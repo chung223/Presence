@@ -9,8 +9,8 @@ enum LockMethod: String, Codable, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .lockScreen: "鎖定螢幕"
-        case .screensaver: "啟動螢幕保護程式"
+        case .lockScreen: String(localized: "鎖定螢幕")
+        case .screensaver: String(localized: "啟動螢幕保護程式")
         }
     }
 }
@@ -22,7 +22,9 @@ struct MonitoredDevice: Codable, Equatable, Identifiable {
     var unlockRSSI = -60
     var lockRSSI = -75
 
-    var displayName: String { name ?? "未命名裝置" }
+    var displayName: String { name ?? Self.unnamed }
+
+    static var unnamed: String { String(localized: "未命名裝置") }
 }
 
 /// 使用者設定。整份存成一個 JSON；缺少的欄位用預設值，之後新增欄位也不會讓舊設定失效。

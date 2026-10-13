@@ -64,7 +64,7 @@ struct GeneralView: View {
                 }
                 LabeledContent("狀態") {
                     HStack {
-                        Text(EventScript.isInstalled ? "已安裝" : "未安裝").foregroundStyle(.secondary)
+                        Text(EventScript.isInstalled ? String(localized: "已安裝") : String(localized: "未安裝")).foregroundStyle(.secondary)
                         Button("打開資料夾") {
                             if let dir = EventScript.directory { NSWorkspace.shared.open(dir) }
                         }
@@ -139,7 +139,7 @@ struct GeneralView: View {
     private var connectionText: String {
         let total = model.preferences.devices.count
         let connected = model.bluetooth.connections.values.filter { $0 == .connected }.count
-        return total == 0 ? "沒有監控中的裝置" : "已連線 \(connected) 台，共 \(total) 台"
+        return total == 0 ? String(localized: "沒有監控中的裝置") : String(localized: "已連線 \(connected) 台，共 \(total) 台")
     }
 }
 
@@ -151,7 +151,7 @@ private struct HotKeyRecorder: View {
 
     var body: some View {
         HStack {
-            Button(recording ? "按下新的組合鍵…" : (hotKey?.display ?? "設定…")) {
+            Button(recording ? String(localized: "按下新的組合鍵…") : (hotKey?.display ?? String(localized: "設定…"))) {
                 recording ? stop() : start()
             }
             .monospaced(hotKey != nil && !recording)

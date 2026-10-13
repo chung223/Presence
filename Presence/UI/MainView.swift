@@ -7,12 +7,12 @@ struct MainView: View {
 
         var title: String {
             switch self {
-            case .overview: "總覽"
-            case .devices: "裝置"
-            case .lockUnlock: "鎖定與解鎖"
-            case .context: "情境"
-            case .general: "一般"
-            case .history: "紀錄"
+            case .overview: String(localized: "總覽")
+            case .devices: String(localized: "裝置")
+            case .lockUnlock: String(localized: "鎖定與解鎖")
+            case .context: String(localized: "情境")
+            case .general: String(localized: "一般")
+            case .history: String(localized: "紀錄")
             }
         }
 

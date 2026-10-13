@@ -15,7 +15,7 @@ struct ContextView: View {
                         Text("\(AppModel.Status.describe(reason))，不會自動鎖定")
                             .foregroundStyle(.orange)
                     } else {
-                        Text(model.preferences.context.isEmpty ? "沒有設定情境，一律照常" : "照常自動鎖定")
+                        Text(model.preferences.context.isEmpty ? String(localized: "沒有設定情境，一律照常") : String(localized: "照常自動鎖定"))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -40,7 +40,7 @@ struct ContextView: View {
                 LabeledContent("目前的網路") {
                     if let current = model.currentNetwork {
                         HStack {
-                            Text(current.ssid ?? "路由器 \(current.id)").foregroundStyle(.secondary)
+                            Text(current.ssid ?? String(localized: "路由器 \(current.id)")).foregroundStyle(.secondary)
                             if !isTrusted(current) {
                                 Button("加入信任…") {
                                     networkName = current.ssid ?? ""

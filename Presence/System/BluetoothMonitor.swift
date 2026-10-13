@@ -19,12 +19,12 @@ final class BluetoothMonitor: NSObject {
 
         var description: String {
             switch self {
-            case .unknown: "正在啟動"
-            case .poweredOn: "已開啟"
-            case .poweredOff: "已關閉"
-            case .unauthorized: "沒有藍牙權限"
-            case .unsupported: "這台 Mac 不支援"
-            case .resetting: "重新啟動中"
+            case .unknown: String(localized: "正在啟動")
+            case .poweredOn: String(localized: "已開啟")
+            case .poweredOff: String(localized: "已關閉")
+            case .unauthorized: String(localized: "沒有藍牙權限")
+            case .unsupported: String(localized: "這台 Mac 不支援")
+            case .resetting: String(localized: "重新啟動中")
             }
         }
     }

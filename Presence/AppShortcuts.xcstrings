@@ -1,0 +1,93 @@
+{
+  "sourceLanguage": "zh-Hant",
+  "strings": {
+    "${applicationName} 狀態": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName} status",
+              "Check ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hant": {
+          "stringSet": {
+            "state": "new",
+            "values": [
+              "${applicationName} 狀態"
+            ]
+          }
+        }
+      }
+    },
+    "恢復 ${applicationName}": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Resume ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hant": {
+          "stringSet": {
+            "state": "new",
+            "values": [
+              "恢復 ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "暫停 ${applicationName}": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Pause ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hant": {
+          "stringSet": {
+            "state": "new",
+            "values": [
+              "暫停 ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "用 ${applicationName} 鎖定": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Lock with ${applicationName}",
+              "Lock my Mac with ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hant": {
+          "stringSet": {
+            "state": "new",
+            "values": [
+              "用 ${applicationName} 鎖定",
+              "${applicationName} 立即鎖定"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -23,16 +23,18 @@ final class AppModel {
 
         var title: String {
             switch self {
-            case .needsDevice: "還沒選擇裝置"
-            case .bluetoothUnavailable(let reason): "藍牙\(reason)"
-            case .paused: "已暫停"
+            case .needsDevice: String(localized: "還沒選擇裝置")
+            case .bluetoothUnavailable(let reason): String(localized: "藍牙\(reason)")
+            case .paused: String(localized: "已暫停")
             case .suspended(let reason, let unlockToo):
-                "\(Self.describe(reason))，暫停自動鎖定\(unlockToo ? "與解鎖" : "")"
-            case .waiting: "等待訊號"
-            case .near: "在附近"
-            case .leaving(let remaining): "離開中，\(Int(remaining.rounded(.up))) 秒後鎖定"
-            case .away(.weakSignal): "不在附近"
-            case .away(.signalLost): "收不到訊號"
+                unlockToo
+                    ? String(localized: "\(Self.describe(reason))，暫停自動鎖定與解鎖")
+                    : String(localized: "\(Self.describe(reason))，暫停自動鎖定")
+            case .waiting: String(localized: "等待訊號")
+            case .near: String(localized: "在附近")
+            case .leaving(let remaining): String(localized: "離開中，\(Int(remaining.rounded(.up))) 秒後鎖定")
+            case .away(.weakSignal): String(localized: "不在附近")
+            case .away(.signalLost): String(localized: "收不到訊號")
             }
         }
 
@@ -53,9 +55,9 @@ final class AppModel {
 
         static func describe(_ reason: ContextRules.Suspension) -> String {
             switch reason {
-            case .trustedNetwork(let name): "在「\(name)」"
-            case .onACPower: "接著電源"
-            case .outsideSchedule: "不在設定的時段"
+            case .trustedNetwork(let name): String(localized: "在「\(name)」")
+            case .onACPower: String(localized: "接著電源")
+            case .outsideSchedule: String(localized: "不在設定的時段")
             }
         }
     }
@@ -134,7 +136,7 @@ final class AppModel {
 
         // 先讀一次密碼：鑰匙圈要問權限的話，讓對話框趁使用者在電腦前時出現，而不是藏在鎖定畫面後面
         if case .needsPermission = PasswordStore.read(allowUI: true) {
-            log.add(.warning, "鑰匙圈不允許 Presence 讀取密碼，請到「鎖定與解鎖」重新設定")
+            log.add(.warning, String(localized: "鑰匙圈不允許 Presence 讀取密碼，請到「鎖定與解鎖」重新設定"))
         }
 
         Task { await refreshNetwork() }
@@ -145,7 +147,7 @@ final class AppModel {
                 self?.tick()
             }
         }
-        log.add(.info, "Presence 已啟動")
+        log.add(.info, String(localized: "Presence 已啟動"))
     }
 
     // MARK: - 顯示用
@@ -154,7 +156,7 @@ final class AppModel {
 
     /// 訊息裡用來稱呼「你的裝置」：只有一台就用它的名字。
     var subject: String {
-        preferences.devices.count == 1 ? preferences.devices[0].displayName : "所有裝置"
+        preferences.devices.count == 1 ? preferences.devices[0].displayName : String(localized: "所有裝置")
     }
 
     /// 目前判定在附近的裝置名稱。
@@ -175,10 +177,10 @@ final class AppModel {
         guard hasDevices else { return status.title }
         let rssi = strongestRSSI.map { " · \($0) dBm" } ?? ""
         if status == .near {
-            return "\(nearDeviceNames.joined(separator: "、")) 在附近\(rssi)"
+            return String(localized: "\(Self.list(nearDeviceNames)) 在附近\(rssi)")
         }
         if case .suspended = status { return status.title }
-        return "\(subject)：\(status.title)\(rssi)"
+        return String(localized: "\(subject)：\(status.title)\(rssi)")
     }
 
     /// 依情境暫停自動鎖定的原因；nil 表示照常。
@@ -230,25 +232,25 @@ final class AppModel {
 
     func resumeAutoUnlock() {
         automation.resetFailures()
-        log.add(.info, "已恢復自動解鎖")
+        log.add(.info, String(localized: "已恢復自動解鎖"))
     }
 
     func pause(for duration: TimeInterval) {
         automation.pause(until: Date().addingTimeInterval(duration))
         now = Date()
-        log.add(.info, "暫停自動鎖定與解鎖 \(Self.describe(duration))")
+        log.add(.info, String(localized: "暫停自動鎖定與解鎖 \(Self.describe(duration))"))
     }
 
     func resume() {
         automation.pause(until: nil)
         now = Date()
-        log.add(.info, "恢復自動鎖定與解鎖")
+        log.add(.info, String(localized: "恢復自動鎖定與解鎖"))
     }
 
     func trustCurrentNetwork(named name: String) {
         guard let network = currentNetwork, !preferences.context.trustedNetworks.contains(where: { $0.id == network.id }) else { return }
         let trimmed = name.trimmingCharacters(in: .whitespaces)
-        preferences.context.trustedNetworks.append(.init(id: network.id, name: trimmed.isEmpty ? (network.ssid ?? "信任的網路") : trimmed))
+        preferences.context.trustedNetworks.append(.init(id: network.id, name: trimmed.isEmpty ? (network.ssid ?? String(localized: "信任的網路")) : trimmed))
     }
 
     func refreshNetwork() async {
@@ -258,34 +260,34 @@ final class AppModel {
 
     func addDevice(_ device: BluetoothMonitor.NearbyDevice) {
         preferences.addDevice(id: device.id, name: device.name)
-        log.add(.info, "開始監控 \(device.name ?? "未命名裝置")")
+        log.add(.info, String(localized: "開始監控 \(device.name ?? MonitoredDevice.unnamed)"))
     }
 
     func removeDevice(_ id: UUID) {
-        let name = preferences.device(id)?.displayName ?? "未命名裝置"
+        let name = preferences.device(id)?.displayName ?? String(localized: "未命名裝置")
         preferences.removeDevice(id)
-        log.add(.info, "不再監控 \(name)")
+        log.add(.info, String(localized: "不再監控 \(name)"))
     }
 
     /// 驗證是正確的登入密碼才存進鑰匙圈。
     func setPassword(_ password: String) -> String? {
-        guard PasswordStore.verify(password) else { return "密碼不正確，請輸入這個帳號的登入密碼" }
+        guard PasswordStore.verify(password) else { return String(localized: "密碼不正確，請輸入這個帳號的登入密碼") }
         do {
             try PasswordStore.save(password)
         } catch {
-            return "無法存入鑰匙圈：\(error.localizedDescription)"
+            return String(localized: "無法存入鑰匙圈：\(error.localizedDescription)")
         }
         hasPassword = true
         warnedMissingPassword = false
         automation.resetFailures()
-        log.add(.info, "已更新登入密碼")
+        log.add(.info, String(localized: "已更新登入密碼"))
         return nil
     }
 
     func removePassword() {
         PasswordStore.delete()
         hasPassword = false
-        log.add(.info, "已移除登入密碼，不會再自動解鎖")
+        log.add(.info, String(localized: "已移除登入密碼，不會再自動解鎖"))
     }
 
     func setLaunchAtLogin(_ enabled: Bool) -> String? {
@@ -301,7 +303,7 @@ final class AppModel {
     func importLegacySettings() {
         guard let imported = LegacyBLEUnlock.imported(into: preferences) else { return }
         preferences = imported
-        log.add(.info, "已匯入舊版 BLEUnlock 的設定")
+        log.add(.info, String(localized: "已匯入舊版 BLEUnlock 的設定"))
     }
 
     func quitLegacyApp() {
@@ -427,7 +429,7 @@ final class AppModel {
             Task {
                 try? await Task.sleep(for: .milliseconds(1500))
                 if ScreenSession.queryLocked() == false {
-                    log.add(.warning, "鎖定失敗：送出鎖定後螢幕仍未鎖定")
+                    log.add(.warning, String(localized: "鎖定失敗：送出鎖定後螢幕仍未鎖定"))
                 }
             }
         case .screensaver:
@@ -437,18 +439,18 @@ final class AppModel {
                 try? await Task.sleep(for: .seconds(3))
                 if ScreenSession.queryLocked() == false {
                     ScreenControl.lockScreen()
-                    log.add(.warning, "螢幕保護程式啟動後沒有鎖定，已改用鎖定螢幕。請到系統設定把「螢幕保護程式啟動或螢幕關閉後要求密碼」設為「立即」。")
+                    log.add(.warning, String(localized: "螢幕保護程式啟動後沒有鎖定，已改用鎖定螢幕。請到系統設定把「螢幕保護程式啟動或螢幕關閉後要求密碼」設為「立即」。"))
                 }
             }
         }
 
         guard let reason else {
-            log.add(.locked, "手動鎖定")
+            log.add(.locked, String(localized: "手動鎖定"))
             return
         }
         let message = reason == .weakSignal
-            ? "\(subject) 離開了，已自動鎖定"
-            : "收不到 \(subject) 的訊號，已自動鎖定"
+            ? String(localized: "\(subject) 離開了，已自動鎖定")
+            : String(localized: "收不到 \(subject) 的訊號，已自動鎖定")
         log.add(.locked, message)
         if preferences.notifyOnLock { Notifier.post("Presence", message, id: Self.lockNotificationID) }
         EventScript.run(reason == .weakSignal ? .away : .lost, rssi: strongestRSSI)
@@ -468,13 +470,13 @@ final class AppModel {
             password = value
         case .notFound:
             hasPassword = false
-            warnOnce("還沒設定登入密碼，無法自動解鎖")
+            warnOnce(String(localized: "還沒設定登入密碼，無法自動解鎖"))
             return
         case .needsPermission:
-            warnOnce("鑰匙圈不允許 Presence 讀取密碼，請到「鎖定與解鎖」重新設定")
+            warnOnce(String(localized: "鑰匙圈不允許 Presence 讀取密碼，請到「鎖定與解鎖」重新設定"))
             return
         case .failed(let status):
-            warnOnce("讀取鑰匙圈失敗（\(status)），這次沒有自動解鎖")
+            warnOnce(String(localized: "讀取鑰匙圈失敗（\(status)），這次沒有自動解鎖"))
             return
         }
 
@@ -492,17 +494,17 @@ final class AppModel {
             case .stillLocked:
                 automation.unlockAttemptFailed()
                 if automation.isBlockedByFailures {
-                    log.add(.unlockFailed, "連續 \(Automation.maximumFailures) 次自動解鎖失敗，已停止自動解鎖。如果改過登入密碼，請重新設定；否則可以在「鎖定與解鎖」恢復。")
+                    log.add(.unlockFailed, String(localized: "連續 \(Automation.maximumFailures) 次自動解鎖失敗，已停止自動解鎖。如果改過登入密碼，請重新設定；否則可以在「鎖定與解鎖」恢復。"))
                 } else {
-                    log.add(.unlockFailed, "自動解鎖失敗，螢幕仍是鎖定")
+                    log.add(.unlockFailed, String(localized: "自動解鎖失敗，螢幕仍是鎖定"))
                 }
             case .interrupted:
-                log.add(.info, "輸入途中螢幕已經解鎖或換了畫面，已停止輸入")
+                log.add(.info, String(localized: "輸入途中螢幕已經解鎖或換了畫面，已停止輸入"))
             case .displayDidNotWake:
-                log.add(.warning, "螢幕沒有亮起，這次沒有解鎖")
+                log.add(.warning, String(localized: "螢幕沒有亮起，這次沒有解鎖"))
             case .noAccessibility:
                 accessibilityGranted = false
-                log.add(.warning, "沒有輔助使用權限，無法自動解鎖")
+                log.add(.warning, String(localized: "沒有輔助使用權限，無法自動解鎖"))
             case .notLocked:
                 break
             }
@@ -519,14 +521,14 @@ final class AppModel {
             Notifier.remove(id: Self.lockNotificationID)
             if byUs {
                 let names = nearDeviceNames
-                log.add(.unlocked, "\(names.isEmpty ? subject : names.joined(separator: "、")) 在附近，已自動解鎖")
+                log.add(.unlocked, String(localized: "\(names.isEmpty ? subject : Self.list(names)) 在附近，已自動解鎖"))
                 EventScript.run(.unlocked, rssi: strongestRSSI)
             } else if case .away = group.presence, hasDevices {
                 // 可能是你自己用 Touch ID 解鎖、只是裝置訊號太弱，也可能是別人，所以只陳述事實
-                log.add(.intruded, "手動解鎖（當時偵測不到\(subject)）")
+                log.add(.intruded, String(localized: "手動解鎖（當時偵測不到\(subject)）"))
                 EventScript.run(.intruded, rssi: strongestRSSI)
             } else {
-                log.add(.manualUnlock, "手動解鎖")
+                log.add(.manualUnlock, String(localized: "手動解鎖"))
             }
             if mediaPausedByUs {
                 mediaPausedByUs = false
@@ -537,7 +539,7 @@ final class AppModel {
             }
         case .locked:
             if let last = lastLockAt, t.timeIntervalSince(last) < 5 { break }
-            log.add(.locked, "螢幕已鎖定")
+            log.add(.locked, String(localized: "螢幕已鎖定"))
         case .displayWoke:
             evaluateUnlock()
         case .systemWillSleep, .systemDidWake:
@@ -550,7 +552,7 @@ final class AppModel {
 
     private func handleAvailability(_ availability: BluetoothMonitor.Availability) {
         if availability == .poweredOn {
-            if bluetoothWasUnavailable { log.add(.info, "藍牙已恢復") }
+            if bluetoothWasUnavailable { log.add(.info, String(localized: "藍牙已恢復")) }
             bluetoothWasUnavailable = false
             return
         }
@@ -558,7 +560,7 @@ final class AppModel {
         group.reset(at: Date())
         if !bluetoothWasUnavailable {
             bluetoothWasUnavailable = true
-            log.add(.warning, "藍牙\(availability.description)。收不到訊號超過逾時時間後會自動鎖定。")
+            log.add(.warning, String(localized: "藍牙\(availability.description)。收不到訊號超過逾時時間後會自動鎖定。"))
         }
     }
 
@@ -566,14 +568,14 @@ final class AppModel {
         let current = suspension
         guard current != lastSuspension else { return }
         if let current {
-            log.add(.info, "\(Status.describe(current))，暫停自動鎖定\(preferences.context.alsoSuspendUnlock ? "與解鎖" : "")")
+            log.add(.info, Status.suspended(current, unlockToo: preferences.context.alsoSuspendUnlock).title)
         } else if let previous = lastSuspension {
             let what = switch previous {
-            case .trustedNetwork(let name): "離開「\(name)」"
-            case .onACPower: "拔掉電源"
-            case .outsideSchedule: "進入設定的時段"
+            case .trustedNetwork(let name): String(localized: "離開「\(name)」")
+            case .onACPower: String(localized: "拔掉電源")
+            case .outsideSchedule: String(localized: "進入設定的時段")
             }
-            log.add(.info, "\(what)，恢復自動鎖定")
+            log.add(.info, String(localized: "\(what)，恢復自動鎖定"))
         }
         lastSuspension = current
     }
@@ -606,14 +608,20 @@ final class AppModel {
     private func registerHotKey() {
         hotKeyConflict = !HotKeyCenter.shared.register(preferences.lockHotKey)
         if hotKeyConflict, let key = preferences.lockHotKey {
-            log.add(.warning, "快捷鍵 \(key.display) 已被其他 App 使用，請換一組")
+            log.add(.warning, String(localized: "快捷鍵 \(key.display) 已被其他 App 使用，請換一組"))
         }
     }
 
+    /// 依系統語言格式化時間長度，例如「1 小時 30 分鐘」、「1 hr, 30 min」。
     static func describe(_ duration: TimeInterval) -> String {
-        let minutes = Int(duration / 60)
-        if minutes < 60 { return "\(minutes) 分鐘" }
-        if minutes % 60 == 0 { return "\(minutes / 60) 小時" }
-        return "\(minutes / 60) 小時 \(minutes % 60) 分鐘"
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = duration < 60 ? [.second] : [.hour, .minute]
+        formatter.unitsStyle = .short
+        return formatter.string(from: duration) ?? ""
+    }
+
+    /// 依系統語言串接名稱，例如「Weichung和Apple Watch」、「Weichung and Apple Watch」。
+    static func list(_ names: [String]) -> String {
+        ListFormatter.localizedString(byJoining: names)
     }
 }

@@ -35,9 +35,9 @@ struct LockUnlockView: View {
                     .disabled(!model.preferences.unlockEnabled)
                 LabeledContent("登入密碼") {
                     HStack {
-                        Text(model.hasPassword ? "已設定" : "未設定")
+                        Text(model.hasPassword ? String(localized: "已設定") : String(localized: "未設定"))
                             .foregroundStyle(model.hasPassword ? Color.secondary : Color.red)
-                        Button(model.hasPassword ? "更改…" : "設定…") { showingPassword = true }
+                        Button(model.hasPassword ? String(localized: "更改…") : String(localized: "設定…")) { showingPassword = true }
                         if model.hasPassword {
                             Button("移除") { model.removePassword() }
                         }
@@ -111,12 +111,12 @@ struct LockUnlockView: View {
     }
 
     static func seconds(_ value: TimeInterval) -> String {
-        value < 60 ? "\(Int(value)) 秒" : AppModel.describe(value)
+        AppModel.describe(value)
     }
 }
 
 private struct ThresholdRow: View {
-    let title: String
+    let title: LocalizedStringKey
     @Binding var value: Int
     let range: ClosedRange<Int>
     let current: Int?

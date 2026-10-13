@@ -22,7 +22,7 @@ struct DevicesView: View {
                             Text(device.id.uuidString).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
                         }
                         Spacer()
-                        Text(current.map { "\($0.rssi) dBm" } ?? "不在範圍內")
+                        Text(current.map { "\($0.rssi) dBm" } ?? String(localized: "不在範圍內"))
                             .monospacedDigit()
                             .foregroundStyle(.secondary)
                         Button("移除", role: .destructive) { model.removeDevice(device.id) }
@@ -36,7 +36,7 @@ struct DevicesView: View {
 
             Section {
                 if candidates.isEmpty {
-                    Text(model.bluetooth.availability == .poweredOn ? "正在掃描…" : "藍牙\(model.bluetooth.availability.description)")
+                    Text(model.bluetooth.availability == .poweredOn ? String(localized: "正在掃描…") : String(localized: "藍牙\(model.bluetooth.availability.description)"))
                         .foregroundStyle(.secondary)
                 }
                 ForEach(candidates) { device in
@@ -67,7 +67,7 @@ private struct DeviceRow: View {
         HStack(spacing: 12) {
             SignalBars(rssi: device.rssi)
             VStack(alignment: .leading, spacing: 2) {
-                Text(device.name ?? "未命名裝置")
+                Text(device.name ?? String(localized: "未命名裝置"))
                     .foregroundStyle(device.name == nil ? .secondary : .primary)
                 Text(device.id.uuidString.prefix(8) + "…")
                     .font(.caption)
@@ -104,6 +104,6 @@ struct SignalBars: View {
             }
         }
         .frame(width: 24, height: 18, alignment: .bottom)
-        .accessibilityLabel(rssi.map { "訊號 \($0) dBm" } ?? "沒有訊號")
+        .accessibilityLabel(rssi.map { String(localized: "訊號 \($0) dBm") } ?? String(localized: "沒有訊號"))
     }
 }

@@ -1,0 +1,2600 @@
+{
+  "sourceLanguage": "zh-Hant",
+  "strings": {
+    "%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        }
+      }
+    },
+    "%@ 在附近": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ nearby"
+          }
+        }
+      }
+    },
+    "%@ 在附近%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ nearby%@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ 在附近%2$@"
+          }
+        }
+      }
+    },
+    "%@ 在附近，已自動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ nearby — unlocked automatically"
+          }
+        }
+      }
+    },
+    "%@ 離開了，已自動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ left — locked automatically"
+          }
+        }
+      }
+    },
+    "%@，不會自動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — won't lock automatically"
+          }
+        }
+      }
+    },
+    "%@，恢復自動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — auto-lock resumed"
+          }
+        }
+      }
+    },
+    "%@，暫停自動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — auto-lock paused"
+          }
+        }
+      }
+    },
+    "%@，暫停自動鎖定與解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — auto-lock and unlock paused"
+          }
+        }
+      }
+    },
+    "%@：%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: %@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@：%2$@"
+          }
+        }
+      }
+    },
+    "%@：%@%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@: %2$@%3$@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@：%2$@%3$@"
+          }
+        }
+      }
+    },
+    "%@：最近 3 分鐘的訊號": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: Signal in the Last 3 Minutes"
+          }
+        }
+      }
+    },
+    "%lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        }
+      }
+    },
+    "%lld dBm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld dBm"
+          }
+        }
+      }
+    },
+    "1 小時": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 Hour"
+          }
+        }
+      }
+    },
+    "15 分鐘": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15 Minutes"
+          }
+        }
+      }
+    },
+    "4 小時": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4 Hours"
+          }
+        }
+      }
+    },
+    "Apple Watch 請戴在手上。這個位置的訊號會用來決定解鎖門檻。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wear your Apple Watch. The signal here sets the unlock threshold."
+          }
+        }
+      }
+    },
+    "Presence": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence"
+          }
+        }
+      }
+    },
+    "Presence 已啟動": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence started"
+          }
+        }
+      }
+    },
+    "Presence 會先確認這是「%@」的登入密碼，再存進鑰匙圈。只有自動解鎖時才會讀出來，不會寫進任何紀錄。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence checks that this is the login password for “%@” before saving it to your keychain. It's read only when unlocking automatically and is never written to any log."
+          }
+        }
+      }
+    },
+    "Presence 的想法來自 Takeshi Sone 的 BLEUnlock（MIT 授權），為新版 macOS 重新設計與實作。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence is based on BLEUnlock by Takeshi Sone (MIT License), redesigned and rewritten for current macOS."
+          }
+        }
+      }
+    },
+    "Presence 自動解鎖用的登入密碼": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Login password Presence uses to unlock automatically"
+          }
+        }
+      }
+    },
+    "Presence 還沒有啟動": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence isn't running"
+          }
+        }
+      }
+    },
+    "RSSI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RSSI"
+          }
+        }
+      }
+    },
+    "一般": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "General"
+          }
+        }
+      }
+    },
+    "不再監控 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stopped monitoring %@"
+          }
+        }
+      }
+    },
+    "不在範圍內": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Out of range"
+          }
+        }
+      }
+    },
+    "不在設定的時段": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outside scheduled hours"
+          }
+        }
+      }
+    },
+    "不在附近": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Away"
+          }
+        }
+      }
+    },
+    "不確定門檻要設多少？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not sure what thresholds to use?"
+          }
+        }
+      }
+    },
+    "不自動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-unlock off"
+          }
+        }
+      }
+    },
+    "不自動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-lock off"
+          }
+        }
+      }
+    },
+    "主動模式": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active mode"
+          }
+        }
+      }
+    },
+    "主動模式會連線到裝置定期讀取訊號，數值比較穩定，但可能干擾藍牙鍵盤、滑鼠、耳機或個人熱點。被動模式只收廣播訊號，不會干擾其他設備。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active mode connects to your devices and reads their signal regularly. Readings are steadier, but it may interfere with Bluetooth keyboards, mice, headphones, or Personal Hotspot. Passive mode only listens to broadcasts and doesn't interfere with other devices."
+          }
+        }
+      }
+    },
+    "事件": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Event"
+          }
+        }
+      }
+    },
+    "事件腳本": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Event Script"
+          }
+        }
+      }
+    },
+    "任一台在附近就算你在，全部都離開才會鎖定。例如同時加入 iPhone 和 Apple Watch，手錶訊號變弱時只要手機還在就不會鎖。每台裝置的門檻在「鎖定與解鎖」分開設定。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You count as present when any of these devices is nearby, and your Mac locks only when all of them are away. For example, add both your iPhone and Apple Watch: if the watch signal drops, your Mac stays unlocked as long as your iPhone is nearby. Set each device's thresholds in Lock & Unlock."
+          }
+        }
+      }
+    },
+    "例如只在上班時間自動鎖定。開始晚於結束表示跨過午夜，例如 22:00 到 06:00。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For example, lock automatically only during work hours. A start time later than the end time spans midnight, such as 22:00 to 06:00."
+          }
+        }
+      }
+    },
+    "例如門口或隔壁座位。到了以後再按「開始測量」。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Such as the door or the next desk. Click Start Measuring when you get there."
+          }
+        }
+      }
+    },
+    "例如：家裡": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "e.g. Home"
+          }
+        }
+      }
+    },
+    "信任的網路": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trusted Networks"
+          }
+        }
+      }
+    },
+    "儲存": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      }
+    },
+    "允許使用藍牙": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow Bluetooth"
+          }
+        }
+      }
+    },
+    "允許輔助使用": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow Accessibility"
+          }
+        }
+      }
+    },
+    "允許通知": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow Notifications"
+          }
+        }
+      }
+    },
+    "兩個 App 同時執行會互相干擾。結束前，記得在舊版的選單關掉「登入時啟動」。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Running both apps at once causes conflicts. Before quitting BLEUnlock, turn off “Launch at Login” in its menu."
+          }
+        }
+      }
+    },
+    "分鐘": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minutes"
+          }
+        }
+      }
+    },
+    "到「系統設定 › 隱私權與安全性 › 藍牙」打開 Presence。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn on Presence in System Settings › Privacy & Security › Bluetooth."
+          }
+        }
+      }
+    },
+    "加入": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add"
+          }
+        }
+      }
+    },
+    "加入信任…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trust…"
+          }
+        }
+      }
+    },
+    "加入裝置後會在這裡顯示訊號": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a device to see its signal here"
+          }
+        }
+      }
+    },
+    "匯入": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import"
+          }
+        }
+      }
+    },
+    "取得 Presence 狀態": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get Presence Status"
+          }
+        }
+      }
+    },
+    "取消": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
+    "只在使用電池時自動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock automatically only on battery power"
+          }
+        }
+      }
+    },
+    "只在指定時段自動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock automatically only during scheduled hours"
+          }
+        }
+      }
+    },
+    "只設定解鎖門檻": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set Unlock Threshold Only"
+          }
+        }
+      }
+    },
+    "啟動": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Startup"
+          }
+        }
+      }
+    },
+    "啟動螢幕保護程式": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Screen Saver"
+          }
+        }
+      }
+    },
+    "回來時自動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock automatically when you return"
+          }
+        }
+      }
+    },
+    "回傳目前的狀態，例如「Weichung 在附近 · -52 dBm」。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Returns the current status, such as “iPhone nearby · -52 dBm”."
+          }
+        }
+      }
+    },
+    "在 Finder 顯示": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show in Finder"
+          }
+        }
+      }
+    },
+    "在「%@」": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On “%@”"
+          }
+        }
+      }
+    },
+    "在任何 App 裡按下快捷鍵就會立即鎖定。「捷徑」App 裡也有 Presence 的動作（立即鎖定、暫停、恢復、取得狀態），可以接進自動化，或在終端機用 shortcuts run 執行。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Press the shortcut in any app to lock right away. The Shortcuts app also has Presence actions (Lock Now, Pause, Resume, Get Status) for automations, or run them in Terminal with shortcuts run."
+          }
+        }
+      }
+    },
+    "在指定的時間內不自動鎖定，也不自動解鎖。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Don't lock or unlock automatically for the specified time."
+          }
+        }
+      }
+    },
+    "在這個位置放一個名為 event 的可執行檔，鎖定或解鎖時會帶參數執行：away（訊號變弱而鎖定）、lost（收不到訊號而鎖定）、unlocked（自動解鎖）、intruded（裝置不在時被手動解鎖）。第二個參數是當時的訊號強度。與 BLEUnlock 相容。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Put an executable named event here and it runs on lock and unlock with an argument: away (locked because the signal got weak), lost (locked because the signal was lost), unlocked (unlocked automatically), or intruded (unlocked manually while your devices were away). The second argument is the signal strength at that moment. Compatible with BLEUnlock."
+          }
+        }
+      }
+    },
+    "在附近": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nearby"
+          }
+        }
+      }
+    },
+    "套用": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply"
+          }
+        }
+      }
+    },
+    "完全收不到訊號多久就鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock after no signal for"
+          }
+        }
+      }
+    },
+    "密碼不正確，請輸入這個帳號的登入密碼": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incorrect password. Enter the login password for this account."
+          }
+        }
+      }
+    },
+    "已允許": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allowed"
+          }
+        }
+      }
+    },
+    "已匯入舊版 BLEUnlock 的設定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imported settings from BLEUnlock"
+          }
+        }
+      }
+    },
+    "已安裝": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installed"
+          }
+        }
+      }
+    },
+    "已恢復自動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-unlock resumed"
+          }
+        }
+      }
+    },
+    "已暫停": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused"
+          }
+        }
+      }
+    },
+    "已更新登入密碼": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Login password updated"
+          }
+        }
+      }
+    },
+    "已移除登入密碼，不會再自動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Login password removed; Presence won't unlock automatically"
+          }
+        }
+      }
+    },
+    "已設定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set"
+          }
+        }
+      }
+    },
+    "已連線 %lld 台，共 %lld 台": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld of %2$lld connected"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "new",
+            "value": "已連線 %1$lld 台，共 %2$lld 台"
+          }
+        }
+      }
+    },
+    "已開啟": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On"
+          }
+        }
+      }
+    },
+    "已關閉": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Off"
+          }
+        }
+      }
+    },
+    "帶著%@走到你希望 Mac 開始鎖定的地方。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take %@ to where you want your Mac to lock."
+          }
+        }
+      }
+    },
+    "帶著%@，坐在你平常使用 Mac 的位置。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sit where you usually use your Mac, with %@."
+          }
+        }
+      }
+    },
+    "座位": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desk"
+          }
+        }
+      }
+    },
+    "建議解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock at"
+          }
+        }
+      }
+    },
+    "建議鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock at"
+          }
+        }
+      }
+    },
+    "快捷鍵 %@ 已被其他 App 使用，請換一組": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The shortcut %@ is used by another app. Choose a different one."
+          }
+        }
+      }
+    },
+    "快捷鍵與捷徑": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard Shortcut and Shortcuts"
+          }
+        }
+      }
+    },
+    "恢復": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume"
+          }
+        }
+      }
+    },
+    "恢復 Presence": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume Presence"
+          }
+        }
+      }
+    },
+    "恢復自動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume Auto-Unlock"
+          }
+        }
+      }
+    },
+    "恢復自動鎖定與解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume Auto-Lock and Unlock"
+          }
+        }
+      }
+    },
+    "情境": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conditions"
+          }
+        }
+      }
+    },
+    "情境符合時也暫停自動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Also pause auto-unlock when conditions apply"
+          }
+        }
+      }
+    },
+    "所有裝置": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All devices"
+          }
+        }
+      }
+    },
+    "手動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlocked manually"
+          }
+        }
+      }
+    },
+    "手動解鎖（當時偵測不到%@）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlocked manually (%@ not detected)"
+          }
+        }
+      }
+    },
+    "手動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Locked manually"
+          }
+        }
+      }
+    },
+    "手動鎖定中": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Locked manually"
+          }
+        }
+      }
+    },
+    "打開 Presence…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Presence…"
+          }
+        }
+      }
+    },
+    "打開登入項目設定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Login Items Settings"
+          }
+        }
+      }
+    },
+    "打開設定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Settings"
+          }
+        }
+      }
+    },
+    "打開資料夾": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Folder"
+          }
+        }
+      }
+    },
+    "拔掉電源": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unplugged"
+          }
+        }
+      }
+    },
+    "拿著裝置靠近或遠離 Mac，看哪一台的訊號跟著變，就是它。iPhone 和 Apple Watch 要登入和這台 Mac 相同的 Apple 帳號，Mac 才認得出同一台裝置；其他廠牌的裝置如果會定期更換藍牙位址，就沒辦法持續追蹤。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move a device closer to or farther from your Mac and watch which signal changes. iPhone and Apple Watch must be signed in to the same Apple Account as this Mac to be recognized consistently. Devices from other makers that change their Bluetooth address periodically can't be tracked."
+          }
+        }
+      }
+    },
+    "按下新的組合鍵…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Press Shortcut…"
+          }
+        }
+      }
+    },
+    "接著電源": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On power adapter"
+          }
+        }
+      }
+    },
+    "接著電源時通常放在固定的地方，例如家裡的書桌；帶出門用電池時才自動鎖定。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When plugged in, your Mac is usually somewhere fixed, like your desk at home. Lock automatically only when you're out on battery."
+          }
+        }
+      }
+    },
+    "播放": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playback"
+          }
+        }
+      }
+    },
+    "收不到 %@ 的訊號，已自動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lost the signal from %@ — locked automatically"
+          }
+        }
+      }
+    },
+    "收不到訊號": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No signal"
+          }
+        }
+      }
+    },
+    "星期": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Days"
+          }
+        }
+      }
+    },
+    "時段": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schedule"
+          }
+        }
+      }
+    },
+    "時間": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time"
+          }
+        }
+      }
+    },
+    "暫停": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        }
+      }
+    },
+    "暫停 Presence": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause Presence"
+          }
+        }
+      }
+    },
+    "暫停到 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused until %@"
+          }
+        }
+      }
+    },
+    "暫停自動鎖定與解鎖 ${minutes} 分鐘": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause auto-lock and unlock for ${minutes} minutes"
+          }
+        }
+      }
+    },
+    "暫停自動鎖定與解鎖 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-lock and unlock paused for %@"
+          }
+        }
+      }
+    },
+    "更改…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change…"
+          }
+        }
+      }
+    },
+    "最近 3 分鐘的訊號": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signal in the Last 3 Minutes"
+          }
+        }
+      }
+    },
+    "最近的事件": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recent Events"
+          }
+        }
+      }
+    },
+    "有裝置在兩個位置的訊號太接近，鎖定門檻已自動拉開。建議把鎖定位置再走遠一點重新校準。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some devices had similar signals at both spots, so their lock thresholds were widened automatically. Try recalibrating from farther away."
+          }
+        }
+      }
+    },
+    "未允許": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not allowed"
+          }
+        }
+      }
+    },
+    "未命名裝置": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unnamed device"
+          }
+        }
+      }
+    },
+    "未安裝": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not installed"
+          }
+        }
+      }
+    },
+    "未設定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not set"
+          }
+        }
+      }
+    },
+    "查看全部": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show All"
+          }
+        }
+      }
+    },
+    "校準時分別站在「希望解鎖」和「希望鎖定」的位置各量 8 秒，會同時算出每台裝置的門檻。數值越接近 0 代表要越近。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calibration measures for 8 seconds where you want to unlock and where you want to lock, then sets thresholds for every device. Values closer to 0 mean closer."
+          }
+        }
+      }
+    },
+    "校準門檻": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calibrate Thresholds"
+          }
+        }
+      }
+    },
+    "權限": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permissions"
+          }
+        }
+      }
+    },
+    "正在啟動": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starting"
+          }
+        }
+      }
+    },
+    "正在掃描…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scanning…"
+          }
+        }
+      }
+    },
+    "正在測量，請保持不動約 %lld 秒…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Measuring. Stay still for about %lld seconds…"
+          }
+        }
+      }
+    },
+    "沒收到": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No signal"
+          }
+        }
+      }
+    },
+    "沒有收到足夠的訊號，請確認裝置在附近、藍牙是開的，再試一次。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not enough signal received. Make sure your devices are nearby and Bluetooth is on, then try again."
+          }
+        }
+      }
+    },
+    "沒有監控中的裝置": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No devices monitored"
+          }
+        }
+      }
+    },
+    "沒有藍牙權限": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not allowed"
+          }
+        }
+      }
+    },
+    "沒有訊號": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No signal"
+          }
+        }
+      }
+    },
+    "沒有設定情境，一律照常": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No conditions set; always active"
+          }
+        }
+      }
+    },
+    "沒有輔助使用權限，無法自動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't unlock automatically without Accessibility permission"
+          }
+        }
+      }
+    },
+    "沒有連上網路": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not connected"
+          }
+        }
+      }
+    },
+    "沿用 BLEUnlock 的設定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use BLEUnlock Settings"
+          }
+        }
+      }
+    },
+    "沿用裝置與門檻設定（不含密碼）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use its device and threshold settings (not the password)"
+          }
+        }
+      }
+    },
+    "清除": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear"
+          }
+        }
+      }
+    },
+    "測量中": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Measuring"
+          }
+        }
+      }
+    },
+    "濾波後": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filtered"
+          }
+        }
+      }
+    },
+    "灰點是每一筆收到的訊號，線是取中位數後的結果。線要高於綠色虛線才會解鎖，低於橘色虛線一段時間就會鎖定。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gray dots are individual readings; the line is their median. Your Mac unlocks when the line is above the green dashed line, and locks when it stays below the orange one for a while."
+          }
+        }
+      }
+    },
+    "為這個網路取個名字": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name This Network"
+          }
+        }
+      }
+    },
+    "無法存入鑰匙圈：%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't save to the keychain: %@"
+          }
+        }
+      }
+    },
+    "照常自動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Locking automatically as usual"
+          }
+        }
+      }
+    },
+    "版本": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        }
+      }
+    },
+    "狀態": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        }
+      }
+    },
+    "用 Presence 鎖定這台 Mac。之後要離開一段時間再回來，才會自動解鎖。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock this Mac with Presence. It won't unlock automatically until you've been away for a while and come back."
+          }
+        }
+      }
+    },
+    "登入密碼": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Login Password"
+          }
+        }
+      }
+    },
+    "登入時自動啟動": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Launch at login"
+          }
+        }
+      }
+    },
+    "監控中的裝置": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitored Devices"
+          }
+        }
+      }
+    },
+    "目前": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Now"
+          }
+        }
+      }
+    },
+    "目前的網路": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current network"
+          }
+        }
+      }
+    },
+    "目前訊號 %lld dBm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current signal: %lld dBm"
+          }
+        }
+      }
+    },
+    "目前連線中": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connected"
+          }
+        }
+      }
+    },
+    "移除": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove"
+          }
+        }
+      }
+    },
+    "立即鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock Now"
+          }
+        }
+      }
+    },
+    "立即鎖定 Mac": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock Mac Now"
+          }
+        }
+      }
+    },
+    "立即鎖定的快捷鍵": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock Now shortcut"
+          }
+        }
+      }
+    },
+    "等待訊號": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for signal"
+          }
+        }
+      }
+    },
+    "紀錄": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "History"
+          }
+        }
+      }
+    },
+    "結束": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quit"
+          }
+        }
+      }
+    },
+    "結束 Presence": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quit Presence"
+          }
+        }
+      }
+    },
+    "結束暫停，恢復自動鎖定與解鎖。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End the pause and resume automatic locking and unlocking."
+          }
+        }
+      }
+    },
+    "結束舊版": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quit BLEUnlock"
+          }
+        }
+      }
+    },
+    "結束舊版 BLEUnlock": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quit BLEUnlock"
+          }
+        }
+      }
+    },
+    "總覽": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overview"
+          }
+        }
+      }
+    },
+    "腳本位置": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Script location"
+          }
+        }
+      }
+    },
+    "自動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-Unlock"
+          }
+        }
+      }
+    },
+    "自動解鎖失敗，螢幕仍是鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic unlock failed; the screen is still locked"
+          }
+        }
+      }
+    },
+    "自動解鎖時用來輸入。會先驗證是否正確，再存進鑰匙圈。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Typed in to unlock automatically. It's verified before being saved to your keychain."
+          }
+        }
+      }
+    },
+    "自動解鎖要模擬鍵盤輸入密碼，需要這個權限。到「系統設定 › 隱私權與安全性 › 輔助使用」打開 Presence。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlocking automatically types your password, which requires this permission. Turn on Presence in System Settings › Privacy & Security › Accessibility."
+          }
+        }
+      }
+    },
+    "自動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-Lock"
+          }
+        }
+      }
+    },
+    "自動鎖定與解鎖暫停到 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-lock and unlock paused until %@"
+          }
+        }
+      }
+    },
+    "舊版 BLEUnlock": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BLEUnlock"
+          }
+        }
+      }
+    },
+    "舊版正在執行，會互相干擾": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BLEUnlock is running and will conflict"
+          }
+        }
+      }
+    },
+    "藍牙": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetooth"
+          }
+        }
+      }
+    },
+    "藍牙%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetooth: %@"
+          }
+        }
+      }
+    },
+    "藍牙%@。收不到訊號超過逾時時間後會自動鎖定。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetooth: %@. Your Mac will lock automatically if no signal is received within the timeout."
+          }
+        }
+      }
+    },
+    "藍牙已恢復": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetooth is back"
+          }
+        }
+      }
+    },
+    "藍牙關閉或收不到訊號時也會在逾時後鎖定。用螢幕保護程式鎖定時，要在系統設定把「螢幕保護程式啟動後要求密碼」設為「立即」，否則 Presence 會改用直接鎖定。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Mac also locks after the timeout if Bluetooth is off or there's no signal. To lock with the screen saver, set “Require password after screen saver begins” to “Immediately” in System Settings; otherwise Presence locks the screen directly."
+          }
+        }
+      }
+    },
+    "螢幕保護程式啟動後沒有鎖定，已改用鎖定螢幕。請到系統設定把「螢幕保護程式啟動或螢幕關閉後要求密碼」設為「立即」。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The screen saver started without locking, so Presence locked the screen instead. In System Settings, set “Require password after screen saver begins or display is turned off” to “Immediately”."
+          }
+        }
+      }
+    },
+    "螢幕已鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Screen locked"
+          }
+        }
+      }
+    },
+    "螢幕沒有亮起，這次沒有解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The display didn't wake, so the Mac wasn't unlocked"
+          }
+        }
+      }
+    },
+    "被動模式": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passive mode"
+          }
+        }
+      }
+    },
+    "裝置": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devices"
+          }
+        }
+      }
+    },
+    "要清除所有紀錄嗎？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear all history?"
+          }
+        }
+      }
+    },
+    "解鎖 %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock %lld"
+          }
+        }
+      }
+    },
+    "解鎖門檻": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock threshold"
+          }
+        }
+      }
+    },
+    "訊號 %lld dBm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signal %lld dBm"
+          }
+        }
+      }
+    },
+    "訊號低於門檻多久才鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock after weak signal for"
+          }
+        }
+      }
+    },
+    "訊號在幾秒內持續高於解鎖門檻才會解鎖，單一筆異常的強訊號不算。關掉「靠近時喚醒螢幕」後，要等你按鍵盤或滑鼠叫醒螢幕才會解鎖，比較安全。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Mac unlocks only when the signal stays above the unlock threshold for a few seconds; a single unusually strong reading doesn't count. With “Wake display when nearby” off, it unlocks only after you wake the display with the keyboard or mouse, which is safer."
+          }
+        }
+      }
+    },
+    "設定…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set…"
+          }
+        }
+      }
+    },
+    "設定密碼…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set Password…"
+          }
+        }
+      }
+    },
+    "設定登入密碼": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set Login Password"
+          }
+        }
+      }
+    },
+    "請系統詢問": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Request Permission"
+          }
+        }
+      }
+    },
+    "讀取鑰匙圈失敗（%d），這次沒有自動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read the keychain (%d), so the Mac wasn't unlocked"
+          }
+        }
+      }
+    },
+    "路由器 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Router %@"
+          }
+        }
+      }
+    },
+    "輔助使用": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accessibility"
+          }
+        }
+      }
+    },
+    "輔助使用權限": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accessibility permission"
+          }
+        }
+      }
+    },
+    "輸入途中螢幕已經解鎖或換了畫面，已停止輸入": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The screen unlocked or changed while typing, so typing stopped"
+          }
+        }
+      }
+    },
+    "近": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Near"
+          }
+        }
+      }
+    },
+    "這台 Mac 不支援": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not supported on this Mac"
+          }
+        }
+      }
+    },
+    "這台 Mac 沒有電池，不適用。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This Mac has no battery."
+          }
+        }
+      }
+    },
+    "這組快捷鍵已被其他 App 使用，請換一組。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This shortcut is used by another app. Choose a different one."
+          }
+        }
+      }
+    },
+    "通常是你的 iPhone，也可以再加上 Apple Watch。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usually your iPhone. You can add your Apple Watch too."
+          }
+        }
+      }
+    },
+    "通知": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications"
+          }
+        }
+      }
+    },
+    "連上這些網路時不會自動鎖定，例如家裡。Presence 用路由器的硬體位址辨識網路，不需要定位權限。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Mac won't lock automatically on these networks, such as at home. Presence identifies networks by the router's hardware address, so it doesn't need Location permission."
+          }
+        }
+      }
+    },
+    "連上這個網路時，Presence 不會自動鎖定。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence won't lock automatically on this network."
+          }
+        }
+      }
+    },
+    "連線狀態": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection"
+          }
+        }
+      }
+    },
+    "連續 %lld 次自動解鎖失敗，已停止自動解鎖。如果改過登入密碼，請重新設定；否則可以在「鎖定與解鎖」恢復。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic unlock failed %lld times in a row and has been turned off. If you changed your login password, set it again; otherwise resume it in Lock & Unlock."
+          }
+        }
+      }
+    },
+    "連續解鎖失敗，已停止自動解鎖。如果改過登入密碼，請重新設定。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic unlock stopped after repeated failures. If you changed your login password, set it again."
+          }
+        }
+      }
+    },
+    "進入設定的時段": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entered scheduled hours"
+          }
+        }
+      }
+    },
+    "遠": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Far"
+          }
+        }
+      }
+    },
+    "適用於 Music、Spotify、瀏覽器影片等出現在「正在播放」的內容。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Works with Music, Spotify, browser videos, and anything else shown in Now Playing."
+          }
+        }
+      }
+    },
+    "選擇裝置": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Device"
+          }
+        }
+      }
+    },
+    "選擇要監控的裝置": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a device to monitor"
+          }
+        }
+      }
+    },
+    "還差幾步就能開始使用": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A few more steps to get started"
+          }
+        }
+      }
+    },
+    "還沒有事件": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Events Yet"
+          }
+        }
+      }
+    },
+    "還沒有收到訊號": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No signal yet"
+          }
+        }
+      }
+    },
+    "還沒有監控任何裝置，從下面的列表加入。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No devices yet. Add one from the list below."
+          }
+        }
+      }
+    },
+    "還沒設定登入密碼，無法自動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't unlock automatically: no login password set"
+          }
+        }
+      }
+    },
+    "還沒選擇裝置": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No device chosen"
+          }
+        }
+      }
+    },
+    "重新啟動中": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restarting"
+          }
+        }
+      }
+    },
+    "錯誤 %d": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error %d"
+          }
+        }
+      }
+    },
+    "鎖定 %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock %lld"
+          }
+        }
+      }
+    },
+    "鎖定位置": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock spot"
+          }
+        }
+      }
+    },
+    "鎖定失敗：送出鎖定後螢幕仍未鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock failed: the screen still isn't locked"
+          }
+        }
+      }
+    },
+    "鎖定後在鎖定畫面顯示原因": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show the reason on the lock screen"
+          }
+        }
+      }
+    },
+    "鎖定方式": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock method"
+          }
+        }
+      }
+    },
+    "鎖定時暫停播放，解鎖後繼續": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause playback when locked, resume when unlocked"
+          }
+        }
+      }
+    },
+    "鎖定與解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock & Unlock"
+          }
+        }
+      }
+    },
+    "鎖定螢幕": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock Screen"
+          }
+        }
+      }
+    },
+    "鎖定門檻": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock threshold"
+          }
+        }
+      }
+    },
+    "鑰匙圈不允許 Presence 讀取密碼，請到「鎖定與解鎖」重新設定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The keychain didn't let Presence read the password. Set it again in Lock & Unlock."
+          }
+        }
+      }
+    },
+    "門檻": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thresholds"
+          }
+        }
+      }
+    },
+    "開始": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start"
+          }
+        }
+      }
+    },
+    "開始校準…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calibrate…"
+          }
+        }
+      }
+    },
+    "開始測量": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Measuring"
+          }
+        }
+      }
+    },
+    "開始監控 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Started monitoring %@"
+          }
+        }
+      }
+    },
+    "關於": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        }
+      }
+    },
+    "附近的裝置（依訊號強弱排序）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nearby Devices (Strongest First)"
+          }
+        }
+      }
+    },
+    "離開「%@」": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left “%@”"
+          }
+        }
+      }
+    },
+    "離開中，%lld 秒後鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leaving — locking in %lld s"
+          }
+        }
+      }
+    },
+    "離開時自動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock automatically when you leave"
+          }
+        }
+      }
+    },
+    "電源": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Power"
+          }
+        }
+      }
+    },
+    "需要你在系統設定允許": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Needs your approval in System Settings"
+          }
+        }
+      }
+    },
+    "靠近時喚醒螢幕": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wake display when nearby"
+          }
+        }
+      }
+    },
+    "預設只暫停自動鎖定，回來時仍會自動解鎖。情境結束時如果裝置不在附近，會立刻鎖定。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "By default only auto-lock is paused, and your Mac still unlocks when you return. When the conditions end, your Mac locks right away if your devices aren't nearby."
+          }
+        }
+      }
+    },
+    "顯示未命名裝置": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show unnamed devices"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -60,11 +60,11 @@ enum PasswordStore {
         var item = baseQuery
         item[kSecValueData as String] = Data(password.utf8)
         item[kSecAttrLabel as String] = "Presence"
-        item[kSecAttrDescription as String] = "Presence 自動解鎖用的登入密碼"
+        item[kSecAttrDescription as String] = String(localized: "Presence 自動解鎖用的登入密碼")
         let status = SecItemAdd(item as CFDictionary, nil)
         guard status == errSecSuccess else {
             throw NSError(domain: NSOSStatusErrorDomain, code: Int(status),
-                          userInfo: [NSLocalizedDescriptionKey: SecCopyErrorMessageString(status, nil) as String? ?? "錯誤 \(status)"])
+                          userInfo: [NSLocalizedDescriptionKey: SecCopyErrorMessageString(status, nil) as String? ?? String(localized: "錯誤 \(status)")])
         }
     }
 

@@ -92,23 +92,24 @@ private struct StatusHeader: View {
         let status = model.status
         guard model.hasDevices else { return status.title }
         if status == .near {
-            return "\(model.nearDeviceNames.joined(separator: "、")) 在附近"
+            return String(localized: "\(AppModel.list(model.nearDeviceNames)) 在附近")
         }
         return "\(model.subject) \(status.title)"
     }
 
     private var detail: String {
         if case .paused(let until) = model.status {
-            return "自動鎖定與解鎖暫停到 \(until.formatted(date: .omitted, time: .shortened))"
+            return String(localized: "自動鎖定與解鎖暫停到 \(until.formatted(date: .omitted, time: .shortened))")
         }
         let p = model.preferences
         var parts = p.devices.map { device in
-            "\(device.displayName) \(model.smoothedRSSI(for: device.id).map { "\($0) dBm" } ?? "沒有訊號")"
+            let rssi = model.smoothedRSSI(for: device.id).map { "\($0) dBm" } ?? String(localized: "沒有訊號")
+            return "\(device.displayName) \(rssi)"
         }
-        if !p.lockEnabled { parts.append("不自動鎖定") }
-        if !p.unlockEnabled { parts.append("不自動解鎖") }
-        parts.append(p.activeMode ? "主動模式" : "被動模式")
-        if model.automation.manualHold { parts.append("手動鎖定中") }
+        if !p.lockEnabled { parts.append(String(localized: "不自動鎖定")) }
+        if !p.unlockEnabled { parts.append(String(localized: "不自動解鎖")) }
+        parts.append(p.activeMode ? String(localized: "主動模式") : String(localized: "被動模式"))
+        if model.automation.manualHold { parts.append(String(localized: "手動鎖定中")) }
         return parts.joined(separator: " · ")
     }
 }
@@ -125,7 +126,7 @@ private struct SignalChart: View {
         let samples = device.flatMap { model.samples[$0.id] } ?? []
         let smoothed = device.flatMap { model.smoothed[$0.id] } ?? []
         VStack(alignment: .leading, spacing: 8) {
-            Text(device.map { "\($0.displayName)：最近 3 分鐘的訊號" } ?? "最近 3 分鐘的訊號").font(.headline)
+            Text(device.map { String(localized: "\($0.displayName)：最近 3 分鐘的訊號") } ?? String(localized: "最近 3 分鐘的訊號")).font(.headline)
             Chart {
                 ForEach(samples) { point in
                     PointMark(x: .value("時間", point.date), y: .value("RSSI", point.rssi))
@@ -172,7 +173,7 @@ private struct SignalChart: View {
             .frame(height: 200)
             .overlay {
                 if samples.isEmpty {
-                    Text(device == nil ? "加入裝置後會在這裡顯示訊號" : "還沒有收到訊號")
+                    Text(device == nil ? String(localized: "加入裝置後會在這裡顯示訊號") : String(localized: "還沒有收到訊號"))
                         .foregroundStyle(.secondary)
                 }
             }
@@ -279,21 +280,21 @@ private struct SetupChecklist: View {
 
     private func title(_ item: AppModel.SetupItem) -> String {
         switch item {
-        case .bluetooth: "允許使用藍牙"
-        case .device: "選擇要監控的裝置"
-        case .accessibility: "允許輔助使用"
-        case .password: "設定登入密碼"
-        case .legacyApp: "結束舊版 BLEUnlock"
+        case .bluetooth: String(localized: "允許使用藍牙")
+        case .device: String(localized: "選擇要監控的裝置")
+        case .accessibility: String(localized: "允許輔助使用")
+        case .password: String(localized: "設定登入密碼")
+        case .legacyApp: String(localized: "結束舊版 BLEUnlock")
         }
     }
 
     private func detail(_ item: AppModel.SetupItem) -> String {
         switch item {
-        case .bluetooth: "到「系統設定 › 隱私權與安全性 › 藍牙」打開 Presence。"
-        case .device: "通常是你的 iPhone，也可以再加上 Apple Watch。"
-        case .accessibility: "自動解鎖要模擬鍵盤輸入密碼，需要這個權限。到「系統設定 › 隱私權與安全性 › 輔助使用」打開 Presence。"
-        case .password: "自動解鎖時用來輸入。會先驗證是否正確，再存進鑰匙圈。"
-        case .legacyApp: "兩個 App 同時執行會互相干擾。結束前，記得在舊版的選單關掉「登入時啟動」。"
+        case .bluetooth: String(localized: "到「系統設定 › 隱私權與安全性 › 藍牙」打開 Presence。")
+        case .device: String(localized: "通常是你的 iPhone，也可以再加上 Apple Watch。")
+        case .accessibility: String(localized: "自動解鎖要模擬鍵盤輸入密碼，需要這個權限。到「系統設定 › 隱私權與安全性 › 輔助使用」打開 Presence。")
+        case .password: String(localized: "自動解鎖時用來輸入。會先驗證是否正確，再存進鑰匙圈。")
+        case .legacyApp: String(localized: "兩個 App 同時執行會互相干擾。結束前，記得在舊版的選單關掉「登入時啟動」。")
         }
     }
 

@@ -1,0 +1,23 @@
+{
+  "sourceLanguage": "zh-Hant",
+  "strings": {
+    "NSBluetoothAlwaysUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence uses Bluetooth to detect whether your phone or watch is nearby, so it can lock or unlock this Mac."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence 用藍牙偵測你的手機或手錶在不在附近，決定要鎖定還是解鎖這台 Mac。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

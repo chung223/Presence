@@ -49,7 +49,7 @@ struct CalibrationSheet: View {
     }
 
     private var devicesText: String {
-        model.preferences.devices.map(\.displayName).joined(separator: "、")
+        AppModel.list(model.preferences.devices.map(\.displayName))
     }
 
     @ViewBuilder
@@ -98,7 +98,7 @@ struct CalibrationSheet: View {
         }
     }
 
-    private func instruction(_ number: Int, _ title: String, _ detail: String) -> some View {
+    private func instruction(_ number: Int, _ title: LocalizedStringKey, _ detail: LocalizedStringKey) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Text("\(number)")
                 .font(.headline)
@@ -133,7 +133,7 @@ struct CalibrationSheet: View {
                     Text(s.device.displayName).lineLimit(1)
                     Text(s.near.map(String.init) ?? "—")
                     Text(s.far.map(String.init) ?? "—")
-                    Text(s.unlock.map(String.init) ?? "沒收到").foregroundStyle(s.unlock == nil ? .secondary : Color.green)
+                    Text(s.unlock.map(String.init) ?? String(localized: "沒收到")).foregroundStyle(s.unlock == nil ? .secondary : Color.green)
                     Text(s.lock.map(String.init) ?? "—").foregroundStyle(.orange)
                 }
             }
