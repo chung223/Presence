@@ -1,3 +1,4 @@
+import Carbon.HIToolbox
 import SwiftUI
 import UserNotifications
 
@@ -21,6 +22,19 @@ struct GeneralView: View {
                 if let loginError {
                     Text(loginError).font(.callout).foregroundStyle(.red)
                 }
+            }
+
+            Section {
+                LabeledContent("立即鎖定的快捷鍵") {
+                    HotKeyRecorder(hotKey: $model.preferences.lockHotKey)
+                }
+                if model.hotKeyConflict {
+                    Text("這組快捷鍵已被其他 App 使用，請換一組。").font(.callout).foregroundStyle(.red)
+                }
+            } header: {
+                Text("快捷鍵與捷徑")
+            } footer: {
+                Text("在任何 App 裡按下快捷鍵就會立即鎖定。「捷徑」App 裡也有 Presence 的動作（立即鎖定、暫停、恢復、取得狀態），可以接進自動化，或在終端機用 shortcuts run 執行。")
             }
 
             Section {
@@ -126,5 +140,48 @@ struct GeneralView: View {
         let total = model.preferences.devices.count
         let connected = model.bluetooth.connections.values.filter { $0 == .connected }.count
         return total == 0 ? "沒有監控中的裝置" : "已連線 \(connected) 台，共 \(total) 台"
+    }
+}
+
+/// 按一下開始錄製，接著按下想要的組合鍵；Esc 取消。
+private struct HotKeyRecorder: View {
+    @Binding var hotKey: HotKey?
+    @State private var recording = false
+    @State private var monitor: Any?
+
+    var body: some View {
+        HStack {
+            Button(recording ? "按下新的組合鍵…" : (hotKey?.display ?? "設定…")) {
+                recording ? stop() : start()
+            }
+            .monospaced(hotKey != nil && !recording)
+            if hotKey != nil, !recording {
+                Button("清除") { hotKey = nil }
+            }
+        }
+        .onDisappear(perform: stop)
+    }
+
+    private func start() {
+        recording = true
+        monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            if event.keyCode == UInt16(kVK_Escape) {
+                stop()
+                return nil
+            }
+            guard let key = HotKey(event: event) else {
+                NSSound.beep()
+                return nil
+            }
+            hotKey = key
+            stop()
+            return nil
+        }
+    }
+
+    private func stop() {
+        recording = false
+        if let monitor { NSEvent.removeMonitor(monitor) }
+        monitor = nil
     }
 }

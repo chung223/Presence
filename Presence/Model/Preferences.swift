@@ -43,6 +43,8 @@ struct Preferences: Equatable {
     var showUnnamedDevices = false
 
     var context = ContextRules()
+    /// 立即鎖定的全域快捷鍵；nil 表示沒有設定。
+    var lockHotKey: HotKey?
 
     func proximity(for device: MonitoredDevice) -> ProximitySettings {
         ProximitySettings(
@@ -92,7 +94,7 @@ struct Preferences: Equatable {
 extension Preferences: Codable {
     private enum CodingKeys: String, CodingKey {
         case devices, lockEnabled, lockDelay, signalTimeout, lockMethod, notifyOnLock
-        case unlockEnabled, wakeOnProximity, pauseMedia, activeMode, showUnnamedDevices, context
+        case unlockEnabled, wakeOnProximity, pauseMedia, activeMode, showUnnamedDevices, context, lockHotKey
         // 0.1 版只有一台裝置，門檻放在最外層
         case targetID, targetName, unlockRSSI, lockRSSI
     }
@@ -121,6 +123,7 @@ extension Preferences: Codable {
         activeMode = try c.decodeIfPresent(Bool.self, forKey: .activeMode) ?? d.activeMode
         showUnnamedDevices = try c.decodeIfPresent(Bool.self, forKey: .showUnnamedDevices) ?? d.showUnnamedDevices
         context = (try? c.decodeIfPresent(ContextRules.self, forKey: .context)) ?? d.context
+        lockHotKey = try? c.decodeIfPresent(HotKey.self, forKey: .lockHotKey)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -137,6 +140,7 @@ extension Preferences: Codable {
         try c.encode(activeMode, forKey: .activeMode)
         try c.encode(showUnnamedDevices, forKey: .showUnnamedDevices)
         try c.encode(context, forKey: .context)
+        try c.encodeIfPresent(lockHotKey, forKey: .lockHotKey)
     }
 }
 

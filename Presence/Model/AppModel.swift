@@ -89,6 +89,7 @@ final class AppModel {
     private(set) var loginItemEnabled = LoginItem.isEnabled
     private(set) var loginItemNeedsApproval = LoginItem.status == .requiresApproval
     private(set) var legacyAppRunning = LegacyBLEUnlock.runningApp != nil
+    private(set) var hotKeyConflict = false
     private(set) var currentNetwork: NetworkIdentity.Current?
     private(set) var onACPower = PowerSource.isOnACPower
     let hasBattery = PowerSource.hasBattery
@@ -105,6 +106,9 @@ final class AppModel {
     @ObservationIgnored private var lockOwed = false
     @ObservationIgnored private var lastSuspension: ContextRules.Suspension?
 
+    /// 給「捷徑」動作用：App 啟動後指向唯一的 AppModel。
+    static weak var current: AppModel?
+
     private static let historyDuration: TimeInterval = 180
     private static let lockNotificationID = "presence.locked"
 
@@ -115,6 +119,9 @@ final class AppModel {
     }
 
     func start() {
+        Self.current = self
+        HotKeyCenter.shared.onPress = { [weak self] in self?.lockNow() }
+        registerHotKey()
         bluetooth.onSample = { [weak self] id, rssi, date in self?.handleSample(id, rssi, at: date) }
         bluetooth.onAvailabilityChange = { [weak self] availability in self?.handleAvailability(availability) }
         bluetooth.onTargetName = { [weak self] id, name in self?.preferences.rename(id, to: name) }
@@ -161,6 +168,18 @@ final class AppModel {
     var strongestRSSI: Int? { preferences.devices.compactMap { smoothedRSSI(for: $0.id) }.max() }
 
     var isPaused: Bool { automation.isPaused(at: now) }
+
+    /// 一行文字的狀態，給選單列和「捷徑」用，例如「Weichung 在附近 · -52 dBm」。
+    var statusLine: String {
+        let status = status
+        guard hasDevices else { return status.title }
+        let rssi = strongestRSSI.map { " · \($0) dBm" } ?? ""
+        if status == .near {
+            return "\(nearDeviceNames.joined(separator: "、")) 在附近\(rssi)"
+        }
+        if case .suspended = status { return status.title }
+        return "\(subject)：\(status.title)\(rssi)"
+    }
 
     /// 依情境暫停自動鎖定的原因；nil 表示照常。
     var suspension: ContextRules.Suspension? {
@@ -578,6 +597,16 @@ final class AppModel {
         }
         if preferences.activeMode != old.activeMode {
             bluetooth.activeMode = preferences.activeMode
+        }
+        if preferences.lockHotKey != old.lockHotKey {
+            registerHotKey()
+        }
+    }
+
+    private func registerHotKey() {
+        hotKeyConflict = !HotKeyCenter.shared.register(preferences.lockHotKey)
+        if hotKeyConflict, let key = preferences.lockHotKey {
+            log.add(.warning, "快捷鍵 \(key.display) 已被其他 App 使用，請換一組")
         }
     }
 

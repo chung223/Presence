@@ -40,13 +40,5 @@ struct MenuBarMenu: View {
             .keyboardShortcut("q")
     }
 
-    private var headline: String {
-        let status = model.status
-        guard model.hasDevices else { return status.title }
-        let rssi = model.strongestRSSI.map { " · \($0) dBm" } ?? ""
-        if status == .near {
-            return "\(model.nearDeviceNames.joined(separator: "、")) 在附近\(rssi)"
-        }
-        return "\(model.subject)：\(status.title)\(rssi)"
-    }
+    private var headline: String { model.statusLine }
 }
