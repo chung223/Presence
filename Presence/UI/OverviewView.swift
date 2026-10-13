@@ -39,6 +39,7 @@ extension AppModel.Status {
         case .away: .secondary
         case .waiting: .secondary
         case .paused: .blue
+        case .suspended: .orange
         case .needsDevice, .bluetoothUnavailable: .yellow
         }
     }

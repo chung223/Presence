@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MainView: View {
     enum Section: String, CaseIterable, Identifiable {
-        case overview, devices, lockUnlock, general, history
+        case overview, devices, lockUnlock, context, general, history
         var id: String { rawValue }
 
         var title: String {
@@ -10,6 +10,7 @@ struct MainView: View {
             case .overview: "總覽"
             case .devices: "裝置"
             case .lockUnlock: "鎖定與解鎖"
+            case .context: "情境"
             case .general: "一般"
             case .history: "紀錄"
             }
@@ -20,6 +21,7 @@ struct MainView: View {
             case .overview: "gauge.with.dots.needle.67percent"
             case .devices: "iphone.radiowaves.left.and.right"
             case .lockUnlock: "lock.shield"
+            case .context: "house"
             case .general: "gearshape"
             case .history: "list.bullet.rectangle"
             }
@@ -44,6 +46,7 @@ struct MainView: View {
             case .overview: OverviewView(model: model, selection: $selection)
             case .devices: DevicesView(model: model)
             case .lockUnlock: LockUnlockView(model: model)
+            case .context: ContextView(model: model)
             case .general: GeneralView(model: model)
             case .history: HistoryView(log: model.log)
             }

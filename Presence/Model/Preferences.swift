@@ -42,6 +42,8 @@ struct Preferences: Equatable {
     var activeMode = false
     var showUnnamedDevices = false
 
+    var context = ContextRules()
+
     func proximity(for device: MonitoredDevice) -> ProximitySettings {
         ProximitySettings(
             unlockRSSI: unlockEnabled ? device.unlockRSSI : nil,
@@ -90,7 +92,7 @@ struct Preferences: Equatable {
 extension Preferences: Codable {
     private enum CodingKeys: String, CodingKey {
         case devices, lockEnabled, lockDelay, signalTimeout, lockMethod, notifyOnLock
-        case unlockEnabled, wakeOnProximity, pauseMedia, activeMode, showUnnamedDevices
+        case unlockEnabled, wakeOnProximity, pauseMedia, activeMode, showUnnamedDevices, context
         // 0.1 版只有一台裝置，門檻放在最外層
         case targetID, targetName, unlockRSSI, lockRSSI
     }
@@ -118,6 +120,7 @@ extension Preferences: Codable {
         pauseMedia = try c.decodeIfPresent(Bool.self, forKey: .pauseMedia) ?? d.pauseMedia
         activeMode = try c.decodeIfPresent(Bool.self, forKey: .activeMode) ?? d.activeMode
         showUnnamedDevices = try c.decodeIfPresent(Bool.self, forKey: .showUnnamedDevices) ?? d.showUnnamedDevices
+        context = (try? c.decodeIfPresent(ContextRules.self, forKey: .context)) ?? d.context
     }
 
     func encode(to encoder: Encoder) throws {
@@ -133,6 +136,7 @@ extension Preferences: Codable {
         try c.encode(pauseMedia, forKey: .pauseMedia)
         try c.encode(activeMode, forKey: .activeMode)
         try c.encode(showUnnamedDevices, forKey: .showUnnamedDevices)
+        try c.encode(context, forKey: .context)
     }
 }
 

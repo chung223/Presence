@@ -15,6 +15,7 @@ final class AppModel {
         case needsDevice
         case bluetoothUnavailable(String)
         case paused(until: Date)
+        case suspended(ContextRules.Suspension, unlockToo: Bool)
         case waiting
         case near
         case leaving(remaining: TimeInterval)
@@ -25,6 +26,8 @@ final class AppModel {
             case .needsDevice: "還沒選擇裝置"
             case .bluetoothUnavailable(let reason): "藍牙\(reason)"
             case .paused: "已暫停"
+            case .suspended(let reason, let unlockToo):
+                "\(Self.describe(reason))，暫停自動鎖定\(unlockToo ? "與解鎖" : "")"
             case .waiting: "等待訊號"
             case .near: "在附近"
             case .leaving(let remaining): "離開中，\(Int(remaining.rounded(.up))) 秒後鎖定"
@@ -38,10 +41,21 @@ final class AppModel {
             case .needsDevice: "questionmark.circle"
             case .bluetoothUnavailable: "exclamationmark.triangle"
             case .paused: "pause.circle"
+            case .suspended(.trustedNetwork, _): "house.circle"
+            case .suspended(.onACPower, _): "powerplug"
+            case .suspended(.outsideSchedule, _): "calendar.badge.clock"
             case .waiting: "ellipsis.circle"
             case .near: "iphone.radiowaves.left.and.right"
             case .leaving: "figure.walk.departure"
             case .away: "iphone.slash"
+            }
+        }
+
+        static func describe(_ reason: ContextRules.Suspension) -> String {
+            switch reason {
+            case .trustedNetwork(let name): "在「\(name)」"
+            case .onACPower: "接著電源"
+            case .outsideSchedule: "不在設定的時段"
             }
         }
     }
@@ -75,6 +89,9 @@ final class AppModel {
     private(set) var loginItemEnabled = LoginItem.isEnabled
     private(set) var loginItemNeedsApproval = LoginItem.status == .requiresApproval
     private(set) var legacyAppRunning = LegacyBLEUnlock.runningApp != nil
+    private(set) var currentNetwork: NetworkIdentity.Current?
+    private(set) var onACPower = PowerSource.isOnACPower
+    let hasBattery = PowerSource.hasBattery
 
     @ObservationIgnored private let store = PreferencesStore()
     @ObservationIgnored private var tickTask: Task<Void, Never>?
@@ -86,6 +103,7 @@ final class AppModel {
     @ObservationIgnored private var warnedMissingPassword = false
     /// 判定離開時因為暫停、切換使用者等原因沒鎖成；條件恢復後要補鎖。
     @ObservationIgnored private var lockOwed = false
+    @ObservationIgnored private var lastSuspension: ContextRules.Suspension?
 
     private static let historyDuration: TimeInterval = 180
     private static let lockNotificationID = "presence.locked"
@@ -111,6 +129,8 @@ final class AppModel {
         if case .needsPermission = PasswordStore.read(allowUI: true) {
             log.add(.warning, "鑰匙圈不允許 Presence 讀取密碼，請到「鎖定與解鎖」重新設定")
         }
+
+        Task { await refreshNetwork() }
 
         tickTask = Task { [weak self] in
             while !Task.isCancelled {
@@ -142,6 +162,11 @@ final class AppModel {
 
     var isPaused: Bool { automation.isPaused(at: now) }
 
+    /// 依情境暫停自動鎖定的原因；nil 表示照常。
+    var suspension: ContextRules.Suspension? {
+        preferences.context.suspension(in: .init(networkID: currentNetwork?.id, onACPower: onACPower, date: now))
+    }
+
     var status: Status {
         guard hasDevices else { return .needsDevice }
         switch bluetooth.availability {
@@ -150,6 +175,9 @@ final class AppModel {
         default: return .bluetoothUnavailable(bluetooth.availability.description)
         }
         if let until = automation.pausedUntil, now < until { return .paused(until: until) }
+        if let reason = suspension {
+            return .suspended(reason, unlockToo: preferences.context.alsoSuspendUnlock)
+        }
         switch group.presence {
         case .unknown: return .waiting
         case .near: return .near
@@ -196,6 +224,17 @@ final class AppModel {
         automation.pause(until: nil)
         now = Date()
         log.add(.info, "恢復自動鎖定與解鎖")
+    }
+
+    func trustCurrentNetwork(named name: String) {
+        guard let network = currentNetwork, !preferences.context.trustedNetworks.contains(where: { $0.id == network.id }) else { return }
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        preferences.context.trustedNetworks.append(.init(id: network.id, name: trimmed.isEmpty ? (network.ssid ?? "信任的網路") : trimmed))
+    }
+
+    func refreshNetwork() async {
+        let network = await NetworkIdentity.current()
+        if network != currentNetwork { currentNetwork = network }
     }
 
     func addDevice(_ device: BluetoothMonitor.NearbyDevice) {
@@ -280,6 +319,10 @@ final class AppModel {
     private func tick() {
         let t = Date()
         now = t
+        let power = PowerSource.isOnACPower
+        if power != onACPower { onACPower = power }
+        if tickCount.isMultiple(of: 15) { Task { await refreshNetwork() } }
+        noteSuspensionChange()
         handle(group.tick(at: t))
         payOwedLock()
 
@@ -339,7 +382,7 @@ final class AppModel {
             lockOwed = false
             return
         }
-        guard session.isSessionActive, !session.isSystemSleeping,
+        guard session.isSessionActive, !session.isSystemSleeping, suspension == nil,
               automation.shouldLock(lockEnabled: true, screenLocked: false, at: Date()) else {
             lockOwed = true
             return
@@ -396,6 +439,7 @@ final class AppModel {
         guard !isUnlocking, preferences.unlockEnabled, hasDevices,
               session.isSessionActive, !session.isSystemSleeping else { return }
         guard automation.shouldAttemptUnlock(canUnlock: group.canUnlock, screenLocked: session.isLocked, at: Date()) else { return }
+        if preferences.context.alsoSuspendUnlock, suspension != nil { return }
         // 沒開「靠近時喚醒螢幕」：等使用者自己按鍵盤或滑鼠叫醒螢幕才解鎖
         if CGDisplayIsAsleep(CGMainDisplayID()) != 0 && !preferences.wakeOnProximity { return }
         guard accessibilityGranted else { return }
@@ -497,6 +541,22 @@ final class AppModel {
             bluetoothWasUnavailable = true
             log.add(.warning, "藍牙\(availability.description)。收不到訊號超過逾時時間後會自動鎖定。")
         }
+    }
+
+    private func noteSuspensionChange() {
+        let current = suspension
+        guard current != lastSuspension else { return }
+        if let current {
+            log.add(.info, "\(Status.describe(current))，暫停自動鎖定\(preferences.context.alsoSuspendUnlock ? "與解鎖" : "")")
+        } else if let previous = lastSuspension {
+            let what = switch previous {
+            case .trustedNetwork(let name): "離開「\(name)」"
+            case .onACPower: "拔掉電源"
+            case .outsideSchedule: "進入設定的時段"
+            }
+            log.add(.info, "\(what)，恢復自動鎖定")
+        }
+        lastSuspension = current
     }
 
     private func warnOnce(_ message: String) {
