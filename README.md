@@ -1,0 +1,95 @@
+# Presence
+
+帶著手機離開座位，Mac 自動鎖定；走回來，自動解鎖。
+
+Presence 是 macOS 選單列工具，用藍牙偵測你的 iPhone、Apple Watch 或其他 BLE 裝置在不在附近。想法來自 [BLEUnlock](https://github.com/ts1/BLEUnlock)，針對新版 macOS 重新設計與實作，並修正了原版幾個安全問題。
+
+## 功能
+
+- **離開自動鎖定**：訊號持續低於門檻幾秒、或完全收不到訊號一段時間，就鎖定螢幕或啟動螢幕保護程式。
+- **回來自動解鎖**：訊號在幾秒內持續夠強，才輸入登入密碼解鎖；單一筆異常的強訊號不會觸發。
+- **即時訊號圖**：看得到每一筆訊號和濾波後的結果，門檻設多少一目了然。
+- **一鍵校準**：分別站在希望解鎖、希望鎖定的位置量 8 秒，自動算出門檻。
+- **暫停**：暫時離開座位又不想被鎖，可以暫停 15 分鐘到 4 小時。
+- **鎖定時暫停播放**，解鎖後繼續。
+- **事件腳本**：鎖定或解鎖時執行你自己的腳本（與 BLEUnlock 相容）。
+- **事件紀錄**：什麼時候、為什麼鎖定或解鎖，都查得到；裝置不在時被人手動解鎖也會記下來。
+- **沿用 BLEUnlock 的設定**：一鍵匯入裝置與門檻。
+
+## 系統需求
+
+- macOS 26 以上（目前只在 macOS 26.7、Apple Silicon 上測試過）
+- 支援藍牙 LE 的 Mac
+- iPhone、Apple Watch，或會定期廣播、藍牙位址固定的 BLE 裝置
+
+## 安裝
+
+目前還沒有發布版本，請從原始碼建置：
+
+```bash
+brew install xcodegen
+xcodegen generate
+xcodebuild -project Presence.xcodeproj -scheme Presence -configuration Release build
+```
+
+## 第一次設定
+
+打開 Presence 後，主視窗會列出還沒完成的步驟：
+
+1. **藍牙權限**：系統詢問時選「允許」。
+2. **選擇裝置**：在「裝置」頁拿著手機靠近或遠離 Mac，看哪一台的訊號跟著變。iPhone 和 Apple Watch 要登入和 Mac 相同的 Apple 帳號，Mac 才認得出同一台裝置。
+3. **輔助使用權限**：自動解鎖要模擬鍵盤輸入密碼，需要在「系統設定 › 隱私權與安全性 › 輔助使用」打開 Presence。
+4. **登入密碼**：Presence 會先確認密碼正確，再存進鑰匙圈。
+
+如果你在用 BLEUnlock，請先在它的選單關掉「登入時啟動」並結束它，兩個同時執行會互相干擾。
+
+## 運作方式與安全設計
+
+**判斷在不在附近**：取最近 4 秒訊號的中位數，至少要有 3 筆樣本。鎖定門檻要低於解鎖門檻（遲滯），避免在邊界反覆鎖定、解鎖。
+
+**狀態未知時一律不解鎖**：剛啟動、系統睡眠醒來、藍牙關閉或換了裝置時，會清掉舊的訊號，重新收到足夠的新訊號後才會解鎖。原版 BLEUnlock 會沿用睡眠前的狀態。
+
+**收不到訊號就鎖定**：藍牙關閉或裝置訊號消失超過逾時時間，會照常鎖定，不會因此停止保護。
+
+**解鎖流程**：喚醒螢幕 → 等螢幕亮起 → 輸入密碼。每送出一段字元前、按 Enter 前，都會確認「仍在鎖定」而且「前景是登入畫面」。如果你在這期間用 Touch ID 或 Apple Watch 先解鎖了，Presence 會立刻停止輸入，密碼不會被打進其他 App（原版的 [#182](https://github.com/ts1/BLEUnlock/issues/182)）。
+
+**解鎖時機**：只在訊號剛從不夠近變成夠近（你走回來了），或螢幕被喚醒（你碰了鍵盤滑鼠）時嘗試。連續失敗兩次就停止自動解鎖，直到你手動解鎖一次，避免密碼錯誤累積。
+
+**手動鎖定**：用 Presence 的「立即鎖定」鎖定後，要離開超過 30 秒再回來才會自動解鎖，訊號短暫變弱不算（原版的 [#137](https://github.com/ts1/BLEUnlock/issues/137)）。
+
+**密碼**：存在鑰匙圈，只在解鎖那一刻讀出，不會寫進任何紀錄。
+
+各項系統行為在 macOS 26.7 的實測結果見 [docs/macos26-findings.md](docs/macos26-findings.md)。
+
+## 事件腳本
+
+在 `~/Library/Application Scripts/com.chung.presence/event` 放一個可執行檔，鎖定或解鎖時會帶參數執行：
+
+| 參數 | 時機 |
+|---|---|
+| `away` | 訊號變弱而鎖定 |
+| `lost` | 收不到訊號而鎖定 |
+| `unlocked` | Presence 自動解鎖 |
+| `intruded` | 裝置不在附近時，有人手動解鎖 |
+
+第二個參數是當時的訊號強度（dBm）。
+
+## 開發
+
+```bash
+# 判斷邏輯的單元測試
+cd Packages/PresenceCore && swift test
+
+# 重新產生 App 圖示
+swift scripts/make-icon.swift Presence/Assets.xcassets/AppIcon.appiconset
+```
+
+`Packages/PresenceCore` 是不碰系統 API 的純邏輯（何時算在附近、何時鎖定、何時嘗試解鎖），App 只負責把藍牙、螢幕狀態和使用者操作接上去。
+
+## 致謝
+
+感謝 Takeshi Sone 的 [BLEUnlock](https://github.com/ts1/BLEUnlock)（MIT 授權）。Presence 沿用了它的做法與事件腳本格式，程式碼為重新撰寫。
+
+## 授權
+
+MIT，見 [LICENSE](LICENSE)。

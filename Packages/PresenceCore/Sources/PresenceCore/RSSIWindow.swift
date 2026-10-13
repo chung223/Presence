@@ -37,13 +37,10 @@ public struct RSSIWindow: Sendable, Equatable {
 
     public var latest: Sample? { samples.last }
 
+    /// 中位數。偶數筆時取較弱的那一個，不取平均：4 筆裡有 2 筆異常強訊號也不會被拉高。
     public var median: Int? {
         guard samples.isEmpty == false else { return nil }
         let sorted = samples.map(\.rssi).sorted()
-        let mid = sorted.count / 2
-        if sorted.count.isMultiple(of: 2) {
-            return Int((Double(sorted[mid - 1] + sorted[mid]) / 2).rounded(.down))
-        }
-        return sorted[mid]
+        return sorted[(sorted.count - 1) / 2]
     }
 }

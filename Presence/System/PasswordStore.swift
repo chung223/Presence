@@ -1,4 +1,5 @@
 import Foundation
+import LocalAuthentication
 import OpenDirectory
 import Security
 
@@ -21,14 +22,37 @@ enum PasswordStore {
         return SecItemCopyMatching(query as CFDictionary, nil) == errSecSuccess
     }
 
-    static func read() -> String? {
+    enum ReadResult {
+        case success(String)
+        case notFound
+        /// 鑰匙圈要使用者允許才能讀（例如 App 的簽名換了）。
+        case needsPermission
+        case failed(OSStatus)
+    }
+
+    /// `allowUI` 為 false 時絕不跳出對話框：鎖定畫面後面的對話框沒人看得到，會讓 App 卡住。
+    static func read(allowUI: Bool) -> ReadResult {
         var query = baseQuery
         query[kSecReturnData as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
+        if !allowUI {
+            let context = LAContext()
+            context.interactionNotAllowed = true
+            query[kSecUseAuthenticationContext as String] = context
+        }
         var item: CFTypeRef?
-        guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
-              let data = item as? Data else { return nil }
-        return String(data: data, encoding: .utf8)
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        switch status {
+        case errSecSuccess:
+            guard let data = item as? Data, let password = String(data: data, encoding: .utf8) else { return .failed(status) }
+            return .success(password)
+        case errSecItemNotFound:
+            return .notFound
+        case errSecInteractionNotAllowed, errSecAuthFailed, errSecUserCanceled:
+            return .needsPermission
+        default:
+            return .failed(status)
+        }
     }
 
     static func save(_ password: String) throws {

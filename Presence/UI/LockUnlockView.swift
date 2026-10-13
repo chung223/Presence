@@ -58,8 +58,12 @@ struct LockUnlockView: View {
                     }
                 }
                 if model.automation.isBlockedByFailures {
-                    Label("連續解鎖失敗，已暫停自動解鎖。手動解鎖一次後恢復；如果改過登入密碼，請重新設定。", systemImage: "exclamationmark.triangle.fill")
-                        .foregroundStyle(.red)
+                    LabeledContent {
+                        Button("恢復自動解鎖") { model.resumeAutoUnlock() }
+                    } label: {
+                        Label("連續解鎖失敗，已停止自動解鎖。如果改過登入密碼，請重新設定。", systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.red)
+                    }
                 }
             } header: {
                 Text("自動解鎖")

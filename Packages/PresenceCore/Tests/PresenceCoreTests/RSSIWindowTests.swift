@@ -8,8 +8,8 @@ struct RSSIWindowTests {
     @Test(arguments: [
         ([-60], -60),
         ([-70, -50, -60], -60),
-        ([-60, -61], -61),          // 偶數取兩個中間值的平均，往弱的方向取整
-        ([-80, -40, -41, -79], -60),
+        ([-60, -61], -61),
+        ([-80, -40, -41, -79], -79),          // 偶數取較弱的中間值
     ])
     func medianOfSamples(values: [Int], expected: Int) {
         var window = RSSIWindow(duration: 10)

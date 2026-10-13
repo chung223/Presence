@@ -83,7 +83,8 @@ final class AppModel {
     @ObservationIgnored private var mediaPausedByUs = false
     @ObservationIgnored private var bluetoothWasUnavailable = false
     @ObservationIgnored private var warnedMissingPassword = false
-    @ObservationIgnored private var couldUnlock = false
+    /// 判定離開時因為暫停、切換使用者等原因沒鎖成；條件恢復後要補鎖。
+    @ObservationIgnored private var lockOwed = false
 
     private static let historyDuration: TimeInterval = 180
     private static let lockNotificationID = "presence.locked"
@@ -104,6 +105,11 @@ final class AppModel {
 
         session.onEvent = { [weak self] event in self?.handleSession(event) }
         session.start()
+
+        // 先讀一次密碼：鑰匙圈要問權限的話，讓對話框趁使用者在電腦前時出現，而不是藏在鎖定畫面後面
+        if case .needsPermission = PasswordStore.read(allowUI: true) {
+            log.add(.warning, "鑰匙圈不允許 Presence 讀取密碼，請到「鎖定與解鎖」重新設定")
+        }
 
         tickTask = Task { [weak self] in
             while !Task.isCancelled {
@@ -157,8 +163,13 @@ final class AppModel {
     // MARK: - 使用者操作
 
     func lockNow() {
-        automation.didLockManually()
+        automation.didLockManually(at: Date())
         lock(reason: nil)
+    }
+
+    func resumeAutoUnlock() {
+        automation.resetFailures()
+        log.add(.info, "已恢復自動解鎖")
     }
 
     func pause(for duration: TimeInterval) {
@@ -189,7 +200,7 @@ final class AppModel {
         }
         hasPassword = true
         warnedMissingPassword = false
-        automation.screenDidUnlock()
+        automation.resetFailures()
         log.add(.info, "已更新登入密碼")
         return nil
     }
@@ -247,7 +258,8 @@ final class AppModel {
     private func tick() {
         let t = Date()
         now = t
-        if let reason = engine.tick(at: t) { handleDeparture(reason) }
+        handle(engine.tick(at: t))
+        payOwedLock()
 
         var next = automation
         next.observe(engine.presence, rearm: preferences.proximity.manualLockRearm, at: t)
@@ -259,7 +271,6 @@ final class AppModel {
         if let first = smoothed.first, first.date < cutoff { smoothed.removeAll { $0.date < cutoff } }
 
         session.refresh()
-        checkArrival()
 
         tickCount += 1
         if tickCount.isMultiple(of: 5) { refreshStatus() }
@@ -267,22 +278,43 @@ final class AppModel {
 
     private func handleSample(_ rssi: Int, at date: Date) {
         samples.append(RSSIPoint(date: date, rssi: rssi))
-        if let reason = engine.record(rssi: rssi, at: date) { handleDeparture(reason) }
-        checkArrival()
+        handle(engine.record(rssi: rssi, at: date))
     }
 
-    /// 只在兩個時機嘗試解鎖（和 BLEUnlock 相同）：訊號剛從不夠近變成夠近（你走回來了），
+    /// 只在兩個時機嘗試解鎖（和 BLEUnlock 相同）：判斷邏輯回報「走回來了」（要真的離開過才會再回報），
     /// 或螢幕被喚醒（你碰了鍵盤滑鼠）。不是每秒都試，否則你在座位上按 ⌃⌘Q 鎖定後會立刻被解鎖。
-    private func checkArrival() {
-        let can = engine.canUnlock
-        defer { couldUnlock = can }
-        if can && !couldUnlock { evaluateUnlock() }
+    private func handle(_ change: PresenceChange?) {
+        switch change {
+        case .departed(let reason): handleDeparture(reason)
+        case .arrived: lockOwed = false; evaluateUnlock()
+        case nil: break
+        }
+    }
+
+    private func payOwedLock() {
+        guard lockOwed else { return }
+        guard case .away(let reason, _) = engine.presence else {
+            lockOwed = false
+            return
+        }
+        handleDeparture(reason)
     }
 
     private func handleDeparture(_ reason: DepartureReason) {
-        guard preferences.targetID != nil, session.isSessionActive, !session.isSystemSleeping else { return }
-        let locked = session.isLocked || ScreenSession.queryLocked()
-        guard automation.shouldLock(lockEnabled: preferences.lockEnabled, screenLocked: locked, at: Date()) else { return }
+        guard preferences.targetID != nil, preferences.lockEnabled else {
+            lockOwed = false
+            return
+        }
+        if ScreenSession.queryLocked() == true {
+            lockOwed = false
+            return
+        }
+        guard session.isSessionActive, !session.isSystemSleeping,
+              automation.shouldLock(lockEnabled: true, screenLocked: false, at: Date()) else {
+            lockOwed = true
+            return
+        }
+        lockOwed = false
         lock(reason: reason)
     }
 
@@ -290,18 +322,28 @@ final class AppModel {
     private func lock(reason: DepartureReason?) {
         if preferences.pauseMedia, MediaControl.isAudioPlaying() {
             MediaControl.pause()
-            mediaPausedByUs = true
+            // 只有暫停後聲音真的停了，才代表是我們停的；否則（例如視訊會議開著）解鎖後不要亂播
+            Task {
+                try? await Task.sleep(for: .seconds(1))
+                mediaPausedByUs = !MediaControl.isAudioPlaying()
+            }
         }
         lastLockAt = Date()
         switch preferences.lockMethod {
         case .lockScreen:
-            if !ScreenControl.lockScreen() { log.add(.warning, "鎖定失敗：系統的鎖定功能無法使用") }
+            ScreenControl.lockScreen()
+            Task {
+                try? await Task.sleep(for: .milliseconds(1500))
+                if ScreenSession.queryLocked() == false {
+                    log.add(.warning, "鎖定失敗：送出鎖定後螢幕仍未鎖定")
+                }
+            }
         case .screensaver:
             ScreenControl.startScreensaver()
             // 螢幕保護程式不一定會要求密碼；3 秒後還沒鎖定就直接鎖
             Task {
                 try? await Task.sleep(for: .seconds(3))
-                if !ScreenSession.queryLocked() {
+                if ScreenSession.queryLocked() == false {
                     ScreenControl.lockScreen()
                     log.add(.warning, "螢幕保護程式啟動後沒有鎖定，已改用鎖定螢幕。請到系統設定把「螢幕保護程式啟動或螢幕關閉後要求密碼」設為「立即」。")
                 }
@@ -325,13 +367,21 @@ final class AppModel {
               session.isSessionActive, !session.isSystemSleeping else { return }
         guard automation.shouldAttemptUnlock(canUnlock: engine.canUnlock, screenLocked: session.isLocked, at: Date()) else { return }
         // 沒開「靠近時喚醒螢幕」：等使用者自己按鍵盤或滑鼠叫醒螢幕才解鎖
-        if session.isDisplayAsleep && !preferences.wakeOnProximity { return }
+        if CGDisplayIsAsleep(CGMainDisplayID()) != 0 && !preferences.wakeOnProximity { return }
         guard accessibilityGranted else { return }
-        guard hasPassword, let password = PasswordStore.read() else {
-            if !warnedMissingPassword {
-                warnedMissingPassword = true
-                log.add(.warning, "還沒設定登入密碼，無法自動解鎖")
-            }
+        let password: String
+        switch PasswordStore.read(allowUI: false) {
+        case .success(let value):
+            password = value
+        case .notFound:
+            hasPassword = false
+            warnOnce("還沒設定登入密碼，無法自動解鎖")
+            return
+        case .needsPermission:
+            warnOnce("鑰匙圈不允許 Presence 讀取密碼，請到「鎖定與解鎖」重新設定")
+            return
+        case .failed(let status):
+            warnOnce("讀取鑰匙圈失敗（\(status)），這次沒有自動解鎖")
             return
         }
 
@@ -343,10 +393,13 @@ final class AppModel {
             switch outcome {
             case .unlocked:
                 lastAutoUnlockAt = Date()
+                automation.unlockSucceeded()
+            case .userIsTyping:
+                break
             case .stillLocked:
                 automation.unlockAttemptFailed()
                 if automation.isBlockedByFailures {
-                    log.add(.unlockFailed, "連續 \(Automation.maximumFailures) 次自動解鎖失敗，先停止自動解鎖。手動解鎖一次後就會恢復；如果改過登入密碼，請重新設定。")
+                    log.add(.unlockFailed, "連續 \(Automation.maximumFailures) 次自動解鎖失敗，已停止自動解鎖。如果改過登入密碼，請重新設定；否則可以在「鎖定與解鎖」恢復。")
                 } else {
                     log.add(.unlockFailed, "自動解鎖失敗，螢幕仍是鎖定")
                 }
@@ -369,6 +422,7 @@ final class AppModel {
         case .unlocked:
             let byUs = isUnlocking || (lastAutoUnlockAt.map { t.timeIntervalSince($0) < 10 } ?? false)
             automation.screenDidUnlock()
+            lockOwed = false
             Notifier.remove(id: Self.lockNotificationID)
             if byUs {
                 log.add(.unlocked, "\(targetDisplayName) 在附近，已自動解鎖")
@@ -411,6 +465,12 @@ final class AppModel {
             bluetoothWasUnavailable = true
             log.add(.warning, "藍牙\(availability.description)。收不到訊號超過逾時時間後會自動鎖定。")
         }
+    }
+
+    private func warnOnce(_ message: String) {
+        guard !warnedMissingPassword else { return }
+        warnedMissingPassword = true
+        log.add(.warning, message)
     }
 
     private func rememberTargetName(_ name: String) {

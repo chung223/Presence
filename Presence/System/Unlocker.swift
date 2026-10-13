@@ -4,19 +4,21 @@ import AppKit
 /// 喚醒螢幕 → 等螢幕亮 → 再等 0.5 秒 → 打密碼 → 按 Enter（keycode 52）。
 ///
 /// 防止密碼打進別的視窗：每送一段字元前、按 Enter 前，都確認仍是鎖定且前景是 loginwindow。
-/// 只要使用者在這期間用 Touch ID 或 Apple Watch 解鎖，就立刻停止。
+/// 每段之間會停一下讓系統處理完事件、更新前景 App，檢查才有意義。
+/// 只要使用者在這期間用 Touch ID 或 Apple Watch 解鎖，就立刻停止，也不會按 Enter。
 enum Unlocker {
     enum Outcome: Equatable {
         case unlocked
         case notLocked
         case noAccessibility
         case displayDidNotWake
+        case userIsTyping
         case interrupted
         case stillLocked
     }
 
     static func unlock(with password: String) async -> Outcome {
-        guard ScreenSession.queryLocked() else { return .notLocked }
+        guard ScreenSession.queryLocked() == true else { return .notLocked }
         guard AXIsProcessTrusted() else { return .noAccessibility }
 
         // 螢幕保護程式在跑時，鎖定畫面在它後面。不能送 Esc（macOS 26 會直接關螢幕），改成結束它。
@@ -31,30 +33,44 @@ enum Unlocker {
         guard awake else { return .displayDidNotWake }
         try? await Task.sleep(for: .milliseconds(500))
 
-        guard type(password, while: isSafeToType) else { return .interrupted }
+        // 使用者已經在自己輸入密碼：不要插進去打亂，也不算失敗
+        if CGEventSource.secondsSinceLastEventType(.hidSystemState, eventType: .keyDown) < 0.4 {
+            return .userIsTyping
+        }
+
+        guard await type(password) else { return .interrupted }
         let unlocked = await waitUntil(timeout: 5) { ScreenSession.queryLocked() == false }
         return unlocked ? .unlocked : .stillLocked
     }
 
     static func isSafeToType() -> Bool {
-        ScreenSession.queryLocked() && ScreenSession.loginWindowIsFrontmost
+        ScreenSession.queryLocked() == true && ScreenSession.loginWindowIsFrontmost
     }
 
     /// 每段最多 20 個 UTF-16 字元（單一鍵盤事件的上限）。
-    private static func type(_ text: String, while isSafe: () -> Bool) -> Bool {
+    private static func type(_ text: String) async -> Bool {
         let source = CGEventSource(stateID: .hidSystemState)
+        func post(_ event: CGEvent?) {
+            guard let event else { return }
+            event.flags = []   // 不要沿用還按著的修飾鍵，否則字元可能變成快捷鍵
+            event.post(tap: .cghidEventTap)
+        }
+
         let units = Array(text.utf16)
         for start in stride(from: 0, to: units.count, by: 20) {
-            guard isSafe() else { return false }
+            guard isSafeToType() else { return false }
             var chunk = Array(units[start..<min(start + 20, units.count)])
             let down = CGEvent(keyboardEventSource: source, virtualKey: 49, keyDown: true)
             down?.keyboardSetUnicodeString(stringLength: chunk.count, unicodeString: &chunk)
-            down?.post(tap: .cghidEventTap)
-            CGEvent(keyboardEventSource: source, virtualKey: 49, keyDown: false)?.post(tap: .cghidEventTap)
+            post(down)
+            post(CGEvent(keyboardEventSource: source, virtualKey: 49, keyDown: false))
+            try? await Task.sleep(for: .milliseconds(40))
         }
-        guard isSafe() else { return false }
-        CGEvent(keyboardEventSource: source, virtualKey: 52, keyDown: true)?.post(tap: .cghidEventTap)
-        CGEvent(keyboardEventSource: source, virtualKey: 52, keyDown: false)?.post(tap: .cghidEventTap)
+        // Enter 最危險（會把字送出去），送之前多等一下再確認一次
+        try? await Task.sleep(for: .milliseconds(80))
+        guard isSafeToType() else { return false }
+        post(CGEvent(keyboardEventSource: source, virtualKey: 52, keyDown: true))
+        post(CGEvent(keyboardEventSource: source, virtualKey: 52, keyDown: false))
         return true
     }
 

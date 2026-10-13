@@ -16,12 +16,21 @@ public enum Presence: Sendable, Equatable {
     case away(DepartureReason, since: Date)
 }
 
+public enum PresenceChange: Sendable, Equatable {
+    /// 剛判定為離開：可以鎖定。
+    case departed(DepartureReason)
+    /// 剛回到夠近、可以解鎖的距離：可以嘗試解鎖。
+    case arrived
+}
+
 /// 判斷手機在不在附近。純邏輯、不碰系統，時間一律由外部傳入。
 ///
 /// 規則：
-/// - 鎖定看 `presence` 變成 `.away` 的那一刻（`handle` 回傳 departure）。
-/// - 解鎖看 `canUnlock`：視窗內至少有 `minimumSamples` 筆樣本，而且中位數達到解鎖門檻。
+/// - 解鎖要看 `canUnlock`：視窗內至少有 `minimumSamples` 筆樣本，而且中位數達到解鎖門檻。
 ///   單筆異常的強訊號不會觸發解鎖。
+/// - `.arrived` 只會在「真的離開過」之後觸發一次：訊號低於鎖定門檻、判定離開、或重設，才會重新允許。
+///   這樣人在座位上自己鎖定時，訊號在門檻附近抖動不會讓它馬上解鎖。
+/// - 判定離開時寧可早一點：樣本稀疏時也會倒數；判定靠近時寧可保守：一定要有足夠的樣本。
 /// - `reset` 會清空所有樣本，之後必須收到新的樣本才能再解鎖，避免沿用睡眠前的狀態。
 public struct PresenceEngine: Sendable {
     public private(set) var settings: ProximitySettings
@@ -29,6 +38,7 @@ public struct PresenceEngine: Sendable {
     public private(set) var lastSampleAt: Date?
     private var window: RSSIWindow
     private var unknownSince: Date
+    private var arrivalArmed = true
 
     public init(settings: ProximitySettings = .default, now: Date) {
         let s = settings.normalized()
@@ -54,18 +64,19 @@ public struct PresenceEngine: Sendable {
         window.duration = s.filterWindow
     }
 
-    /// 收到一筆 RSSI。回傳非 nil 表示剛剛判定為離開。
+    /// 收到一筆 RSSI。
     @discardableResult
-    public mutating func record(rssi: Int, at now: Date) -> DepartureReason? {
-        guard RSSIWindow.isValid(rssi) else { return evaluate(now: now) }
-        window.add(rssi, at: now)
-        lastSampleAt = now
+    public mutating func record(rssi: Int, at now: Date) -> PresenceChange? {
+        if RSSIWindow.isValid(rssi) {
+            window.add(rssi, at: now)
+            lastSampleAt = now
+        }
         return evaluate(now: now)
     }
 
     /// 定時呼叫（建議每秒一次），處理倒數與訊號逾時。
     @discardableResult
-    public mutating func tick(at now: Date) -> DepartureReason? {
+    public mutating func tick(at now: Date) -> PresenceChange? {
         window.prune(now: now)
         return evaluate(now: now)
     }
@@ -76,36 +87,51 @@ public struct PresenceEngine: Sendable {
         presence = .unknown
         lastSampleAt = nil
         unknownSince = now
+        arrivalArmed = true
     }
 
-    private mutating func evaluate(now: Date) -> DepartureReason? {
+    private mutating func evaluate(now: Date) -> PresenceChange? {
         let lastHeard = lastSampleAt ?? unknownSince
         if now.timeIntervalSince(lastHeard) >= settings.signalTimeout {
+            arrivalArmed = true
             if case .away = presence { return nil }
             presence = .away(.signalLost, since: now)
-            return .signalLost
+            return .departed(.signalLost)
         }
 
-        guard let median = window.median else { return nil }
+        let median = window.median
         let enough = window.count >= settings.minimumSamples
-        let above = median >= settings.departureThreshold
+        let departure = settings.departureThreshold
 
         switch presence {
         case .unknown:
-            guard enough else { return nil }
-            presence = above ? .near : .leaving(since: now)
+            if let median, enough {
+                presence = median >= departure ? .near : .leaving(since: now)
+            } else if let median, median < departure,
+                      now.timeIntervalSince(unknownSince) >= settings.filterWindow * 2 {
+                // 樣本稀疏但都很弱：不能一直停在未知，否則永遠不會鎖定
+                presence = .leaving(since: now)
+            }
         case .near:
-            if !above { presence = .leaving(since: now) }
+            if let median, median < departure { presence = .leaving(since: now) }
         case .leaving(let since):
-            if above {
+            if let median, median >= departure {
                 presence = .near
             } else if now.timeIntervalSince(since) >= settings.lockDelay {
+                // 視窗內沒有樣本也照樣倒數：收不到強訊號就是還在離開
                 presence = .away(.weakSignal, since: now)
-                return .weakSignal
+                arrivalArmed = true
+                return .departed(.weakSignal)
             }
         case .away:
             // 離開後要回到解鎖門檻以上才算回來（遲滯），不是只超過鎖定門檻
-            if enough, median >= settings.arrivalThreshold { presence = .near }
+            if let median, enough, median >= settings.arrivalThreshold { presence = .near }
+        }
+
+        if let median, median < departure { arrivalArmed = true }
+        if arrivalArmed, canUnlock {
+            arrivalArmed = false
+            return .arrived
         }
         return nil
     }
