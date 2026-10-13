@@ -1,0 +1,50 @@
+name: Presence
+options:
+  bundleIdPrefix: com.chung
+  deploymentTarget:
+    macOS: "26.0"
+  developmentLanguage: zh-Hant
+packages:
+  PresenceCore:
+    path: Packages/PresenceCore
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    DEVELOPMENT_TEAM: 52A8DH7GF9
+    CODE_SIGN_STYLE: Manual
+    ENABLE_HARDENED_RUNTIME: YES
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+  configs:
+    Debug:
+      CODE_SIGN_IDENTITY: "Apple Development: WEICHUNG LAI (C2R6HR9R2C)"
+    Release:
+      CODE_SIGN_IDENTITY: "Developer ID Application: WEICHUNG LAI (52A8DH7GF9)"
+targets:
+  Presence:
+    type: application
+    platform: macOS
+    sources: [Presence]
+    dependencies:
+      - package: PresenceCore
+    info:
+      path: Presence/Info.plist
+      properties:
+        CFBundleDisplayName: Presence
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.utilities
+        LSUIElement: true
+        NSBluetoothAlwaysUsageDescription: Presence 用藍牙偵測你的手機或手錶在不在附近，決定要鎖定還是解鎖這台 Mac。
+        NSHumanReadableCopyright: © 2026 Weichung Lai. MIT License.
+    entitlements:
+      path: Presence/Presence.entitlements
+      properties:
+        com.apple.security.device.bluetooth: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.chung.presence
+        GENERATE_INFOPLIST_FILE: NO
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
