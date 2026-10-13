@@ -81,3 +81,30 @@ targets:
           CODE_SIGN_IDENTITY: Apple Development
         Release:
           CODE_SIGN_IDENTITY: Apple Distribution
+  PresenceRemoteWatch:
+    type: application
+    platform: watchOS
+    deploymentTarget: "26.0"
+    sources: [Watch]
+    info:
+      path: Watch/Info.plist
+      properties:
+        CFBundleDisplayName: Presence
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        WKApplication: true
+        WKRunsIndependentlyOfCompanionApp: true
+        WKCompanionAppBundleIdentifier: com.chung.presence.remote
+        NSBluetoothAlwaysUsageDescription: Presence 用藍牙連到你 Mac 上的 Presence，從手錶鎖定或查看狀態。
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.chung.presence.remote.watchkitapp
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_STYLE: Automatic
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+      configs:
+        Debug:
+          CODE_SIGN_IDENTITY: Apple Development
+        Release:
+          CODE_SIGN_IDENTITY: Apple Distribution
