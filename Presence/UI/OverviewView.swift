@@ -13,7 +13,12 @@ struct OverviewView: View {
                     SetupChecklist(model: model, selection: $selection)
                 }
                 StatusHeader(model: model)
-                SignalChart(model: model)
+                if model.preferences.devices.isEmpty {
+                    SignalChart(model: model, device: nil)
+                }
+                ForEach(model.preferences.devices) { device in
+                    SignalChart(model: model, device: device)
+                }
                 RecentEvents(log: model.log, selection: $selection)
             }
             .padding(24)
@@ -53,7 +58,7 @@ private struct StatusHeader: View {
                 .contentTransition(.symbolEffect(.replace))
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(model.preferences.targetID == nil ? status.title : "\(model.targetDisplayName) \(status.title)")
+                Text(title)
                     .font(.title2.weight(.semibold))
                 Text(detail)
                     .font(.callout)
@@ -76,21 +81,31 @@ private struct StatusHeader: View {
                 Button("立即鎖定", systemImage: "lock.fill") { model.lockNow() }
             }
             .controlSize(.large)
-            .disabled(model.preferences.targetID == nil)
+            .disabled(!model.hasDevices)
         }
         .padding(16)
         .background(.background.secondary, in: .rect(cornerRadius: 14))
+    }
+
+    private var title: String {
+        let status = model.status
+        guard model.hasDevices else { return status.title }
+        if status == .near {
+            return "\(model.nearDeviceNames.joined(separator: "、")) 在附近"
+        }
+        return "\(model.subject) \(status.title)"
     }
 
     private var detail: String {
         if case .paused(let until) = model.status {
             return "自動鎖定與解鎖暫停到 \(until.formatted(date: .omitted, time: .shortened))"
         }
-        var parts: [String] = []
-        if let rssi = model.engine.smoothedRSSI { parts.append("訊號 \(rssi) dBm") }
         let p = model.preferences
-        parts.append(p.unlockEnabled ? "解鎖門檻 \(p.unlockRSSI)" : "不自動解鎖")
-        parts.append(p.lockEnabled ? "鎖定門檻 \(p.lockRSSI)" : "不自動鎖定")
+        var parts = p.devices.map { device in
+            "\(device.displayName) \(model.smoothedRSSI(for: device.id).map { "\($0) dBm" } ?? "沒有訊號")"
+        }
+        if !p.lockEnabled { parts.append("不自動鎖定") }
+        if !p.unlockEnabled { parts.append("不自動解鎖") }
         parts.append(p.activeMode ? "主動模式" : "被動模式")
         if model.automation.manualHold { parts.append("手動鎖定中") }
         return parts.joined(separator: " · ")
@@ -101,37 +116,40 @@ private struct StatusHeader: View {
 
 private struct SignalChart: View {
     let model: AppModel
+    let device: MonitoredDevice?
 
     var body: some View {
         let p = model.preferences
         let end = model.now
+        let samples = device.flatMap { model.samples[$0.id] } ?? []
+        let smoothed = device.flatMap { model.smoothed[$0.id] } ?? []
         VStack(alignment: .leading, spacing: 8) {
-            Text("最近 3 分鐘的訊號").font(.headline)
+            Text(device.map { "\($0.displayName)：最近 3 分鐘的訊號" } ?? "最近 3 分鐘的訊號").font(.headline)
             Chart {
-                ForEach(model.samples) { point in
+                ForEach(samples) { point in
                     PointMark(x: .value("時間", point.date), y: .value("RSSI", point.rssi))
                         .symbolSize(10)
                         .foregroundStyle(.secondary.opacity(0.35))
                 }
-                ForEach(model.smoothed) { point in
+                ForEach(smoothed) { point in
                     LineMark(x: .value("時間", point.date), y: .value("濾波後", point.rssi))
                         .interpolationMethod(.monotone)
                         .foregroundStyle(.tint)
                 }
-                if p.unlockEnabled {
-                    RuleMark(y: .value("解鎖門檻", p.unlockRSSI))
+                if let device, p.unlockEnabled {
+                    RuleMark(y: .value("解鎖門檻", device.unlockRSSI))
                         .foregroundStyle(.green)
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
                         .annotation(position: .top, alignment: .leading) {
-                            Text("解鎖 \(p.unlockRSSI)").font(.caption2).foregroundStyle(.green)
+                            Text("解鎖 \(device.unlockRSSI)").font(.caption2).foregroundStyle(.green)
                         }
                 }
-                if p.lockEnabled {
-                    RuleMark(y: .value("鎖定門檻", p.lockRSSI))
+                if let device, p.lockEnabled {
+                    RuleMark(y: .value("鎖定門檻", device.lockRSSI))
                         .foregroundStyle(.orange)
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
                         .annotation(position: .bottom, alignment: .leading) {
-                            Text("鎖定 \(p.lockRSSI)").font(.caption2).foregroundStyle(.orange)
+                            Text("鎖定 \(device.lockRSSI)").font(.caption2).foregroundStyle(.orange)
                         }
                 }
             }
@@ -150,10 +168,10 @@ private struct SignalChart: View {
                 }
             }
             .chartPlotStyle { $0.clipped() }
-            .frame(height: 220)
+            .frame(height: 200)
             .overlay {
-                if model.samples.isEmpty {
-                    Text(model.preferences.targetID == nil ? "選擇裝置後會在這裡顯示訊號" : "還沒有收到訊號")
+                if samples.isEmpty {
+                    Text(device == nil ? "加入裝置後會在這裡顯示訊號" : "還沒有收到訊號")
                         .foregroundStyle(.secondary)
                 }
             }
@@ -216,7 +234,8 @@ extension EventLog.Kind {
         case .locked: .orange
         case .unlocked: .green
         case .manualUnlock: .blue
-        case .intruded, .unlockFailed: .red
+        case .intruded: .orange
+        case .unlockFailed: .red
         case .warning: .yellow
         case .info: .secondary
         }
@@ -270,7 +289,7 @@ private struct SetupChecklist: View {
     private func detail(_ item: AppModel.SetupItem) -> String {
         switch item {
         case .bluetooth: "到「系統設定 › 隱私權與安全性 › 藍牙」打開 Presence。"
-        case .device: "通常是你的 iPhone 或 Apple Watch。"
+        case .device: "通常是你的 iPhone，也可以再加上 Apple Watch。"
         case .accessibility: "自動解鎖要模擬鍵盤輸入密碼，需要這個權限。到「系統設定 › 隱私權與安全性 › 輔助使用」打開 Presence。"
         case .password: "自動解鎖時用來輸入。會先驗證是否正確，再存進鑰匙圈。"
         case .legacyApp: "兩個 App 同時執行會互相干擾。結束前，記得在舊版的選單關掉「登入時啟動」。"

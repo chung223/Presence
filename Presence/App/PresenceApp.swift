@@ -7,6 +7,11 @@ struct PresenceApp: App {
 
     private var model: AppModel { appDelegate.model }
 
+    /// 指定了 -PresenceInitialSection（截圖檢查用）也會打開主視窗。
+    private var opensWindowAtLaunch: Bool {
+        model.needsAttentionAtLaunch || UserDefaults.standard.string(forKey: "PresenceInitialSection") != nil
+    }
+
     var body: some Scene {
         Window("Presence", id: "main") {
             MainView(model: model)
@@ -14,7 +19,7 @@ struct PresenceApp: App {
         }
         .defaultSize(width: 900, height: 640)
         // 還沒設定好就在啟動時打開主視窗，否則只待在選單列
-        .defaultLaunchBehavior(model.needsAttentionAtLaunch ? .presented : .suppressed)
+        .defaultLaunchBehavior(opensWindowAtLaunch ? .presented : .suppressed)
 
         MenuBarExtra {
             MenuBarMenu(model: model)

@@ -15,17 +15,18 @@ enum LegacyBLEUnlock {
     /// 把舊版設定套到目前的設定上；回傳 nil 表示沒有舊版設定。
     static func imported(into base: Preferences) -> Preferences? {
         guard let old = UserDefaults(suiteName: bundleID),
-              let device = old.string(forKey: "device"), let uuid = UUID(uuidString: device) else { return nil }
+              let saved = old.string(forKey: "device"), let uuid = UUID(uuidString: saved) else { return nil }
         var p = base
-        p.targetID = uuid
-        p.targetName = nil
+        var device = p.device(uuid) ?? MonitoredDevice(id: uuid)
 
         // 舊版用 -100 表示不鎖定、1 表示不解鎖；0 表示沒設定過
         let lock = old.integer(forKey: "lockRSSI")
-        if lock == -100 { p.lockEnabled = false } else if lock != 0 { p.lockEnabled = true; p.lockRSSI = lock }
+        if lock == -100 { p.lockEnabled = false } else if lock != 0 { p.lockEnabled = true; device.lockRSSI = lock }
         let unlock = old.integer(forKey: "unlockRSSI")
-        if unlock == 1 { p.unlockEnabled = false } else if unlock != 0 { p.unlockEnabled = true; p.unlockRSSI = unlock }
-        if p.lockRSSI >= p.unlockRSSI { p.lockRSSI = p.unlockRSSI - 1 }
+        if unlock == 1 { p.unlockEnabled = false } else if unlock != 0 { p.unlockEnabled = true; device.unlockRSSI = unlock }
+        if device.lockRSSI >= device.unlockRSSI { device.lockRSSI = device.unlockRSSI - 1 }
+        p.devices.removeAll { $0.id == uuid }
+        p.devices.insert(device, at: 0)
 
         let delay = old.integer(forKey: "lockDelay")
         if delay > 0 { p.lockDelay = TimeInterval(delay) }

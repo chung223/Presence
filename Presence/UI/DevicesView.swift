@@ -4,39 +4,43 @@ struct DevicesView: View {
     @Bindable var model: AppModel
 
     var body: some View {
-        let target = model.preferences.targetID
-        let devices = model.bluetooth.nearby.filter {
-            model.preferences.showUnnamedDevices || $0.name != nil || $0.id == target
+        let monitored = Set(model.preferences.devices.map(\.id))
+        let candidates = model.bluetooth.nearby.filter {
+            !monitored.contains($0.id) && (model.preferences.showUnnamedDevices || $0.name != nil)
         }
         Form {
-            Section("目前監控") {
-                if let target {
-                    let current = model.bluetooth.nearby.first { $0.id == target }
+            Section {
+                if model.preferences.devices.isEmpty {
+                    Text("還沒有監控任何裝置，從下面的列表加入。").foregroundStyle(.secondary)
+                }
+                ForEach(model.preferences.devices) { device in
+                    let current = model.bluetooth.nearby.first { $0.id == device.id }
                     HStack(spacing: 12) {
                         SignalBars(rssi: current?.rssi)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(model.targetDisplayName)
-                            Text(target.uuidString).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
+                            Text(device.displayName)
+                            Text(device.id.uuidString).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
                         }
                         Spacer()
                         Text(current.map { "\($0.rssi) dBm" } ?? "不在範圍內")
                             .monospacedDigit()
                             .foregroundStyle(.secondary)
+                        Button("移除", role: .destructive) { model.removeDevice(device.id) }
                     }
-                } else {
-                    Text("還沒選擇裝置，從下面的列表挑一台。").foregroundStyle(.secondary)
                 }
+            } header: {
+                Text("監控中的裝置")
+            } footer: {
+                Text("任一台在附近就算你在，全部都離開才會鎖定。例如同時加入 iPhone 和 Apple Watch，手錶訊號變弱時只要手機還在就不會鎖。每台裝置的門檻在「鎖定與解鎖」分開設定。")
             }
 
             Section {
-                if devices.isEmpty {
+                if candidates.isEmpty {
                     Text(model.bluetooth.availability == .poweredOn ? "正在掃描…" : "藍牙\(model.bluetooth.availability.description)")
                         .foregroundStyle(.secondary)
                 }
-                ForEach(devices) { device in
-                    DeviceRow(device: device, isTarget: device.id == target) {
-                        model.select(device)
-                    }
+                ForEach(candidates) { device in
+                    DeviceRow(device: device) { model.addDevice(device) }
                 }
             } header: {
                 HStack {
@@ -47,7 +51,7 @@ struct DevicesView: View {
                         .font(.callout)
                 }
             } footer: {
-                Text("拿著手機靠近或遠離 Mac，看哪一台的訊號跟著變，就是它。iPhone 和 Apple Watch 要登入和這台 Mac 相同的 Apple 帳號，Mac 才認得出同一台裝置；其他廠牌的裝置如果會定期更換藍牙位址，就沒辦法持續追蹤。")
+                Text("拿著裝置靠近或遠離 Mac，看哪一台的訊號跟著變，就是它。iPhone 和 Apple Watch 要登入和這台 Mac 相同的 Apple 帳號，Mac 才認得出同一台裝置；其他廠牌的裝置如果會定期更換藍牙位址，就沒辦法持續追蹤。")
             }
         }
         .formStyle(.grouped)
@@ -57,8 +61,7 @@ struct DevicesView: View {
 
 private struct DeviceRow: View {
     let device: BluetoothMonitor.NearbyDevice
-    let isTarget: Bool
-    let select: () -> Void
+    let add: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
@@ -74,14 +77,7 @@ private struct DeviceRow: View {
             Text("\(device.rssi) dBm")
                 .monospacedDigit()
                 .foregroundStyle(.secondary)
-            if isTarget {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(.tint)
-                    .frame(width: 60)
-            } else {
-                Button("監控", action: select)
-                    .frame(width: 60)
-            }
+            Button("加入", action: add)
         }
     }
 }

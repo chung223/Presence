@@ -3,8 +3,8 @@ import Foundation
 import Observation
 import PresenceCore
 
-/// 持續掃描附近的 BLE 裝置。目標裝置的每一筆訊號都交給 `onSample`。
-/// 主動模式下另外連線到目標裝置，每 2 秒讀一次 RSSI（較穩定，但可能干擾其他藍牙設備）。
+/// 持續掃描附近的 BLE 裝置。監控中的裝置每收到一筆訊號就交給 `onSample`。
+/// 主動模式下另外連線到監控中的裝置，每 2 秒讀一次 RSSI（較穩定，但可能干擾其他藍牙設備）。
 @Observable
 final class BluetoothMonitor: NSObject {
     struct NearbyDevice: Identifiable, Equatable {
@@ -30,25 +30,29 @@ final class BluetoothMonitor: NSObject {
     }
 
     enum ConnectionState: Equatable {
-        case off, waiting, connecting, connected
+        case waiting, connecting, connected
     }
 
     private(set) var availability: Availability = .unknown
     private(set) var nearby: [NearbyDevice] = []
-    private(set) var connection: ConnectionState = .off
+    /// 主動模式下每台監控裝置的連線狀態。
+    private(set) var connections: [UUID: ConnectionState] = [:]
 
-    /// 目標裝置每收到一筆訊號就呼叫一次。
-    @ObservationIgnored var onSample: ((Int, Date) -> Void)?
+    @ObservationIgnored var onSample: ((UUID, Int, Date) -> Void)?
     @ObservationIgnored var onAvailabilityChange: ((Availability) -> Void)?
-    /// 第一次看到目標裝置的名稱時呼叫，用來記住名稱。
-    @ObservationIgnored var onTargetName: ((String) -> Void)?
+    /// 監控中的裝置第一次出現名稱時呼叫，用來記住名稱。
+    @ObservationIgnored var onTargetName: ((UUID, String) -> Void)?
 
-    var target: UUID? {
+    var targets: Set<UUID> = [] {
         didSet {
-            guard target != oldValue else { return }
-            disconnectTarget()
-            targetPeripheral = nil
-            if activeMode { connection = .waiting }
+            guard targets != oldValue else { return }
+            for id in oldValue.subtracting(targets) {
+                if let p = peripherals.removeValue(forKey: id) { disconnect(p) }
+                connections[id] = nil
+            }
+            if activeMode {
+                for id in targets.subtracting(oldValue) { connections[id] = .waiting }
+            }
         }
     }
 
@@ -56,20 +60,21 @@ final class BluetoothMonitor: NSObject {
         didSet {
             guard activeMode != oldValue else { return }
             if activeMode {
-                connection = .waiting
+                connections = Dictionary(uniqueKeysWithValues: targets.map { ($0, .waiting) })
                 startPolling()
             } else {
                 pollTask?.cancel()
                 pollTask = nil
-                disconnectTarget()
-                connection = .off
+                peripherals.values.forEach(disconnect)
+                connections = [:]
             }
         }
     }
 
     @ObservationIgnored private var central: CBCentralManager?
     @ObservationIgnored private var devices: [UUID: NearbyDevice] = [:]
-    @ObservationIgnored private var targetPeripheral: CBPeripheral?
+    @ObservationIgnored private var peripherals: [UUID: CBPeripheral] = [:]
+    @ObservationIgnored private var namedTargets: Set<UUID> = []
     @ObservationIgnored private var pollTask: Task<Void, Never>?
     @ObservationIgnored private var publishTask: Task<Void, Never>?
 
@@ -107,8 +112,8 @@ final class BluetoothMonitor: NSObject {
         if new == .poweredOn {
             central?.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
         } else {
-            targetPeripheral = nil
-            if activeMode { connection = .waiting }
+            peripherals.removeAll()
+            if activeMode { connections = Dictionary(uniqueKeysWithValues: targets.map { ($0, .waiting) }) }
         }
         onAvailabilityChange?(new)
     }
@@ -123,10 +128,13 @@ final class BluetoothMonitor: NSObject {
         device.lastSeen = now
         devices[id] = device
 
-        guard id == target else { return }
-        if targetPeripheral == nil, let name = device.name { onTargetName?(name) }
-        targetPeripheral = peripheral
-        onSample?(rssi, now)
+        guard targets.contains(id) else { return }
+        if let name = device.name, !namedTargets.contains(id) {
+            namedTargets.insert(id)
+            onTargetName?(id, name)
+        }
+        peripherals[id] = peripheral
+        onSample?(id, rssi, now)
         if activeMode, peripheral.state == .disconnected { connect(peripheral) }
     }
 
@@ -141,24 +149,29 @@ final class BluetoothMonitor: NSObject {
     }
 
     private func poll() {
-        guard availability == .poweredOn, let p = targetPeripheral else { return }
-        switch p.state {
-        case .connected: p.readRSSI()
-        case .disconnected: connect(p)
-        default: break
+        guard availability == .poweredOn else { return }
+        for p in peripherals.values {
+            switch p.state {
+            case .connected: p.readRSSI()
+            case .disconnected: connect(p)
+            default: break
+            }
         }
     }
 
     private func connect(_ p: CBPeripheral) {
         p.delegate = self
-        connection = .connecting
+        connections[p.identifier] = .connecting
         central?.connect(p)
     }
 
-    private func disconnectTarget() {
-        if let p = targetPeripheral, p.state != .disconnected {
-            central?.cancelPeripheralConnection(p)
-        }
+    private func disconnect(_ p: CBPeripheral) {
+        if p.state != .disconnected { central?.cancelPeripheralConnection(p) }
+    }
+
+    private func connectionLost(_ id: UUID) {
+        guard targets.contains(id), activeMode else { return }
+        connections[id] = .waiting
     }
 }
 
@@ -181,32 +194,27 @@ extension BluetoothMonitor: CBCentralManagerDelegate, CBPeripheralDelegate {
 
     nonisolated func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         MainActor.assumeIsolated {
-            guard peripheral.identifier == target else { return }
-            connection = .connected
+            guard targets.contains(peripheral.identifier) else { return }
+            connections[peripheral.identifier] = .connected
             peripheral.readRSSI()
         }
     }
 
     nonisolated func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
-        MainActor.assumeIsolated {
-            guard peripheral.identifier == target, activeMode else { return }
-            connection = .waiting
-        }
+        MainActor.assumeIsolated { connectionLost(peripheral.identifier) }
     }
 
     nonisolated func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        MainActor.assumeIsolated {
-            guard peripheral.identifier == target, activeMode else { return }
-            connection = .waiting
-        }
+        MainActor.assumeIsolated { connectionLost(peripheral.identifier) }
     }
 
     nonisolated func peripheral(_ peripheral: CBPeripheral, didReadRSSI RSSI: NSNumber, error: Error?) {
         guard error == nil else { return }
         let rssi = RSSI.intValue
         MainActor.assumeIsolated {
-            guard peripheral.identifier == target, RSSIWindow.isValid(rssi) else { return }
-            onSample?(rssi, Date())
+            let id = peripheral.identifier
+            guard targets.contains(id), RSSIWindow.isValid(rssi) else { return }
+            onSample?(id, rssi, Date())
         }
     }
 }

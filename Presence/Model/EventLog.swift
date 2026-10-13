@@ -14,7 +14,7 @@ final class EventLog {
             case .locked: "lock.fill"
             case .unlocked: "lock.open.fill"
             case .manualUnlock: "hand.raised.fill"
-            case .intruded: "exclamationmark.shield.fill"
+            case .intruded: "person.fill.questionmark"
             case .unlockFailed: "xmark.octagon.fill"
             case .warning: "exclamationmark.triangle.fill"
             case .info: "info.circle"

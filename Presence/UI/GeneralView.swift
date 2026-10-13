@@ -123,11 +123,8 @@ struct GeneralView: View {
     }
 
     private var connectionText: String {
-        switch model.bluetooth.connection {
-        case .off: "未使用"
-        case .waiting: "等待裝置出現"
-        case .connecting: "連線中"
-        case .connected: "已連線"
-        }
+        let total = model.preferences.devices.count
+        let connected = model.bluetooth.connections.values.filter { $0 == .connected }.count
+        return total == 0 ? "沒有監控中的裝置" : "已連線 \(connected) 台，共 \(total) 台"
     }
 }

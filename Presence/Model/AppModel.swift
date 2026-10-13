@@ -63,10 +63,11 @@ final class AppModel {
     let session = ScreenSession()
     let log = EventLog()
 
-    private(set) var engine: PresenceEngine
+    private(set) var group: PresenceGroup
     private(set) var automation = Automation()
-    private(set) var samples: [RSSIPoint] = []
-    private(set) var smoothed: [RSSIPoint] = []
+    /// 每台裝置最近 3 分鐘收到的訊號，以及每秒一點的濾波結果（給訊號圖用）。
+    private(set) var samples: [UUID: [RSSIPoint]] = [:]
+    private(set) var smoothed: [UUID: [RSSIPoint]] = [:]
     private(set) var now = Date()
     private(set) var isUnlocking = false
     private(set) var hasPassword = PasswordStore.exists
@@ -92,14 +93,14 @@ final class AppModel {
     init() {
         let prefs = PreferencesStore().load()
         preferences = prefs
-        engine = PresenceEngine(settings: prefs.proximity, now: Date())
+        group = PresenceGroup(devices: prefs.proximityByDevice, now: Date())
     }
 
     func start() {
-        bluetooth.onSample = { [weak self] rssi, date in self?.handleSample(rssi, at: date) }
+        bluetooth.onSample = { [weak self] id, rssi, date in self?.handleSample(id, rssi, at: date) }
         bluetooth.onAvailabilityChange = { [weak self] availability in self?.handleAvailability(availability) }
-        bluetooth.onTargetName = { [weak self] name in self?.rememberTargetName(name) }
-        bluetooth.target = preferences.targetID
+        bluetooth.onTargetName = { [weak self] id, name in self?.preferences.rename(id, to: name) }
+        bluetooth.targets = Set(preferences.devices.map(\.id))
         bluetooth.activeMode = preferences.activeMode
         bluetooth.start()
 
@@ -122,36 +123,49 @@ final class AppModel {
 
     // MARK: - 顯示用
 
-    var targetDisplayName: String { preferences.targetName ?? "你的裝置" }
+    var hasDevices: Bool { !preferences.devices.isEmpty }
+
+    /// 訊息裡用來稱呼「你的裝置」：只有一台就用它的名字。
+    var subject: String {
+        preferences.devices.count == 1 ? preferences.devices[0].displayName : "所有裝置"
+    }
+
+    /// 目前判定在附近的裝置名稱。
+    var nearDeviceNames: [String] {
+        preferences.devices.filter { group.engine(for: $0.id)?.presence == .near }.map(\.displayName)
+    }
+
+    func smoothedRSSI(for id: UUID) -> Int? { group.engine(for: id)?.smoothedRSSI }
+
+    /// 所有裝置中最強的濾波後訊號。
+    var strongestRSSI: Int? { preferences.devices.compactMap { smoothedRSSI(for: $0.id) }.max() }
 
     var isPaused: Bool { automation.isPaused(at: now) }
 
     var status: Status {
-        guard preferences.targetID != nil else { return .needsDevice }
+        guard hasDevices else { return .needsDevice }
         switch bluetooth.availability {
         case .poweredOn: break
         case .unknown: return .waiting
         default: return .bluetoothUnavailable(bluetooth.availability.description)
         }
         if let until = automation.pausedUntil, now < until { return .paused(until: until) }
-        switch engine.presence {
+        switch group.presence {
         case .unknown: return .waiting
         case .near: return .near
         case .leaving(let since):
-            return .leaving(remaining: max(0, preferences.lockDelay - now.timeIntervalSince(since)))
+            return .leaving(remaining: max(0, group.lockDelay - now.timeIntervalSince(since)))
         case .away(let reason, _): return .away(reason)
         }
     }
 
     /// 啟動時是否該直接打開主視窗。
-    var needsAttentionAtLaunch: Bool {
-        preferences.targetID == nil || !pendingSetup.isEmpty
-    }
+    var needsAttentionAtLaunch: Bool { !pendingSetup.isEmpty }
 
     var pendingSetup: [SetupItem] {
         var items: [SetupItem] = []
         if bluetooth.availability == .unauthorized { items.append(.bluetooth) }
-        if preferences.targetID == nil { items.append(.device) }
+        if !hasDevices { items.append(.device) }
         if preferences.unlockEnabled {
             if !accessibilityGranted { items.append(.accessibility) }
             if !hasPassword { items.append(.password) }
@@ -184,10 +198,15 @@ final class AppModel {
         log.add(.info, "恢復自動鎖定與解鎖")
     }
 
-    func select(_ device: BluetoothMonitor.NearbyDevice) {
-        preferences.targetID = device.id
-        preferences.targetName = device.name
-        log.add(.info, "監控裝置改為 \(device.name ?? "未命名裝置")")
+    func addDevice(_ device: BluetoothMonitor.NearbyDevice) {
+        preferences.addDevice(id: device.id, name: device.name)
+        log.add(.info, "開始監控 \(device.name ?? "未命名裝置")")
+    }
+
+    func removeDevice(_ id: UUID) {
+        let name = preferences.device(id)?.displayName ?? "未命名裝置"
+        preferences.removeDevice(id)
+        log.add(.info, "不再監控 \(name)")
     }
 
     /// 驗證是正確的登入密碼才存進鑰匙圈。
@@ -244,13 +263,16 @@ final class AppModel {
         legacyAppRunning = LegacyBLEUnlock.runningApp != nil
     }
 
-    /// 校準：量一段時間內目標裝置的訊號中位數。樣本太少回傳 nil。
-    func measureRSSI(for seconds: Double) async -> Int? {
+    /// 校準：同時量每台裝置一段時間內的訊號中位數。樣本太少的裝置不會出現在結果裡。
+    func measureRSSI(for seconds: Double) async -> [UUID: Int] {
         let start = Date()
         try? await Task.sleep(for: .seconds(seconds))
-        let values = samples.filter { $0.date >= start }.map(\.rssi).sorted()
-        guard values.count >= 3 else { return nil }
-        return values[values.count / 2]
+        var result: [UUID: Int] = [:]
+        for (id, points) in samples {
+            let values = points.filter { $0.date >= start }.map(\.rssi).sorted()
+            if values.count >= 3 { result[id] = values[(values.count - 1) / 2] }
+        }
+        return result
     }
 
     // MARK: - 事件處理
@@ -258,17 +280,25 @@ final class AppModel {
     private func tick() {
         let t = Date()
         now = t
-        handle(engine.tick(at: t))
+        handle(group.tick(at: t))
         payOwedLock()
 
         var next = automation
-        next.observe(engine.presence, rearm: preferences.proximity.manualLockRearm, at: t)
+        next.observe(group.presence, rearm: ProximitySettings.default.manualLockRearm, at: t)
         if next != automation { automation = next }
 
-        if let value = engine.smoothedRSSI { smoothed.append(RSSIPoint(date: t, rssi: value)) }
         let cutoff = t.addingTimeInterval(-Self.historyDuration)
-        if let first = samples.first, first.date < cutoff { samples.removeAll { $0.date < cutoff } }
-        if let first = smoothed.first, first.date < cutoff { smoothed.removeAll { $0.date < cutoff } }
+        for device in preferences.devices {
+            if let value = smoothedRSSI(for: device.id) {
+                smoothed[device.id, default: []].append(RSSIPoint(date: t, rssi: value))
+            }
+        }
+        for id in samples.keys where samples[id]?.first.map({ $0.date < cutoff }) == true {
+            samples[id]?.removeAll { $0.date < cutoff }
+        }
+        for id in smoothed.keys where smoothed[id]?.first.map({ $0.date < cutoff }) == true {
+            smoothed[id]?.removeAll { $0.date < cutoff }
+        }
 
         session.refresh()
 
@@ -276,9 +306,9 @@ final class AppModel {
         if tickCount.isMultiple(of: 5) { refreshStatus() }
     }
 
-    private func handleSample(_ rssi: Int, at date: Date) {
-        samples.append(RSSIPoint(date: date, rssi: rssi))
-        handle(engine.record(rssi: rssi, at: date))
+    private func handleSample(_ id: UUID, _ rssi: Int, at date: Date) {
+        samples[id, default: []].append(RSSIPoint(date: date, rssi: rssi))
+        handle(group.record(device: id, rssi: rssi, at: date))
     }
 
     /// 只在兩個時機嘗試解鎖（和 BLEUnlock 相同）：判斷邏輯回報「走回來了」（要真的離開過才會再回報），
@@ -293,7 +323,7 @@ final class AppModel {
 
     private func payOwedLock() {
         guard lockOwed else { return }
-        guard case .away(let reason, _) = engine.presence else {
+        guard case .away(let reason, _) = group.presence else {
             lockOwed = false
             return
         }
@@ -301,7 +331,7 @@ final class AppModel {
     }
 
     private func handleDeparture(_ reason: DepartureReason) {
-        guard preferences.targetID != nil, preferences.lockEnabled else {
+        guard hasDevices, preferences.lockEnabled else {
             lockOwed = false
             return
         }
@@ -355,17 +385,17 @@ final class AppModel {
             return
         }
         let message = reason == .weakSignal
-            ? "\(targetDisplayName) 離開了，已自動鎖定"
-            : "收不到 \(targetDisplayName) 的訊號，已自動鎖定"
+            ? "\(subject) 離開了，已自動鎖定"
+            : "收不到 \(subject) 的訊號，已自動鎖定"
         log.add(.locked, message)
         if preferences.notifyOnLock { Notifier.post("Presence", message, id: Self.lockNotificationID) }
-        EventScript.run(reason == .weakSignal ? .away : .lost, rssi: engine.smoothedRSSI)
+        EventScript.run(reason == .weakSignal ? .away : .lost, rssi: strongestRSSI)
     }
 
     private func evaluateUnlock() {
-        guard !isUnlocking, preferences.unlockEnabled, preferences.targetID != nil,
+        guard !isUnlocking, preferences.unlockEnabled, hasDevices,
               session.isSessionActive, !session.isSystemSleeping else { return }
-        guard automation.shouldAttemptUnlock(canUnlock: engine.canUnlock, screenLocked: session.isLocked, at: Date()) else { return }
+        guard automation.shouldAttemptUnlock(canUnlock: group.canUnlock, screenLocked: session.isLocked, at: Date()) else { return }
         // 沒開「靠近時喚醒螢幕」：等使用者自己按鍵盤或滑鼠叫醒螢幕才解鎖
         if CGDisplayIsAsleep(CGMainDisplayID()) != 0 && !preferences.wakeOnProximity { return }
         guard accessibilityGranted else { return }
@@ -425,11 +455,13 @@ final class AppModel {
             lockOwed = false
             Notifier.remove(id: Self.lockNotificationID)
             if byUs {
-                log.add(.unlocked, "\(targetDisplayName) 在附近，已自動解鎖")
-                EventScript.run(.unlocked, rssi: engine.smoothedRSSI)
-            } else if case .away = engine.presence, preferences.targetID != nil {
-                log.add(.intruded, "\(targetDisplayName) 不在附近時，這台 Mac 被手動解鎖了")
-                EventScript.run(.intruded, rssi: engine.smoothedRSSI)
+                let names = nearDeviceNames
+                log.add(.unlocked, "\(names.isEmpty ? subject : names.joined(separator: "、")) 在附近，已自動解鎖")
+                EventScript.run(.unlocked, rssi: strongestRSSI)
+            } else if case .away = group.presence, hasDevices {
+                // 可能是你自己用 Touch ID 解鎖、只是裝置訊號太弱，也可能是別人，所以只陳述事實
+                log.add(.intruded, "手動解鎖（當時偵測不到\(subject)）")
+                EventScript.run(.intruded, rssi: strongestRSSI)
             } else {
                 log.add(.manualUnlock, "手動解鎖")
             }
@@ -447,7 +479,7 @@ final class AppModel {
             evaluateUnlock()
         case .systemWillSleep, .systemDidWake:
             // 睡眠前後的訊號都不可信，要重新收集
-            engine.reset(at: t)
+            group.reset(at: t)
         case .displaySlept, .sessionResigned, .sessionActivated:
             break
         }
@@ -460,7 +492,7 @@ final class AppModel {
             return
         }
         guard availability != .unknown, availability != .resetting else { return }
-        engine.reset(at: Date())
+        group.reset(at: Date())
         if !bluetoothWasUnavailable {
             bluetoothWasUnavailable = true
             log.add(.warning, "藍牙\(availability.description)。收不到訊號超過逾時時間後會自動鎖定。")
@@ -473,19 +505,16 @@ final class AppModel {
         log.add(.warning, message)
     }
 
-    private func rememberTargetName(_ name: String) {
-        if preferences.targetName != name { preferences.targetName = name }
-    }
-
     private func apply(changesFrom old: Preferences) {
-        if preferences.proximity != old.proximity {
-            engine.update(settings: preferences.proximity)
+        let proximity = preferences.proximityByDevice
+        if proximity != old.proximityByDevice {
+            group.configure(proximity, now: Date())
         }
-        if preferences.targetID != old.targetID {
-            bluetooth.target = preferences.targetID
-            engine.reset(at: Date())
-            samples.removeAll()
-            smoothed.removeAll()
+        let ids = Set(preferences.devices.map(\.id))
+        if ids != Set(old.devices.map(\.id)) {
+            bluetooth.targets = ids
+            for id in samples.keys where !ids.contains(id) { samples[id] = nil }
+            for id in smoothed.keys where !ids.contains(id) { smoothed[id] = nil }
         }
         if preferences.activeMode != old.activeMode {
             bluetooth.activeMode = preferences.activeMode

@@ -9,9 +9,6 @@ struct LockUnlockView: View {
         Form {
             Section {
                 Toggle("離開時自動鎖定", isOn: $model.preferences.lockEnabled)
-                ThresholdRow(title: "鎖定門檻", value: lockRSSI, range: -100 ... -31,
-                             current: model.engine.smoothedRSSI, tint: .orange)
-                    .disabled(!model.preferences.lockEnabled)
                 Picker("訊號低於門檻多久才鎖定", selection: $model.preferences.lockDelay) {
                     ForEach([2, 5, 10, 15, 30, 60] as [TimeInterval], id: \.self) { Text(Self.seconds($0)).tag($0) }
                 }
@@ -34,9 +31,6 @@ struct LockUnlockView: View {
 
             Section {
                 Toggle("回來時自動解鎖", isOn: $model.preferences.unlockEnabled)
-                ThresholdRow(title: "解鎖門檻", value: unlockRSSI, range: -99 ... -30,
-                             current: model.engine.smoothedRSSI, tint: .green)
-                    .disabled(!model.preferences.unlockEnabled)
                 Toggle("靠近時喚醒螢幕", isOn: $model.preferences.wakeOnProximity)
                     .disabled(!model.preferences.unlockEnabled)
                 LabeledContent("登入密碼") {
@@ -74,12 +68,23 @@ struct LockUnlockView: View {
             Section {
                 LabeledContent("不確定門檻要設多少？") {
                     Button("開始校準…") { showingCalibration = true }
-                        .disabled(model.preferences.targetID == nil)
+                        .disabled(!model.hasDevices)
                 }
             } header: {
-                Text("校準")
+                Text("門檻")
             } footer: {
-                Text("分別站在「希望解鎖」和「希望鎖定」的位置各量 8 秒，自動算出兩個門檻。")
+                Text("校準時分別站在「希望解鎖」和「希望鎖定」的位置各量 8 秒，會同時算出每台裝置的門檻。數值越接近 0 代表要越近。")
+            }
+
+            ForEach(model.preferences.devices) { device in
+                Section(device.displayName) {
+                    ThresholdRow(title: "解鎖門檻", value: unlockBinding(device.id), range: -99 ... -30,
+                                 current: model.smoothedRSSI(for: device.id), tint: .green)
+                        .disabled(!model.preferences.unlockEnabled)
+                    ThresholdRow(title: "鎖定門檻", value: lockBinding(device.id), range: -100 ... -31,
+                                 current: nil, tint: .orange)
+                        .disabled(!model.preferences.lockEnabled)
+                }
             }
         }
         .formStyle(.grouped)
@@ -88,12 +93,14 @@ struct LockUnlockView: View {
         .sheet(isPresented: $showingCalibration) { CalibrationSheet(model: model) }
     }
 
-    private var lockRSSI: Binding<Int> {
-        Binding(get: { model.preferences.lockRSSI }, set: { model.preferences.setLockRSSI($0) })
+    private func lockBinding(_ id: UUID) -> Binding<Int> {
+        Binding(get: { model.preferences.device(id)?.lockRSSI ?? -75 },
+                set: { model.preferences.setLockRSSI($0, for: id) })
     }
 
-    private var unlockRSSI: Binding<Int> {
-        Binding(get: { model.preferences.unlockRSSI }, set: { model.preferences.setUnlockRSSI($0) })
+    private func unlockBinding(_ id: UUID) -> Binding<Int> {
+        Binding(get: { model.preferences.device(id)?.unlockRSSI ?? -60 },
+                set: { model.preferences.setUnlockRSSI($0, for: id) })
     }
 
     private var notifyBinding: Binding<Bool> {
