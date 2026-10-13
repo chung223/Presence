@@ -48,12 +48,26 @@ Presence 本來就用藍牙偵測裝置，所以 Mac 端再加一個 `CBPeripher
 - `PresenceRemote`（iOS）：App 本體、控制中心按鈕、小工具、App Intents。
 - `PresenceRemote Watch`（watchOS）：App 與錶面複雜功能。
 
-## 可行性驗證（先做這些，再決定細節）
+## 可行性驗證結果（2026-10-14，iPhone 18 Pro、iOS 27.0.1、macOS 26.7）
 
-| # | 要確認的事 | 怎麼驗證 |
+測試程式：Mac 端是 Presence 的 `LinkPeripheral`（啟動參數 `-PresenceLinkSpike YES`），iPhone 端是 `Remote/` 的測試 App；用 iPhone Use 自動操作。
+
+| # | 項目 | 結果 |
 |---|---|---|
-| 1 | Presence 一邊掃描、一邊當週邊廣播，兩者互不干擾 | Mac 端驗證版 |
-| 2 | iPhone App 在前景能找到 Mac 並寫入指令 | iPhone 測試 App，可以用 iPhone Use 自動操作 |
-| 3 | 從控制中心或「捷徑」在背景觸發，幾秒內完成 | 同上，鎖定 iPhone 後觸發 |
-| 4 | Apple Watch App 在前景能直接連 Mac | 手錶測試 App，需要你操作 |
-| 5 | iPhone 在背景保持連線，Mac 鎖定時收得到通知 | 放著一小時，看耗電與是否斷線 |
+| 1 | Presence 一邊掃描、一邊當週邊廣播 | ✅ 同時運作，不需要額外的藍牙權限 |
+| 2 | iPhone App 在前景找到 Mac 並送指令 | ✅ 從找到到可收送約 1.6 秒；連著時一來一回 64 毫秒 |
+| 3a | App 在背景，從 Spotlight 執行「Ping Mac」捷徑 | ✅ 50 毫秒，不會打開 App |
+| 3b | App 已被結束，從捷徑冷啟動 | ✅ 44 毫秒（系統保留了連線並交還給 App） |
+| 3c | Mac 端重開，連線真的斷掉 | ✅ Mac 重新廣播後約 1.5 秒，iPhone 自動重連並在背景叫醒 App；之後捷徑 34 毫秒 |
+| 5 | App 在背景或已被結束時收 Mac 的通知 | ✅ 照樣收到；系統會為了通知在背景啟動 App |
+| 4 | Apple Watch App 直接連 Mac | 尚未測（手錶第一次要在錶上按「允許」藍牙權限） |
+
+**踩到的坑**：系統冷啟動 App 時會交還仍然連著的 Mac（state restoration），這時要重新取得服務與特徵，不能因為「已經連著」就跳過，否則會一直等不到就緒。
+
+**結論**：藍牙、Mac 當週邊的架構可行，而且背景行為比預期好。正式版只要在斷線時登記待命連線，Mac 一回到範圍內，系統就會自動連上，不需要 App 一直在跑。
+
+**還要注意**：
+
+- 驗證版每 30 秒送一次心跳，會頻繁叫醒手機上的 App；正式版只在狀態改變時通知。
+- 電量影響還沒量。
+- 「用戶手動從 App 切換器滑掉 App」時，系統不會再為藍牙事件叫醒它（這是 iOS 的規則），通知會收不到，直到下次打開 App。

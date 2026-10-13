@@ -54,3 +54,30 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SWIFT_EMIT_LOC_STRINGS: YES
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+  PresenceRemote:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources: [Remote]
+    info:
+      path: Remote/Info.plist
+      properties:
+        CFBundleDisplayName: Presence Remote
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UIBackgroundModes: [bluetooth-central]
+        NSBluetoothAlwaysUsageDescription: Presence Remote 用藍牙連到你 Mac 上的 Presence，從手機鎖定或查看狀態。
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.chung.presence.remote
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+      configs:
+        Debug:
+          CODE_SIGN_IDENTITY: Apple Development
+        Release:
+          CODE_SIGN_IDENTITY: Apple Distribution

@@ -82,6 +82,8 @@ final class AppModel {
     let bluetooth = BluetoothMonitor()
     let session = ScreenSession()
     let log = EventLog()
+    /// 配套 App 的藍牙服務；目前只在可行性驗證時（-PresenceLinkSpike YES）開啟。
+    let link = LinkPeripheral()
 
     private(set) var group: PresenceGroup
     private(set) var automation = Automation()
@@ -157,6 +159,7 @@ final class AppModel {
 
         session.onEvent = { [weak self] event in self?.handleSession(event) }
         session.start()
+        if UserDefaults.standard.bool(forKey: "PresenceLinkSpike") { link.start() }
 
         // 先讀一次密碼：鑰匙圈要問權限的話，讓對話框趁使用者在電腦前時出現，而不是藏在鎖定畫面後面
         if case .needsPermission = PasswordStore.read(allowUI: true) {
@@ -629,6 +632,11 @@ final class AppModel {
 
     private func handleSession(_ event: ScreenSession.Event) {
         let t = Date()
+        switch event {
+        case .locked: link.send("mac locked")
+        case .unlocked: link.send("mac unlocked")
+        default: break
+        }
         switch event {
         case .unlocked:
             let byUs = isUnlocking || (lastAutoUnlockAt.map { t.timeIntervalSince($0) < 10 } ?? false)
