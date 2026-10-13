@@ -15,7 +15,7 @@
         },
         "zh-Hant": {
           "stringSet": {
-            "state": "new",
+            "state": "translated",
             "values": [
               "${applicationName} 狀態"
             ]
@@ -36,7 +36,7 @@
         },
         "zh-Hant": {
           "stringSet": {
-            "state": "new",
+            "state": "translated",
             "values": [
               "恢復 ${applicationName}"
             ]
@@ -57,7 +57,7 @@
         },
         "zh-Hant": {
           "stringSet": {
-            "state": "new",
+            "state": "translated",
             "values": [
               "暫停 ${applicationName}"
             ]
@@ -79,7 +79,7 @@
         },
         "zh-Hant": {
           "stringSet": {
-            "state": "new",
+            "state": "translated",
             "values": [
               "用 ${applicationName} 鎖定",
               "${applicationName} 立即鎖定"

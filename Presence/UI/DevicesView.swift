@@ -1,3 +1,4 @@
+import PresenceCore
 import SwiftUI
 
 struct DevicesView: View {
@@ -28,10 +29,16 @@ struct DevicesView: View {
                         Button("移除", role: .destructive) { model.removeDevice(device.id) }
                     }
                 }
+                if model.preferences.devices.count > 1 {
+                    Picker("多台裝置時", selection: $model.preferences.devicePolicy) {
+                        Text("任一台在附近就算我在").tag(PresenceGroup.Policy.anyNear)
+                        Text("每一台都要在附近").tag(PresenceGroup.Policy.allNear)
+                    }
+                }
             } header: {
                 Text("監控中的裝置")
             } footer: {
-                Text("任一台在附近就算你在，全部都離開才會鎖定。例如同時加入 iPhone 和 Apple Watch，手錶訊號變弱時只要手機還在就不會鎖。每台裝置的門檻在「鎖定與解鎖」分開設定。")
+                Text("預設任一台在附近就算你在，全部都離開才會鎖定。例如同時加入 iPhone 和 Apple Watch，手錶訊號變弱時只要手機還在就不會鎖。選「每一台都要在附近」則任一台離開就鎖，比較嚴格。每台裝置的門檻在「鎖定與解鎖」分開設定。")
             }
 
             Section {

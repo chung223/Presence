@@ -104,7 +104,11 @@ struct ContextView: View {
             Button("加入") { model.trustCurrentNetwork(named: networkName) }
             Button("取消", role: .cancel) {}
         } message: {
-            Text("連上這個網路時，Presence 不會自動鎖定。")
+            if model.currentNetwork?.isShared == true {
+                Text("注意：這個網路的路由器使用企業或旅館常見的共用位址，其他地方的網路可能被誤認成同一個。建議只信任家裡這類自己的網路。")
+            } else {
+                Text("連上這個網路時，Presence 不會自動鎖定。")
+            }
         }
     }
 

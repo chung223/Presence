@@ -23,16 +23,25 @@ struct LockUnlockView: View {
                 .disabled(!model.preferences.lockEnabled)
                 Toggle("鎖定後在鎖定畫面顯示原因", isOn: notifyBinding)
                     .disabled(!model.preferences.lockEnabled)
+                Toggle("正在操作鍵盤或滑鼠時不鎖定", isOn: $model.preferences.stayUnlockedWhileActive)
+                    .disabled(!model.preferences.lockEnabled)
+                Toggle("鎖定前先通知，10 秒內動一下可以取消", isOn: warnBinding)
+                    .disabled(!model.preferences.lockEnabled)
             } header: {
                 Text("自動鎖定")
             } footer: {
-                Text("藍牙關閉或收不到訊號時也會在逾時後鎖定。用螢幕保護程式鎖定時，要在系統設定把「螢幕保護程式啟動後要求密碼」設為「立即」，否則 Presence 會改用直接鎖定。")
+                Text("藍牙關閉或收不到訊號時也會在逾時後鎖定。「正在操作時不鎖定」可以避免手錶訊號不穩時把坐在座位上的你鎖住；為了不讓別人一直動滑鼠阻止鎖定，最多只會暫緩 2 分鐘。用螢幕保護程式鎖定時，要在系統設定把「螢幕保護程式啟動後要求密碼」設為「立即」，否則 Presence 會改用直接鎖定。")
             }
 
             Section {
                 Toggle("回來時自動解鎖", isOn: $model.preferences.unlockEnabled)
+                Picker("解鎖方式", selection: $model.preferences.unlockMode) {
+                    ForEach(UnlockMode.allCases) { Text($0.title).tag($0) }
+                }
+                .disabled(!model.preferences.unlockEnabled)
                 Toggle("靠近時喚醒螢幕", isOn: $model.preferences.wakeOnProximity)
                     .disabled(!model.preferences.unlockEnabled)
+                if model.preferences.unlockMode == .typePassword {
                 LabeledContent("登入密碼") {
                     HStack {
                         Text(model.hasPassword ? String(localized: "已設定") : String(localized: "未設定"))
@@ -43,7 +52,8 @@ struct LockUnlockView: View {
                         }
                     }
                 }
-                if !model.accessibilityGranted {
+                }
+                if model.preferences.unlockMode == .typePassword, !model.accessibilityGranted {
                     LabeledContent("輔助使用權限") {
                         HStack {
                             Text("未允許").foregroundStyle(.red)
@@ -62,7 +72,11 @@ struct LockUnlockView: View {
             } header: {
                 Text("自動解鎖")
             } footer: {
-                Text("訊號在幾秒內持續高於解鎖門檻才會解鎖，單一筆異常的強訊號不算。關掉「靠近時喚醒螢幕」後，要等你按鍵盤或滑鼠叫醒螢幕才會解鎖，比較安全。")
+                if model.preferences.unlockMode == .handOff {
+                    Text("Presence 不存密碼，也不需要輔助使用權限：你回來時它只喚醒螢幕，由 macOS 內建的「用 Apple Watch 解鎖」或 Touch ID 完成解鎖。要先在「系統設定 › 觸控 ID 與密碼」開啟用 Apple Watch 解鎖。這是最安全的用法。")
+                } else {
+                    Text("訊號在幾秒內持續高於解鎖門檻才會解鎖，單一筆異常的強訊號不算。關掉「靠近時喚醒螢幕」後，要等你按鍵盤或滑鼠叫醒螢幕才會解鎖，比較安全。")
+                }
             }
 
             Section {
@@ -101,6 +115,13 @@ struct LockUnlockView: View {
     private func unlockBinding(_ id: UUID) -> Binding<Int> {
         Binding(get: { model.preferences.device(id)?.unlockRSSI ?? -60 },
                 set: { model.preferences.setUnlockRSSI($0, for: id) })
+    }
+
+    private var warnBinding: Binding<Bool> {
+        Binding(get: { model.preferences.warnBeforeLock }, set: { enabled in
+            model.preferences.warnBeforeLock = enabled
+            if enabled { Task { _ = await Notifier.requestAuthorization() } }
+        })
     }
 
     private var notifyBinding: Binding<Bool> {

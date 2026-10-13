@@ -14,10 +14,17 @@ struct HistoryView: View {
             }
             .width(min: 160, ideal: 190, max: 240)
             TableColumn("事件") { entry in
-                Label {
-                    Text(entry.message)
-                } icon: {
-                    Image(systemName: entry.kind.symbol).foregroundStyle(entry.kind.tint)
+                HStack {
+                    Label {
+                        Text(entry.message)
+                    } icon: {
+                        Image(systemName: entry.kind.symbol).foregroundStyle(entry.kind.tint)
+                    }
+                    if let path = entry.attachment, FileManager.default.fileExists(atPath: path) {
+                        Spacer()
+                        Button("查看照片") { NSWorkspace.shared.open(URL(fileURLWithPath: path)) }
+                            .controlSize(.small)
+                    }
                 }
             }
         }

@@ -66,6 +66,15 @@ struct ContextRulesTests {
         #expect(rules.isWithinSchedule(date(day: 12, hour: 12), calendar: calendar) == false)
     }
 
+    @Test("星期一天都沒選時視為每天，不會變成永遠不鎖定")
+    func emptyWeekdaysMeansEveryDay() {
+        var rules = ContextRules()
+        rules.scheduleEnabled = true
+        rules.weekdays = []
+        #expect(rules.suspension(in: env(at: date(day: 11, hour: 10))) == nil)
+        #expect(rules.suspension(in: env(at: date(day: 11, hour: 20))) == .outsideSchedule)
+    }
+
     @Test func trustedNetworkTakesPriority() {
         var rules = ContextRules()
         rules.trustedNetworks = [.init(id: "aa", name: "辦公室")]

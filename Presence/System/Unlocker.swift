@@ -21,11 +21,7 @@ enum Unlocker {
         guard ScreenSession.queryLocked() == true else { return .notLocked }
         guard AXIsProcessTrusted() else { return .noAccessibility }
 
-        // 螢幕保護程式在跑時，鎖定畫面在它後面。不能送 Esc（macOS 26 會直接關螢幕），改成結束它。
-        if let saver = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.ScreenSaver.Engine").first {
-            saver.terminate()
-            try? await Task.sleep(for: .seconds(1))
-        }
+        if dismissScreensaver() { try? await Task.sleep(for: .seconds(1)) }
 
         // 鎖定約 5 秒後系統會自己關螢幕，螢幕關著時打字無效，所以一律先喚醒
         ScreenControl.wakeDisplay()
@@ -41,6 +37,16 @@ enum Unlocker {
         guard await type(password) else { return .interrupted }
         let unlocked = await waitUntil(timeout: 5) { ScreenSession.queryLocked() == false }
         return unlocked ? .unlocked : .stillLocked
+    }
+
+    /// 螢幕保護程式在跑時，鎖定畫面在它後面。不能送 Esc（macOS 26 會直接關螢幕），改成結束它。
+    @discardableResult
+    static func dismissScreensaver() -> Bool {
+        guard let saver = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.ScreenSaver.Engine").first else {
+            return false
+        }
+        saver.terminate()
+        return true
     }
 
     static func isSafeToType() -> Bool {

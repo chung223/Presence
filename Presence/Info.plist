@@ -26,6 +26,8 @@
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Presence 用藍牙偵測你的手機或手錶在不在附近，決定要鎖定還是解鎖這台 Mac。</string>
+	<key>NSCameraUsageDescription</key>
+	<string>開啟「拍照存證」後，裝置不在附近時有人手動解鎖這台 Mac，Presence 會拍一張照片存在這台 Mac 上。</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2026 Weichung Lai. MIT License.</string>
 </dict>

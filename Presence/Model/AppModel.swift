@@ -16,6 +16,7 @@ final class AppModel {
         case bluetoothUnavailable(String)
         case paused(until: Date)
         case suspended(ContextRules.Suspension, unlockToo: Bool)
+        case lockPending(userActive: Bool)
         case waiting
         case near
         case leaving(remaining: TimeInterval)
@@ -30,6 +31,8 @@ final class AppModel {
                 unlockToo
                     ? String(localized: "\(Self.describe(reason))，暫停自動鎖定與解鎖")
                     : String(localized: "\(Self.describe(reason))，暫停自動鎖定")
+            case .lockPending(true): String(localized: "偵測到你還在操作，暫緩鎖定")
+            case .lockPending(false): String(localized: "即將鎖定")
             case .waiting: String(localized: "等待訊號")
             case .near: String(localized: "在附近")
             case .leaving(let remaining): String(localized: "離開中，\(Int(remaining.rounded(.up))) 秒後鎖定")
@@ -46,6 +49,7 @@ final class AppModel {
             case .suspended(.trustedNetwork, _): "house.circle"
             case .suspended(.onACPower, _): "powerplug"
             case .suspended(.outsideSchedule, _): "calendar.badge.clock"
+            case .lockPending: "hourglass"
             case .waiting: "ellipsis.circle"
             case .near: "iphone.radiowaves.left.and.right"
             case .leaving: "figure.walk.departure"
@@ -92,6 +96,10 @@ final class AppModel {
     private(set) var loginItemNeedsApproval = LoginItem.status == .requiresApproval
     private(set) var legacyAppRunning = LegacyBLEUnlock.runningApp != nil
     private(set) var hotKeyConflict = false
+    /// 在座時間紀錄。
+    private(set) var deskTime = DeskTimeStore.load()
+    /// 已判定離開、但還在等（使用者仍在操作，或倒數通知中）的鎖定。
+    private(set) var pendingLock: PendingLock?
     private(set) var currentNetwork: NetworkIdentity.Current?
     private(set) var onACPower = PowerSource.isOnACPower
     let hasBattery = PowerSource.hasBattery
@@ -107,17 +115,33 @@ final class AppModel {
     /// 判定離開時因為暫停、切換使用者等原因沒鎖成；條件恢復後要補鎖。
     @ObservationIgnored private var lockOwed = false
     @ObservationIgnored private var lastSuspension: ContextRules.Suspension?
+    /// 這次的鎖定是 Presence 做的：解鎖時要執行「回來時」的捷徑。
+    @ObservationIgnored private var lockedByPresence = false
 
     /// 給「捷徑」動作用：App 啟動後指向唯一的 AppModel。
     static weak var current: AppModel?
 
+    struct PendingLock: Equatable {
+        let reason: DepartureReason
+        let since: Date
+        var warnedAt: Date?
+        var loggedActivity = false
+    }
+
     private static let historyDuration: TimeInterval = 180
     private static let lockNotificationID = "presence.locked"
+    private static let warningNotificationID = "presence.lock-warning"
+    /// 最近這麼多秒內有操作鍵盤或滑鼠，就算「還在操作」。
+    private static let activityWindow: TimeInterval = 10
+    /// 再怎麼操作，判定離開後最多暫緩這麼久就一定鎖定（避免別人一直動滑鼠讓它不鎖）。
+    private static let activityCap: TimeInterval = 120
+    /// 鎖定前通知的倒數秒數。
+    private static let warningDuration: TimeInterval = 10
 
     init() {
         let prefs = PreferencesStore().load()
         preferences = prefs
-        group = PresenceGroup(devices: prefs.proximityByDevice, now: Date())
+        group = PresenceGroup(devices: prefs.proximityByDevice, policy: prefs.devicePolicy, now: Date())
     }
 
     func start() {
@@ -140,6 +164,7 @@ final class AppModel {
         }
 
         Task { await refreshNetwork() }
+        CameraCapture.removePhotos(olderThan: 30)
 
         tickTask = Task { [weak self] in
             while !Task.isCancelled {
@@ -199,6 +224,9 @@ final class AppModel {
         if let reason = suspension {
             return .suspended(reason, unlockToo: preferences.context.alsoSuspendUnlock)
         }
+        if pendingLock != nil {
+            return .lockPending(userActive: Self.idleSeconds < Self.activityWindow)
+        }
         switch group.presence {
         case .unknown: return .waiting
         case .near: return .near
@@ -215,7 +243,7 @@ final class AppModel {
         var items: [SetupItem] = []
         if bluetooth.availability == .unauthorized { items.append(.bluetooth) }
         if !hasDevices { items.append(.device) }
-        if preferences.unlockEnabled {
+        if preferences.unlockEnabled, preferences.unlockMode == .typePassword {
             if !accessibilityGranted { items.append(.accessibility) }
             if !hasPassword { items.append(.password) }
         }
@@ -226,6 +254,7 @@ final class AppModel {
     // MARK: - 使用者操作
 
     func lockNow() {
+        cancelPendingLock()
         automation.didLockManually(at: Date())
         lock(reason: nil)
     }
@@ -346,6 +375,8 @@ final class AppModel {
         noteSuspensionChange()
         handle(group.tick(at: t))
         payOwedLock()
+        processPendingLock()
+        updateDeskTime(at: t)
 
         var next = automation
         next.observe(group.presence, rearm: ProximitySettings.default.manualLockRearm, at: t)
@@ -409,7 +440,81 @@ final class AppModel {
             return
         }
         lockOwed = false
-        lock(reason: reason)
+        beginPendingLock(reason)
+    }
+
+    private func beginPendingLock(_ reason: DepartureReason) {
+        guard pendingLock == nil else { return }
+        pendingLock = PendingLock(reason: reason, since: Date())
+        processPendingLock()
+    }
+
+    private func cancelPendingLock() {
+        guard pendingLock != nil else { return }
+        pendingLock = nil
+        Notifier.remove(id: Self.warningNotificationID)
+    }
+
+    /// 判定離開後真正鎖定之前：使用者還在操作就暫緩（有上限），開了倒數通知就先通知。
+    private func processPendingLock() {
+        guard var pending = pendingLock else { return }
+        let t = Date()
+        guard case .away = group.presence, ScreenSession.queryLocked() != true else {
+            cancelPendingLock()
+            return
+        }
+        // 暫停、切換使用者或情境改變：改成條件恢復後補鎖
+        guard session.isSessionActive, !session.isSystemSleeping, suspension == nil,
+              automation.shouldLock(lockEnabled: preferences.lockEnabled, screenLocked: false, at: t) else {
+            cancelPendingLock()
+            lockOwed = preferences.lockEnabled
+            return
+        }
+
+        let waitForActivity = preferences.stayUnlockedWhileActive || preferences.warnBeforeLock
+        if waitForActivity, t.timeIntervalSince(pending.since) < Self.activityCap, Self.idleSeconds < Self.activityWindow {
+            // 已經發出倒數通知後又有操作，就當作取消倒數，等操作停下來再重新開始
+            if pending.warnedAt != nil {
+                pending.warnedAt = nil
+                Notifier.remove(id: Self.warningNotificationID)
+            }
+            if !pending.loggedActivity {
+                pending.loggedActivity = true
+                log.add(.info, String(localized: "\(subject) 已離開，但偵測到你還在操作，暫緩鎖定"))
+            }
+            pendingLock = pending
+            return
+        }
+        if preferences.warnBeforeLock {
+            guard let warnedAt = pending.warnedAt else {
+                pending.warnedAt = t
+                pendingLock = pending
+                Notifier.post("Presence", String(localized: "10 秒後鎖定這台 Mac，動一下滑鼠或鍵盤可以取消"), id: Self.warningNotificationID)
+                return
+            }
+            if t.timeIntervalSince(warnedAt) < Self.warningDuration { return }
+        }
+        pendingLock = nil
+        Notifier.remove(id: Self.warningNotificationID)
+        lock(reason: pending.reason)
+    }
+
+    /// 距離上次操作鍵盤、滑鼠或觸控板過了幾秒。
+    static var idleSeconds: TimeInterval {
+        let types: [CGEventType] = [.keyDown, .flagsChanged, .mouseMoved, .leftMouseDown, .rightMouseDown,
+                                    .otherMouseDown, .leftMouseDragged, .scrollWheel]
+        return types.map { CGEventSource.secondsSinceLastEventType(.hidSystemState, eventType: $0) }.min() ?? .infinity
+    }
+
+    private func updateDeskTime(at t: Date) {
+        let atDesk = group.presence == .near && !session.isSystemSleeping
+        deskTime.update(near: atDesk, at: t)
+        if preferences.sittingReminderEnabled,
+           deskTime.shouldRemind(every: preferences.sittingReminderInterval, at: t) {
+            Notifier.post(String(localized: "該起來走走了"),
+                          String(localized: "你已經連續坐了 \(Self.describe(deskTime.currentDuration(at: t)))"))
+        }
+        if tickCount.isMultiple(of: 60) { DeskTimeStore.save(deskTime) }
     }
 
     /// reason 為 nil 表示使用者手動鎖定。
@@ -423,6 +528,8 @@ final class AppModel {
             }
         }
         lastLockAt = Date()
+        lockedByPresence = true
+        if let name = preferences.shortcutOnLeave { ShortcutsRunner.run(name) }
         switch preferences.lockMethod {
         case .lockScreen:
             ScreenControl.lockScreen()
@@ -461,6 +568,15 @@ final class AppModel {
               session.isSessionActive, !session.isSystemSleeping else { return }
         guard automation.shouldAttemptUnlock(canUnlock: group.canUnlock, screenLocked: session.isLocked, at: Date()) else { return }
         if preferences.context.alsoSuspendUnlock, suspension != nil { return }
+        if preferences.unlockMode == .handOff {
+            // 不碰密碼：喚醒螢幕，讓 macOS 內建的 Apple Watch 解鎖或 Touch ID 接手
+            automation.didAttemptUnlock(at: Date())
+            guard CGDisplayIsAsleep(CGMainDisplayID()) != 0, preferences.wakeOnProximity else { return }
+            Unlocker.dismissScreensaver()
+            ScreenControl.wakeDisplay()
+            log.add(.info, String(localized: "\(Self.list(nearDeviceNames)) 在附近，已喚醒螢幕"))
+            return
+        }
         // 沒開「靠近時喚醒螢幕」：等使用者自己按鍵盤或滑鼠叫醒螢幕才解鎖
         if CGDisplayIsAsleep(CGMainDisplayID()) != 0 && !preferences.wakeOnProximity { return }
         guard accessibilityGranted else { return }
@@ -518,7 +634,12 @@ final class AppModel {
             let byUs = isUnlocking || (lastAutoUnlockAt.map { t.timeIntervalSince($0) < 10 } ?? false)
             automation.screenDidUnlock()
             lockOwed = false
+            cancelPendingLock()
             Notifier.remove(id: Self.lockNotificationID)
+            if lockedByPresence {
+                lockedByPresence = false
+                if let name = preferences.shortcutOnReturn { ShortcutsRunner.run(name) }
+            }
             if byUs {
                 let names = nearDeviceNames
                 log.add(.unlocked, String(localized: "\(names.isEmpty ? subject : Self.list(names)) 在附近，已自動解鎖"))
@@ -527,6 +648,7 @@ final class AppModel {
                 // 可能是你自己用 Touch ID 解鎖、只是裝置訊號太弱，也可能是別人，所以只陳述事實
                 log.add(.intruded, String(localized: "手動解鎖（當時偵測不到\(subject)）"))
                 EventScript.run(.intruded, rssi: strongestRSSI)
+                if preferences.capturePhotoOnIntrusion { captureIntrusionPhoto() }
             } else {
                 log.add(.manualUnlock, String(localized: "手動解鎖"))
             }
@@ -547,6 +669,17 @@ final class AppModel {
             group.reset(at: t)
         case .displaySlept, .sessionResigned, .sessionActivated:
             break
+        }
+    }
+
+    private func captureIntrusionPhoto() {
+        Task {
+            guard let url = await CameraCapture.capturePhoto() else {
+                log.add(.warning, String(localized: "拍照存證失敗：沒有相機權限或相機無法使用"))
+                return
+            }
+            log.add(.intruded, String(localized: "已拍下解鎖當下的照片"), attachment: url)
+            Notifier.post("Presence", String(localized: "你不在時這台 Mac 被手動解鎖了，已拍下照片"))
         }
     }
 
@@ -587,6 +720,9 @@ final class AppModel {
     }
 
     private func apply(changesFrom old: Preferences) {
+        if preferences.devicePolicy != old.devicePolicy {
+            group.policy = preferences.devicePolicy
+        }
         let proximity = preferences.proximityByDevice
         if proximity != old.proximityByDevice {
             group.configure(proximity, now: Date())

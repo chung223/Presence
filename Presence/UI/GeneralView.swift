@@ -6,6 +6,8 @@ struct GeneralView: View {
     @Bindable var model: AppModel
     @State private var loginError: String?
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
+    @State private var shortcuts: [String] = []
+    @State private var cameraDenied = false
 
     var body: some View {
         Form {
@@ -35,6 +37,41 @@ struct GeneralView: View {
                 Text("快捷鍵與捷徑")
             } footer: {
                 Text("在任何 App 裡按下快捷鍵就會立即鎖定。「捷徑」App 裡也有 Presence 的動作（立即鎖定、暫停、恢復、取得狀態），可以接進自動化，或在終端機用 shortcuts run 執行。")
+            }
+
+            Section {
+                Picker("離開時執行", selection: $model.preferences.shortcutOnLeave) {
+                    Text("不執行").tag(String?.none)
+                    ForEach(shortcutChoices(model.preferences.shortcutOnLeave), id: \.self) { Text($0).tag(Optional($0)) }
+                }
+                Picker("回來時執行", selection: $model.preferences.shortcutOnReturn) {
+                    Text("不執行").tag(String?.none)
+                    ForEach(shortcutChoices(model.preferences.shortcutOnReturn), id: \.self) { Text($0).tag(Optional($0)) }
+                }
+            } header: {
+                Text("自動執行捷徑")
+            } footer: {
+                Text("Presence 鎖定時執行「離開時」的捷徑，之後解鎖時執行「回來時」的捷徑。例如離開時開啟專注模式、把 Slack 狀態改成離座、關燈，回來時再恢復。")
+            }
+
+            Section {
+                Toggle("裝置不在時有人手動解鎖，就拍一張照片", isOn: photoBinding)
+                if cameraDenied {
+                    Text("沒有相機權限，請到「系統設定 › 隱私權與安全性 › 相機」打開 Presence。")
+                        .font(.callout).foregroundStyle(.red)
+                }
+                LabeledContent("照片位置") {
+                    Button("打開資料夾") {
+                        if let dir = CameraCapture.directory {
+                            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+                            NSWorkspace.shared.open(dir)
+                        }
+                    }
+                }
+            } header: {
+                Text("拍照存證")
+            } footer: {
+                Text("照片只存在這台 Mac 上，30 天後自動刪除，可以在「紀錄」頁查看。拍照時相機的綠燈會亮。如果你自己用 Touch ID 解鎖時剛好偵測不到裝置，也會拍到你自己。")
             }
 
             Section {
@@ -133,7 +170,28 @@ struct GeneralView: View {
         .task {
             model.refreshStatus()
             notificationStatus = await Notifier.authorizationStatus()
+            shortcuts = await ShortcutsRunner.list()
         }
+    }
+
+    /// 捷徑清單；已選的捷徑如果被刪掉或改名，仍保留在選項裡，免得選單變成空白。
+    private func shortcutChoices(_ selected: String?) -> [String] {
+        guard let selected, !shortcuts.contains(selected) else { return shortcuts }
+        return [selected] + shortcuts
+    }
+
+    private var photoBinding: Binding<Bool> {
+        Binding(get: { model.preferences.capturePhotoOnIntrusion }, set: { enabled in
+            guard enabled else {
+                model.preferences.capturePhotoOnIntrusion = false
+                return
+            }
+            Task {
+                let granted = await CameraCapture.requestAccess()
+                cameraDenied = !granted
+                model.preferences.capturePhotoOnIntrusion = granted
+            }
+        })
     }
 
     private var connectionText: String {

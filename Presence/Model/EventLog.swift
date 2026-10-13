@@ -27,6 +27,8 @@ final class EventLog {
         let date: Date
         let kind: Kind
         let message: String
+        /// 附加的檔案（例如拍照存證的照片）路徑。
+        var attachment: String?
     }
 
     private(set) var entries: [Entry] = []
@@ -49,9 +51,9 @@ final class EventLog {
         }
     }
 
-    func add(_ kind: Kind, _ message: String) {
+    func add(_ kind: Kind, _ message: String, attachment: URL? = nil) {
         logger.info("[\(kind.rawValue, privacy: .public)] \(message, privacy: .public)")
-        entries.append(Entry(date: Date(), kind: kind, message: message))
+        entries.append(Entry(date: Date(), kind: kind, message: message, attachment: attachment?.path))
         if entries.count > Self.limit { entries.removeFirst(entries.count - Self.limit) }
         save()
     }

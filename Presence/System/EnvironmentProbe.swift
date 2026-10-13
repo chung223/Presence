@@ -12,7 +12,12 @@ enum NetworkIdentity {
     struct Current: Equatable {
         let id: String
         let ssid: String?
+        /// 路由器用的是共用的虛擬位址（VRRP、HSRP、GLBP），不同地方的網路可能相同。
+        let isShared: Bool
     }
+
+    /// 企業、學校、旅館常見的虛擬路由器位址前綴；不同網路常用同一組。
+    private static let sharedPrefixes = ["00:00:5e:00:01", "00:00:5e:00:02", "00:00:0c:07:ac", "00:00:0c:9f:f", "00:07:b4:00:01"]
 
     static func current() async -> Current? {
         guard let store = SCDynamicStoreCreate(nil, "Presence" as CFString, nil, nil) else { return nil }
@@ -40,10 +45,13 @@ enum NetworkIdentity {
         }
         for candidate in candidates {
             var mac = candidate.mac.flatMap(normalize)
-            if mac == nil, let router = candidate.router { mac = await arpLookup(router) }
+            if mac == nil, let router = candidate.router { mac = await arpLookup(router, interface: candidate.interface) }
             if let mac {
                 let ssid = candidate.interface == wifiInterface?.interfaceName ? wifiInterface?.ssid() : nil
-                return Current(id: mac, ssid: ssid)
+                // 共用位址再加上路由器 IP，降低跟其他地方的網路撞在一起的機會
+                let shared = sharedPrefixes.contains { mac.hasPrefix($0) }
+                let id = shared ? "\(mac)@\(candidate.router ?? "")" : mac
+                return Current(id: id, ssid: ssid, isShared: shared)
             }
         }
         return nil
@@ -57,12 +65,12 @@ enum NetworkIdentity {
     }
 
     /// 網路簽章裡沒有硬體位址時，改從 ARP 表查：`arp -n 192.168.1.1` → `? (192.168.1.1) at a4:2b:b0:1:2:3 on en0 …`
-    private static func arpLookup(_ ip: String) async -> String? {
+    private static func arpLookup(_ ip: String, interface: String) async -> String? {
         let output = await Task.detached { () -> String? in
             let process = Process()
             let pipe = Pipe()
             process.executableURL = URL(fileURLWithPath: "/usr/sbin/arp")
-            process.arguments = ["-n", ip]
+            process.arguments = ["-n", "-i", interface, ip]
             process.standardOutput = pipe
             process.standardError = FileHandle.nullDevice
             do {

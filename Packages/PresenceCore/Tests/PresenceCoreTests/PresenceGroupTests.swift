@@ -88,6 +88,49 @@ struct PresenceGroupTests {
         }
     }
 
+    @Test("移除在附近的那台後，剩下的都已離開，要回報離開")
+    func removingTheNearDeviceReportsDeparture() {
+        var group = makeGroup()
+        feed(&group, phone: -90, watch: -55, seconds: 20, from: 0)
+        #expect(group.presence == .near)
+        group.configure([phone: phoneSettings], now: t0.addingTimeInterval(20))
+        #expect(group.tick(at: t0.addingTimeInterval(21)) == .departed(.weakSignal))
+        #expect(group.tick(at: t0.addingTimeInterval(22)) == nil, "只回報一次")
+    }
+
+    @Test("手機一直在附近時，手錶訊號抖動不會觸發「走回來」")
+    func jitteryDeviceDoesNotTriggerArrivalWhileGroupIsNear() {
+        var group = makeGroup()
+        var changes = feed(&group, phone: -45, watch: -55, seconds: 3, from: 0)
+        #expect(changes.filter { $0 == .arrived }.count == 1)
+        for i in 0..<10 {
+            let watch = i.isMultiple(of: 2) ? -85 : -55
+            changes = feed(&group, phone: -45, watch: watch, seconds: 6, from: 3 + Double(i) * 6)
+            #expect(changes.contains(.arrived) == false)
+        }
+    }
+
+    @Test("全部都要在附近：任一台離開就鎖")
+    func allNearPolicyDepartsWhenAnyDeviceLeaves() {
+        var group = makeGroup()
+        group.policy = .allNear
+        feed(&group, phone: -45, watch: -55, seconds: 3, from: 0)
+        #expect(group.presence == .near)
+        let changes = feed(&group, phone: -45, watch: -95, seconds: 20, from: 3)
+        #expect(changes == [.departed(.weakSignal)])
+    }
+
+    @Test("全部都要在附近：每一台都夠近才能解鎖")
+    func allNearPolicyNeedsEveryDeviceToUnlock() {
+        var group = makeGroup()
+        group.policy = .allNear
+        feed(&group, phone: -45, watch: -95, seconds: 20, from: 0)
+        #expect(group.canUnlock == false)
+        let changes = feed(&group, phone: -45, watch: -55, seconds: 3, from: 20)
+        #expect(group.canUnlock)
+        #expect(changes.contains(.arrived))
+    }
+
     @Test func emptyGroupIsUnknownAndCannotUnlock() {
         let group = PresenceGroup(now: t0)
         #expect(group.presence == .unknown)

@@ -68,15 +68,17 @@ public struct ContextRules: Sendable, Equatable, Codable {
         let parts = calendar.dateComponents([.weekday, .hour, .minute], from: date)
         guard let weekday = parts.weekday, let hour = parts.hour, let minute = parts.minute else { return true }
         let now = hour * 60 + minute
-        if scheduleStart == scheduleEnd { return weekdays.contains(weekday) }
+        // 一天都沒選視為每天都適用，否則會變成永遠不鎖定
+        let days = weekdays.isEmpty ? Set(1...7) : weekdays
+        if scheduleStart == scheduleEnd { return days.contains(weekday) }
         if scheduleStart < scheduleEnd {
-            return weekdays.contains(weekday) && now >= scheduleStart && now < scheduleEnd
+            return days.contains(weekday) && now >= scheduleStart && now < scheduleEnd
         }
         // 跨過午夜：午夜前算當天，午夜後算前一天開始的時段
-        if now >= scheduleStart { return weekdays.contains(weekday) }
+        if now >= scheduleStart { return days.contains(weekday) }
         if now < scheduleEnd {
             let previous = weekday == 1 ? 7 : weekday - 1
-            return weekdays.contains(previous)
+            return days.contains(previous)
         }
         return false
     }
