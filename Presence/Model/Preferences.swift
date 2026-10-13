@@ -118,8 +118,16 @@ struct Preferences: Equatable {
         devices.removeAll { $0.id == id }
     }
 
+    /// 使用者自己改名。
     mutating func rename(_ id: UUID, to name: String) {
-        guard let i = devices.firstIndex(where: { $0.id == id }), devices[i].name != name else { return }
+        guard let i = devices.firstIndex(where: { $0.id == id }) else { return }
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        devices[i].name = trimmed.isEmpty ? nil : trimmed
+    }
+
+    /// 藍牙廣播的名稱只用來補上還沒有名稱的裝置，不覆蓋使用者取的名字。
+    mutating func fillName(_ id: UUID, with name: String) {
+        guard let i = devices.firstIndex(where: { $0.id == id }), devices[i].name == nil else { return }
         devices[i].name = name
     }
 

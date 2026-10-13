@@ -19,7 +19,8 @@ struct DevicesView: View {
                     HStack(spacing: 12) {
                         SignalBars(rssi: current?.rssi)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(device.displayName)
+                            TextField("名稱", text: nameBinding(device.id), prompt: Text(MonitoredDevice.unnamed))
+                                .textFieldStyle(.plain)
                             Text(device.id.uuidString).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
                         }
                         Spacer()
@@ -63,6 +64,11 @@ struct DevicesView: View {
         }
         .formStyle(.grouped)
         .navigationTitle("裝置")
+    }
+
+    private func nameBinding(_ id: UUID) -> Binding<String> {
+        Binding(get: { model.preferences.device(id)?.name ?? "" },
+                set: { model.preferences.rename(id, to: $0) })
     }
 }
 

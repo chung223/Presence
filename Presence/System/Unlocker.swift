@@ -14,16 +14,20 @@ enum Unlocker {
         case displayDidNotWake
         case userIsTyping
         case interrupted
-        case stillLocked
+        /// 打完密碼仍是鎖定；附上當時的狀況方便判斷原因
+        case stillLocked(diagnostic: String)
     }
 
     static func unlock(with password: String) async -> Outcome {
         guard ScreenSession.queryLocked() == true else { return .notLocked }
         guard AXIsProcessTrusted() else { return .noAccessibility }
 
-        if dismissScreensaver() { try? await Task.sleep(for: .seconds(1)) }
+        let started = Date()
+        let hadScreensaver = dismissScreensaver()
+        if hadScreensaver { try? await Task.sleep(for: .seconds(1)) }
 
         // 鎖定約 5 秒後系統會自己關螢幕，螢幕關著時打字無效，所以一律先喚醒
+        let displayWasAsleep = CGDisplayIsAsleep(CGMainDisplayID()) != 0
         ScreenControl.wakeDisplay()
         let awake = await waitUntil(timeout: 3) { CGDisplayIsAsleep(CGMainDisplayID()) == 0 }
         guard awake else { return .displayDidNotWake }
@@ -34,9 +38,12 @@ enum Unlocker {
             return .userIsTyping
         }
 
+        let typedAfter = Date().timeIntervalSince(started)
         guard await type(password) else { return .interrupted }
         let unlocked = await waitUntil(timeout: 5) { ScreenSession.queryLocked() == false }
-        return unlocked ? .unlocked : .stillLocked
+        let diagnostic = String(format: "screensaver=%@ displayAsleep=%@ typedAfter=%.1fs",
+                                hadScreensaver ? "yes" : "no", displayWasAsleep ? "yes" : "no", typedAfter)
+        return unlocked ? .unlocked : .stillLocked(diagnostic: diagnostic)
     }
 
     /// 螢幕保護程式在跑時，鎖定畫面在它後面。不能送 Esc（macOS 26 會直接關螢幕），改成結束它。

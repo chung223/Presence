@@ -497,6 +497,22 @@
         }
       }
     },
+    "上次連線：%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last connected %@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上次連線：%@"
+          }
+        }
+      }
+    },
     "不再監控 %@": {
       "localizations": {
         "en": {
@@ -669,6 +685,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "久坐提醒"
+          }
+        }
+      }
+    },
+    "之後可以從 iPhone 或 Apple Watch 控制這台 Mac。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can now control this Mac from your iPhone or Apple Watch."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "之後可以從 iPhone 或 Apple Watch 控制這台 Mac。"
           }
         }
       }
@@ -1009,6 +1041,22 @@
         }
       }
     },
+    "加入 iPhone": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add an iPhone"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "加入 iPhone"
+          }
+        }
+      }
+    },
     "加入信任…": {
       "localizations": {
         "en": {
@@ -1105,6 +1153,22 @@
         }
       }
     },
+    "取消配對": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unpair"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取消配對"
+          }
+        }
+      }
+    },
     "只喚醒螢幕，交給 Apple Watch 或 Touch ID": {
       "localizations": {
         "en": {
@@ -1165,6 +1229,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "只設定解鎖門檻"
+          }
+        }
+      }
+    },
+    "名稱": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "名稱"
           }
         }
       }
@@ -1261,6 +1341,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "在 Finder 顯示"
+          }
+        }
+      }
+    },
+    "在 iPhone 安裝 Presence Remote 並配對後，可以從手機、Apple Watch、Siri 或「捷徑」立即鎖定這台 Mac、暫停或恢復，Mac 鎖定時也會通知你。連線走藍牙，指令都經過加密；Apple Watch 會透過 iPhone 取得同一組配對。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After pairing Presence Remote on your iPhone, you can lock this Mac, pause, or resume from your iPhone, Apple Watch, Siri, or Shortcuts, and get notified when your Mac locks. The connection uses Bluetooth and every command is encrypted; your Apple Watch gets the same pairing through your iPhone."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在 iPhone 安裝 Presence Remote 並配對後，可以從手機、Apple Watch、Siri 或「捷徑」立即鎖定這台 Mac、暫停或恢復，Mac 鎖定時也會通知你。連線走藍牙，指令都經過加密；Apple Watch 會透過 iPhone 取得同一組配對。"
+          }
+        }
+      }
+    },
+    "在 iPhone 打開 Presence Remote，點「掃描 QR code」，對準下面的圖。這個 QR code 含有配對用的金鑰，請不要拍給別人。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Presence Remote on your iPhone, tap Scan QR Code, and point it at the code below. This QR code contains the pairing key, so don't share a photo of it."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在 iPhone 打開 Presence Remote，點「掃描 QR code」，對準下面的圖。這個 QR code 含有配對用的金鑰，請不要拍給別人。"
           }
         }
       }
@@ -1405,6 +1517,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "完全收不到訊號多久就鎖定"
+          }
+        }
+      }
+    },
+    "完成": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成"
           }
         }
       }
@@ -1597,6 +1725,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "已連線 %1$lld 台，共 %2$lld 台"
+          }
+        }
+      }
+    },
+    "已連線（%@）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connected (%@)"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已連線（%@）"
+          }
+        }
+      }
+    },
+    "已配對的裝置": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paired Devices"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已配對的裝置"
           }
         }
       }
@@ -1921,6 +2081,22 @@
         }
       }
     },
+    "手機與手錶": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone & Watch"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手機與手錶"
+          }
+        }
+      }
+    },
     "打開 Presence…": {
       "localizations": {
         "en": {
@@ -2141,6 +2317,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "收不到訊號"
+          }
+        }
+      }
+    },
+    "收到 iPhone 或 Apple Watch 的鎖定指令": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock requested from iPhone or Apple Watch"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收到 iPhone 或 Apple Watch 的鎖定指令"
           }
         }
       }
@@ -3165,6 +3357,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "立即鎖定的快捷鍵"
+          }
+        }
+      }
+    },
+    "等待 iPhone 連線…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for iPhone…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待 iPhone 連線…"
           }
         }
       }
@@ -4257,6 +4465,22 @@
         }
       }
     },
+    "還沒有配對任何裝置。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No paired devices yet."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "還沒有配對任何裝置。"
+          }
+        }
+      }
+    },
     "還沒設定登入密碼，無法自動解鎖": {
       "localizations": {
         "en": {
@@ -4285,6 +4509,70 @@
           "stringUnit": {
             "state": "translated",
             "value": "還沒選擇裝置"
+          }
+        }
+      }
+    },
+    "配對 iPhone": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pair iPhone"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配對 iPhone"
+          }
+        }
+      }
+    },
+    "配對完成": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paired"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配對完成"
+          }
+        }
+      }
+    },
+    "配對新的 iPhone…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pair New iPhone…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配對新的 iPhone…"
+          }
+        }
+      }
+    },
+    "配對於 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paired %@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配對於 %@"
           }
         }
       }

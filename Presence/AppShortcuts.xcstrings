@@ -2,7 +2,6 @@
   "sourceLanguage": "zh-Hant",
   "strings": {
     "${applicationName} 狀態": {
-      "extractionState": "extracted_with_value",
       "localizations": {
         "en": {
           "stringSet": {
@@ -24,7 +23,6 @@
       }
     },
     "恢復 ${applicationName}": {
-      "extractionState": "extracted_with_value",
       "localizations": {
         "en": {
           "stringSet": {
@@ -45,7 +43,6 @@
       }
     },
     "暫停 ${applicationName}": {
-      "extractionState": "extracted_with_value",
       "localizations": {
         "en": {
           "stringSet": {
@@ -66,7 +63,6 @@
       }
     },
     "用 ${applicationName} 鎖定": {
-      "extractionState": "extracted_with_value",
       "localizations": {
         "en": {
           "stringSet": {

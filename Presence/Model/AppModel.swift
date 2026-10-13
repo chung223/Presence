@@ -1,6 +1,7 @@
 import AppKit
 import Observation
 import PresenceCore
+import PresenceLink
 
 /// 把藍牙訊號、判斷邏輯、螢幕狀態和使用者操作串在一起。
 @Observable
@@ -82,8 +83,8 @@ final class AppModel {
     let bluetooth = BluetoothMonitor()
     let session = ScreenSession()
     let log = EventLog()
-    /// 配套 App 的藍牙服務；目前只在可行性驗證時（-PresenceLinkSpike YES）開啟。
-    let link = LinkPeripheral()
+    /// 讓 iPhone 與 Apple Watch 的 Presence Remote 連進來。
+    let link = LinkService()
 
     private(set) var group: PresenceGroup
     private(set) var automation = Automation()
@@ -119,6 +120,8 @@ final class AppModel {
     @ObservationIgnored private var lastSuspension: ContextRules.Suspension?
     /// 這次的鎖定是 Presence 做的：解鎖時要執行「回來時」的捷徑。
     @ObservationIgnored private var lockedByPresence = false
+    /// 上次推送給 iPhone／手錶的狀態摘要；有變才推送。
+    @ObservationIgnored private var lastLinkSignature = ""
 
     /// 給「捷徑」動作用：App 啟動後指向唯一的 AppModel。
     static weak var current: AppModel?
@@ -152,14 +155,16 @@ final class AppModel {
         registerHotKey()
         bluetooth.onSample = { [weak self] id, rssi, date in self?.handleSample(id, rssi, at: date) }
         bluetooth.onAvailabilityChange = { [weak self] availability in self?.handleAvailability(availability) }
-        bluetooth.onTargetName = { [weak self] id, name in self?.preferences.rename(id, to: name) }
+        bluetooth.onTargetName = { [weak self] id, name in self?.preferences.fillName(id, with: name) }
         bluetooth.targets = Set(preferences.devices.map(\.id))
         bluetooth.activeMode = preferences.activeMode
         bluetooth.start()
 
         session.onEvent = { [weak self] event in self?.handleSession(event) }
         session.start()
-        if UserDefaults.standard.bool(forKey: "PresenceLinkSpike") { link.start() }
+        link.statusProvider = { [weak self] in self?.linkStatus ?? LinkStatus(macName: "Mac", presence: .waiting, summary: "", locked: false) }
+        link.onCommand = { [weak self] command in self?.handleRemote(command) }
+        link.start()
 
         // 先讀一次密碼：鑰匙圈要問權限的話，讓對話框趁使用者在電腦前時出現，而不是藏在鎖定畫面後面
         if case .needsPermission = PasswordStore.read(allowUI: true) {
@@ -380,6 +385,7 @@ final class AppModel {
         payOwedLock()
         processPendingLock()
         updateDeskTime(at: t)
+        pushLinkStatusIfChanged()
 
         var next = automation
         next.observe(group.presence, rearm: ProximitySettings.default.manualLockRearm, at: t)
@@ -554,6 +560,7 @@ final class AppModel {
             }
         }
 
+        link.broadcast(event: reason == nil ? .lockedManually : .lockedAway)
         guard let reason else {
             log.add(.locked, String(localized: "手動鎖定"))
             return
@@ -610,8 +617,9 @@ final class AppModel {
                 automation.unlockSucceeded()
             case .userIsTyping:
                 break
-            case .stillLocked:
+            case .stillLocked(let diagnostic):
                 automation.unlockAttemptFailed()
+                log.add(.info, "unlock diagnostic: \(diagnostic)")
                 if automation.isBlockedByFailures {
                     log.add(.unlockFailed, String(localized: "連續 \(Automation.maximumFailures) 次自動解鎖失敗，已停止自動解鎖。如果改過登入密碼，請重新設定；否則可以在「鎖定與解鎖」恢復。"))
                 } else {
@@ -632,11 +640,7 @@ final class AppModel {
 
     private func handleSession(_ event: ScreenSession.Event) {
         let t = Date()
-        switch event {
-        case .locked: link.send("mac locked")
-        case .unlocked: link.send("mac unlocked")
-        default: break
-        }
+
         switch event {
         case .unlocked:
             let byUs = isUnlocking || (lastAutoUnlockAt.map { t.timeIntervalSince($0) < 10 } ?? false)
@@ -648,6 +652,7 @@ final class AppModel {
                 lockedByPresence = false
                 if let name = preferences.shortcutOnReturn { ShortcutsRunner.run(name) }
             }
+            link.broadcast(event: group.presence.isAway && !byUs ? .unlockedWhileAway : .unlocked)
             if byUs {
                 let names = nearDeviceNames
                 log.add(.unlocked, String(localized: "\(names.isEmpty ? subject : Self.list(names)) 在附近，已自動解鎖"))
@@ -678,6 +683,56 @@ final class AppModel {
         case .displaySlept, .sessionResigned, .sessionActivated:
             break
         }
+    }
+
+    // MARK: - iPhone 與 Apple Watch
+
+    /// 給 iPhone／手錶看的狀態。
+    var linkStatus: LinkStatus {
+        let presence: MacPresence = switch status {
+        case .needsDevice: .noDevice
+        case .bluetoothUnavailable: .bluetoothOff
+        case .paused: .paused
+        case .suspended: .suspended
+        case .lockPending: .lockPending
+        case .waiting: .waiting
+        case .near: .near
+        case .leaving: .leaving
+        case .away: .away
+        }
+        return LinkStatus(
+            macName: Host.current().localizedName ?? "Mac",
+            presence: presence,
+            summary: statusLine,
+            locked: ScreenSession.queryLocked() == true,
+            pausedUntil: isPaused ? automation.pausedUntil : nil
+        )
+    }
+
+    private func handleRemote(_ command: LinkCommand) {
+        switch command {
+        case .lock:
+            cancelPendingLock()
+            automation.didLockManually(at: Date())
+            log.add(.info, String(localized: "收到 iPhone 或 Apple Watch 的鎖定指令"))
+            lock(reason: nil)
+        case .pause(let minutes):
+            pause(for: TimeInterval(max(1, min(minutes, 24 * 60)) * 60))
+        case .resume:
+            resume()
+        case .hello, .status:
+            break
+        }
+        pushLinkStatusIfChanged()
+    }
+
+    /// 狀態有實質改變才推送（訊號強度每秒都在變，不算）。
+    private func pushLinkStatusIfChanged() {
+        let s = linkStatus
+        let signature = "\(s.presence.rawValue)|\(s.locked)|\(s.pausedUntil?.timeIntervalSince1970 ?? 0)|\(nearDeviceNames)"
+        guard signature != lastLinkSignature else { return }
+        lastLinkSignature = signature
+        link.broadcast()
     }
 
     private func captureIntrusionPhoto() {
@@ -767,5 +822,12 @@ final class AppModel {
     /// 依系統語言串接名稱，例如「Weichung和Apple Watch」、「Weichung and Apple Watch」。
     static func list(_ names: [String]) -> String {
         ListFormatter.localizedString(byJoining: names)
+    }
+}
+
+private extension Presence {
+    var isAway: Bool {
+        if case .away = self { return true }
+        return false
     }
 }

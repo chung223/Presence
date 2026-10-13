@@ -7,6 +7,8 @@ options:
 packages:
   PresenceCore:
     path: Packages/PresenceCore
+  PresenceLink:
+    path: Packages/PresenceLink
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -27,6 +29,7 @@ targets:
     sources: [Presence]
     dependencies:
       - package: PresenceCore
+      - package: PresenceLink
     info:
       path: Presence/Info.plist
       properties:
@@ -59,6 +62,8 @@ targets:
     platform: iOS
     deploymentTarget: "26.0"
     sources: [Remote]
+    dependencies:
+      - package: PresenceLink
     info:
       path: Remote/Info.plist
       properties:
@@ -68,6 +73,7 @@ targets:
         UILaunchScreen: {}
         UIBackgroundModes: [bluetooth-central]
         NSBluetoothAlwaysUsageDescription: Presence Remote 用藍牙連到你 Mac 上的 Presence，從手機鎖定或查看狀態。
+        NSCameraUsageDescription: 用相機掃描 Mac 上 Presence 顯示的配對 QR code。
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.chung.presence.remote
@@ -86,6 +92,8 @@ targets:
     platform: watchOS
     deploymentTarget: "26.0"
     sources: [Watch]
+    dependencies:
+      - package: PresenceLink
     info:
       path: Watch/Info.plist
       properties:
