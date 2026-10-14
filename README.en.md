@@ -10,7 +10,7 @@ Presence is a macOS menu bar app that uses Bluetooth to tell whether your iPhone
 
 <img src="docs/images/walkaway-en.gif" width="800" alt="The Mac counts down and locks when you walk away, then unlocks when you come back">
 
-▶ [Promo video (37 seconds)](https://github.com/chung223/Presence/releases/download/v0.1.2/presence-promo-en.mp4)
+https://github.com/user-attachments/assets/821a77f5-3dda-4b4a-9a25-fd0a4ffa1bad
 
 ## Features
 
