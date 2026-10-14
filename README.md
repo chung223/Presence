@@ -1,5 +1,7 @@
 # Presence
 
+[English](README.en.md)
+
 帶著手機離開座位，Mac 自動鎖定；走回來，自動解鎖。
 
 Presence 是 macOS 選單列工具，用藍牙偵測你的 iPhone、Apple Watch 或其他 BLE 裝置在不在附近。想法來自 [BLEUnlock](https://github.com/ts1/BLEUnlock)，針對新版 macOS 重新設計與實作，並修正了原版幾個安全問題。
@@ -9,6 +11,7 @@ Presence 是 macOS 選單列工具，用藍牙偵測你的 iPhone、Apple Watch 
 - **離開自動鎖定**：訊號持續低於門檻幾秒、或完全收不到訊號一段時間，就鎖定螢幕或啟動螢幕保護程式。
 - **回來自動解鎖**：訊號在幾秒內持續夠強，才輸入登入密碼解鎖；單一筆異常的強訊號不會觸發。
 - **iPhone 加密確認**：配對 Presence Remote 後，輸入密碼前會先請 iPhone 用配對金鑰回應，只偽造藍牙訊號無法讓 Mac 解鎖。
+- **iPhone 與 Apple Watch 遙控**：用配套 App Presence Remote，從手機、手錶、控制中心、小工具或 Siri 立即鎖定、暫停或恢復；Mac 自動鎖定或有人趁你不在手動解鎖時，iPhone 會收到通知（見下方「Presence Remote」）。
 - **意外結束自動重開**：當機或被系統結束時，launchd 會把它重新開起來；從選單結束則不會。
 - **多裝置**：同時監控 iPhone 和 Apple Watch，任一台在附近就算你在；每台裝置有自己的門檻。
 - **即時訊號圖**：看得到每一筆訊號和濾波後的結果，門檻設多少一目了然。
@@ -34,7 +37,7 @@ Presence 是 macOS 選單列工具，用藍牙偵測你的 iPhone、Apple Watch 
 
 **一定要放在「應用程式」資料夾**：從「下載」或外接硬碟執行，系統可能在睡眠時把它結束，登入時也開不起來。放錯地方時，Presence 會提醒你並可以一鍵移過去。
 
-iPhone 與 Apple Watch 的 Presence Remote 還沒上架，目前要從原始碼建置（見「開發」）。
+iPhone 與 Apple Watch 的 Presence Remote 已送 App Store 審核，上架後會在這裡附上連結；在那之前要從原始碼建置（見「開發」）。
 
 也可以從原始碼建置 Mac 版：
 
@@ -55,6 +58,25 @@ xcodebuild -project Presence.xcodeproj -scheme Presence -configuration Release b
 
 如果你在用 BLEUnlock，請先在它的選單關掉「登入時啟動」並結束它，兩個同時執行會互相干擾。
 
+## Presence Remote（iPhone 與 Apple Watch）
+
+<p>
+<img src="metadata/screenshots/iphone-6.9/zh-Hant/01-near.png" width="260" alt="iPhone 上的 Presence Remote">
+<img src="metadata/screenshots/watch-ultra/zh-Hant/01-status.png" width="200" alt="Apple Watch 上的 Presence Remote">
+</p>
+
+Presence Remote 是 Presence 的配套 App，透過藍牙直接連到你的 Mac，不需要帳號或網路。
+
+- **立即鎖定 Mac**：從 App、Apple Watch、控制中心、動作按鈕、Siri 或「捷徑」。
+- **暫停與恢復**：暫停自動鎖定與解鎖 15 分鐘到 4 小時，或隨時恢復（要先解鎖 iPhone）。
+- **查看狀態**：你在不在附近、Mac 有沒有鎖著；主畫面與鎖定畫面小工具、手錶錶面複雜功能都看得到。
+- **通知**：Mac 因為你離開而自動鎖定、或你不在附近時被人手動解鎖，iPhone 會收到通知。
+- **解鎖前的加密確認**：Mac 要輸入密碼前，會先請 iPhone 用配對金鑰回應（見「運作方式與安全設計」）。
+
+**配對**：在 Mac 的 Presence 打開「手機與手錶」，按「配對新的 iPhone…」，再用 Presence Remote 掃描畫面上的 QR code。Apple Watch 會透過這支 iPhone 取得配對，不用另外設定。
+
+需要 iOS 26、watchOS 26 以上。只在藍牙範圍內（大約同一個房間）有效。
+
 ## 運作方式與安全設計
 
 **判斷在不在附近**：取最近 4 秒訊號的中位數，至少要有 3 筆樣本。鎖定門檻要低於解鎖門檻（遲滯），避免在邊界反覆鎖定、解鎖。
@@ -65,7 +87,7 @@ xcodebuild -project Presence.xcodeproj -scheme Presence -configuration Release b
 
 **不提供 URL scheme**：任何網頁都能觸發 URL scheme，等於讓網頁可以暫停你的自動鎖定。自動化請用「捷徑」動作。
 
-**解鎖流程**：喚醒螢幕 → 先等幾秒，讓 macOS 內建的「用 Apple Watch 解鎖」有機會先解開 → 還鎖著才輸入密碼。手錶解鎖比較安全，也不會跟 Presence 打字互搶。預設等 5 秒；如果連續幾次都沒有手錶先解開，就縮短成 1.5 秒。每送出一段字元前、按 Enter 前，都會確認「仍在鎖定」而且「前景是登入畫面」。如果你在這期間用 Touch ID 或 Apple Watch 先解鎖了，Presence 會立刻停止輸入，密碼不會被打進其他 App（原版的 [#182](https://github.com/ts1/BLEUnlock/issues/182)）。
+**解鎖流程**：喚醒螢幕 → 先等幾秒，讓 macOS 內建的「用 Apple Watch 解鎖」有機會先解開 → 還鎖著才輸入密碼。手錶解鎖比較安全，也不會跟 Presence 打字互搶。預設等 5 秒；如果連續幾次都沒有手錶先解開，就縮短成 1.5 秒。每送出一段字元前、按 Enter 前，都會確認「仍在鎖定」而且「前景是登入畫面」。如果你在這期間用 Touch ID 或 Apple Watch 先解鎖了，Presence 會立刻停止輸入，密碼不會被打進其他 App（原版的 [#182](https://github.com/ts1/BLEUnlock/issues/182)）。解鎖後一分鐘內不讓螢幕因為閒置而變暗，避免剛解開又被系統鎖回去。
 
 **解鎖時機**：只在訊號剛從不夠近變成夠近（你走回來了），或螢幕被喚醒（你碰了鍵盤滑鼠）時嘗試。連續失敗兩次就停止自動解鎖，直到你手動解鎖一次，避免密碼錯誤累積。
 
@@ -76,6 +98,10 @@ xcodebuild -project Presence.xcodeproj -scheme Presence -configuration Release b
 **加密確認**：只看訊號強弱的話，偽造你手機的藍牙廣播就能讓 Mac 解鎖。配對了 iPhone 時，Presence 在輸入密碼前會送出一個隨機的 128 位元挑戰，只有用配對金鑰加密、在時限內原樣送回的回應才算數；挑戰每次不同、只收一次。iPhone 沒有連上或沒有回應時就不自動解鎖，改由你用 Apple Watch、Touch ID 或密碼解鎖。這擋不了把你手機訊號轉送到遠處的中繼攻擊（見 [docs/companion-app.md](docs/companion-app.md)）。
 
 各項系統行為在 macOS 26.7 的實測結果見 [docs/macos26-findings.md](docs/macos26-findings.md)。
+
+## 隱私
+
+Presence 與 Presence Remote 不收集任何資料：沒有帳號、伺服器或分析工具，裝置之間只用藍牙直接溝通。Mac 版只會向 GitHub 讀取更新清單。詳見[隱私權政策](docs/privacy.md)。
 
 ## 事件腳本
 

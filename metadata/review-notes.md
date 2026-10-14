@@ -10,7 +10,7 @@ The app has no account or server. It talks to Presence on a paired Mac directly 
 
 How to test:
 1. On a Mac with macOS 26 or later, download the latest Presence zip (0.1.1 or later) from the link above, move Presence to Applications, and open it. Allow Bluetooth when asked.
-2. In Presence, open "Phone & Watch" (手機與手錶) and click "Pair New iPhone…". A QR code appears.
+2. In Presence, open "iPhone & Watch" (手機與手錶) and click "Pair New iPhone…". A QR code appears.
 3. In Presence Remote on the iPhone, tap "Scan QR Code" and scan it. The Mac shows "Paired".
 4. Tap "Lock Mac Now" to lock the Mac, or pause and resume automatic locking (pause and resume require the iPhone to be unlocked).
 5. The Control Center control, Home Screen and Lock Screen widgets, and the Apple Watch app use the same pairing.
