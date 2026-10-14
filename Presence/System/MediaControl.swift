@@ -33,10 +33,12 @@ enum MediaControl {
     }
 
     static func pause() {
+        if Demo.isActive { return }
         _ = sendCommand?(1, nil) // kMRPause
     }
 
     static func play() {
+        if Demo.isActive { return }
         _ = sendCommand?(0, nil) // kMRPlay
     }
 }

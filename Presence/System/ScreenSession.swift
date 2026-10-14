@@ -22,9 +22,13 @@ final class ScreenSession {
     /// 鎖定時 session 字典才有 CGSSessionScreenIsLocked = 1（在 macOS 26.7 驗證過）。
     /// 拿不到 session 字典時回傳 nil（狀態未知），呼叫端不要把它當成「沒鎖定」。
     nonisolated static func queryLocked() -> Bool? {
+        if Demo.isActive { return demoLocked }
         guard let dict = CGSessionCopyCurrentDictionary() as? [String: Any] else { return nil }
         return (dict["CGSSessionScreenIsLocked"] as? NSNumber)?.boolValue ?? false
     }
+
+    /// 示範模式的鎖定狀態：不真的鎖定螢幕，`refresh()` 照樣會發出鎖定／解鎖事件。
+    nonisolated(unsafe) static var demoLocked = false
 
     static var loginWindowIsFrontmost: Bool {
         NSWorkspace.shared.frontmostApplication?.bundleIdentifier == "com.apple.loginwindow"

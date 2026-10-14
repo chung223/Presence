@@ -58,6 +58,13 @@ final class EventLog {
         save()
     }
 
+    #if DEBUG
+    /// 示範模式：換成假的紀錄（不存檔，見 `Demo`）。
+    func seedDemo(_ demo: [Entry]) {
+        entries = demo
+    }
+    #endif
+
     func clear() {
         entries.removeAll()
         save()

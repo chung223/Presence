@@ -10,7 +10,7 @@ import Sparkle
 final class Updater {
     static let shared = Updater()
 
-    private let controller = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+    private let controller = SPUStandardUpdaterController(startingUpdater: !Demo.isActive, updaterDelegate: nil, userDriverDelegate: nil)
 
     var automaticallyChecks: Bool {
         get { controller.updater.automaticallyChecksForUpdates }

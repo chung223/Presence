@@ -24,6 +24,7 @@ struct PairedDeviceStore {
     }
 
     static func save(_ devices: [PairedDevice]) {
+        if Demo.isActive { return }
         if let data = try? JSONEncoder().encode(devices) { UserDefaults.standard.set(data, forKey: listKey) }
     }
 
@@ -41,6 +42,7 @@ struct PairedDeviceStore {
     }
 
     static func storeKey(_ key: Data, for id: UUID) {
+        if Demo.isActive { return }
         let base: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
@@ -54,6 +56,7 @@ struct PairedDeviceStore {
     }
 
     static func removeKey(for id: UUID) {
+        if Demo.isActive { return }
         SecItemDelete([
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
@@ -114,6 +117,7 @@ final class LinkService: NSObject {
     private var shouldAdvertise: Bool { !devices.isEmpty || pendingPairing != nil }
 
     func start() {
+        if Demo.isActive { return }
         guard shouldAdvertise else {
             stop()
             return
@@ -134,11 +138,19 @@ final class LinkService: NSObject {
         connected = [:]
     }
 
+    #if DEBUG
+    /// 示範模式：不廣播，直接顯示假的已配對裝置。
+    func startDemo(devices: [PairedDevice], connected: [UUID: String]) {
+        self.devices = devices
+        self.connected = connected
+    }
+    #endif
+
     // MARK: - 配對
 
     func beginPairing() -> PairingInfo {
         cancelPairing()
-        let pairing = PairingInfo.generate(macName: Host.current().localizedName ?? "Mac")
+        let pairing = PairingInfo.generate(macName: Demo.isActive ? "MacBook Pro" : Host.current().localizedName ?? "Mac")
         PairedDeviceStore.storeKey(pairing.key, for: pairing.id)
         keys[pairing.id] = pairing.key
         pendingPairing = pairing

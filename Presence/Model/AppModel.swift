@@ -82,7 +82,8 @@ final class AppModel {
 
     let bluetooth = BluetoothMonitor()
     let session = ScreenSession()
-    let log = EventLog()
+    /// 示範模式的紀錄不存檔（見 Demo）。
+    let log = Demo.isActive ? EventLog(directory: nil) : EventLog()
     /// 讓 iPhone 與 Apple Watch 的 Presence Remote 連進來。
     let link = LinkService()
 
@@ -95,7 +96,7 @@ final class AppModel {
     /// 選單列圖示。只在真的換了時才更新：`status` 會讀 `now`，直接讀它會讓選單列每秒重畫。
     private(set) var menuBarSymbol = "ellipsis.circle"
     /// 這台 Mac 的名稱。`Host.current()` 很慢，啟動時查一次就好。
-    private static let macName = Host.current().localizedName ?? "Mac"
+    private static let macName = Demo.isActive ? "MacBook Pro" : Host.current().localizedName ?? "Mac"
     private(set) var isUnlocking = false
     /// 正在自動解鎖的前半段：等 macOS 自己解鎖、等 iPhone 的加密確認。
     private(set) var isConfirmingPresence = false
@@ -121,7 +122,7 @@ final class AppModel {
     private(set) var onACPower = PowerSource.isOnACPower
     let hasBattery = PowerSource.hasBattery
 
-    @ObservationIgnored private let store = PreferencesStore()
+    @ObservationIgnored private let store: PreferencesStore
     @ObservationIgnored private var tickTask: Task<Void, Never>?
     @ObservationIgnored private var tickCount = 0
     @ObservationIgnored private var lastAutoUnlockAt: Date?
@@ -158,7 +159,13 @@ final class AppModel {
     private static let warningDuration: TimeInterval = 10
 
     init() {
-        let prefs = PreferencesStore().load()
+        #if DEBUG
+        store = Demo.isActive ? PreferencesStore(defaults: Demo.defaults) : PreferencesStore()
+        let prefs = Demo.isActive ? Demo.preferences : store.load()
+        #else
+        store = PreferencesStore()
+        let prefs = store.load()
+        #endif
         preferences = prefs
         group = PresenceGroup(devices: prefs.proximityByDevice, policy: prefs.devicePolicy, now: Date())
     }
@@ -288,7 +295,7 @@ final class AppModel {
             if !hasPassword { items.append(.password) }
         }
         if legacyAppRunning { items.append(.legacyApp) }
-        if !InstallLocation.isInApplications { items.append(.location) }
+        if !InstallLocation.isInApplications, !Demo.isActive { items.append(.location) }
         return items
     }
 
@@ -324,6 +331,7 @@ final class AppModel {
     }
 
     func refreshNetwork() async {
+        if Demo.isActive { return }
         let network = await NetworkIdentity.current()
         if network != currentNetwork { currentNetwork = network }
     }
@@ -410,6 +418,14 @@ final class AppModel {
     }
 
     func refreshStatus() {
+        if Demo.isActive {
+            hasPassword = true
+            accessibilityGranted = true
+            loginItemEnabled = true
+            loginItemNeedsApproval = false
+            legacyAppRunning = false
+            return
+        }
         hasPassword = PasswordStore.exists
         accessibilityGranted = Accessibility.isTrusted
         let loginStatus = LoginItem.status
@@ -570,6 +586,7 @@ final class AppModel {
 
     /// 距離上次操作鍵盤、滑鼠或觸控板過了幾秒。
     static var idleSeconds: TimeInterval {
+        if Demo.isActive { return .infinity }
         let types: [CGEventType] = [.keyDown, .flagsChanged, .mouseMoved, .leftMouseDown, .rightMouseDown,
                                     .otherMouseDown, .leftMouseDragged, .scrollWheel]
         return types.map { CGEventSource.secondsSinceLastEventType(.hidSystemState, eventType: $0) }.min() ?? .infinity
@@ -600,6 +617,8 @@ final class AppModel {
         lockedByPresence = true
         if let name = preferences.shortcutOnLeave { ShortcutsRunner.run(name) }
         switch preferences.lockMethod {
+        case _ where Demo.isActive:
+            ScreenSession.demoLocked = true
         case .lockScreen:
             ScreenControl.lockScreen()
             Task {
@@ -644,6 +663,12 @@ final class AppModel {
               session.isSessionActive, !session.isSystemSleeping else { return }
         guard automation.shouldAttemptUnlock(canUnlock: group.canUnlock, screenLocked: session.isLocked, at: Date()) else { return }
         if preferences.context.alsoSuspendUnlock, suspension != nil { return }
+        #if DEBUG
+        if Demo.isActive {
+            demoUnlock()
+            return
+        }
+        #endif
         if preferences.unlockMode == .handOff {
             // 不碰密碼：喚醒螢幕，讓 macOS 內建的 Apple Watch 解鎖或 Touch ID 接手
             automation.didAttemptUnlock(at: Date())
@@ -1024,6 +1049,98 @@ final class AppModel {
         ListFormatter.localizedString(byJoining: names)
     }
 }
+
+// MARK: - 示範模式
+
+#if DEBUG
+extension AppModel {
+    /// 示範模式的 start()：假裝置、模擬訊號，不碰藍牙、螢幕、鑰匙圈與登入項目（見 Demo）。
+    func startDemo() {
+        Self.current = self
+        let t = Date()
+        ScreenSession.demoLocked = false
+        log.seedDemo(Demo.logEntries(now: t))
+        deskTime = Demo.deskTime(now: t)
+        refreshStatus()
+
+        bluetooth.onSample = { [weak self] id, rssi, date in self?.handleSample(id, rssi, at: date) }
+        bluetooth.startDemo(Demo.nearby)
+        session.onEvent = { [weak self] event in self?.handleSession(event) }
+        link.statusProvider = { [weak self] in self?.linkStatus ?? LinkStatus(macName: "Mac", presence: .waiting, summary: "", locked: false) }
+        link.startDemo(devices: Demo.pairedDevices, connected: [Demo.pairingID: "iPhone"])
+
+        // 訊號圖先填上過去 3 分鐘一直坐在座位上的訊號；濾波線和真的一樣取最近 4 秒的中位數
+        for device in preferences.devices {
+            let near = Demo.targetRSSI(for: device.id, elapsed: 0) ?? -60
+            let raw = stride(from: Self.historyDuration, to: 0, by: -1).map {
+                RSSIPoint(date: t.addingTimeInterval(-$0), rssi: near + Int.random(in: -5...5))
+            }
+            samples[device.id] = raw
+            smoothed[device.id] = raw.indices.map { i in
+                let window = raw[max(0, i - 3)...i].map(\.rssi).sorted()
+                return RSSIPoint(date: raw[i].date, rssi: window[(window.count - 1) / 2])
+            }
+        }
+        // -PresenceDemoWindowSize 1000x720：截圖用的視窗大小（點）
+        if let size = UserDefaults.standard.string(forKey: "PresenceDemoWindowSize")?.split(separator: "x").compactMap({ Double($0) }),
+           size.count == 2 {
+            Task {
+                try? await Task.sleep(for: .milliseconds(500))
+                guard let window = NSApp.windows.first(where: { $0.isVisible && $0.canBecomeMain }) else { return }
+                window.setContentSize(NSSize(width: size[0], height: size[1]))
+                window.center()
+                // 截圖要作用中的樣子：背景啟動的 App 系統不一定讓它到前景，再要求一次
+                NSApp.activate(ignoringOtherApps: true)
+                window.makeKeyAndOrderFront(nil)
+                // 「裝置」頁的名稱欄位會自動取得焦點、文字反白；改讓側邊欄取得焦點（選取的項目才是藍色）
+                func sidebar(in view: NSView) -> NSTableView? {
+                    if let table = view as? NSTableView { return table }
+                    return view.subviews.lazy.compactMap(sidebar(in:)).first
+                }
+                window.makeFirstResponder(window.contentView.flatMap(sidebar(in:)))
+            }
+        }
+
+        tickTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1))
+                self?.tick()
+            }
+        }
+        // 模擬訊號：手機大約每秒一筆，手錶比較稀疏
+        Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .milliseconds(Int.random(in: 600...1100)))
+                guard let self else { return }
+                let elapsed = Date().timeIntervalSince(t)
+                for device in preferences.devices where device.id == Demo.iPhoneID || Bool.random() {
+                    if let rssi = Demo.targetRSSI(for: device.id, elapsed: elapsed) {
+                        bluetooth.demoSample(device.id, rssi: rssi + Int.random(in: -4...4))
+                    }
+                }
+            }
+        }
+    }
+
+    /// 示範模式的自動解鎖：假裝 iPhone 加密確認後解開。
+    private func demoUnlock() {
+        automation.didAttemptUnlock(at: Date())
+        isConfirmingPresence = true
+        Task {
+            try? await Task.sleep(for: .milliseconds(1200))
+            isConfirmingPresence = false
+            guard session.isLocked, group.canUnlock else { return }
+            unlockConfirmedBy = "iPhone"
+            isUnlocking = true
+            ScreenSession.demoLocked = false
+            session.refresh()
+            isUnlocking = false
+            lastAutoUnlockAt = Date()
+            automation.unlockSucceeded()
+        }
+    }
+}
+#endif
 
 private extension Presence {
     var isAway: Bool {

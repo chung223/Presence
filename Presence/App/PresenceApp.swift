@@ -8,15 +8,15 @@ struct PresenceApp: App {
     private var model: AppModel { appDelegate.model }
 
     init() {
-        // 已經有 Presence 在跑：讓它打開主視窗，這個直接結束
-        if !AppInstance.resolveAtLaunch() { exit(0) }
+        // 已經有 Presence 在跑：讓它打開主視窗，這個直接結束（示範模式和它並存，不接手）
+        if !Demo.isActive, !AppInstance.resolveAtLaunch() { exit(0) }
         AppInstance.installTerminationHandler()
         ProcessInfo.processInfo.automaticTerminationSupportEnabled = false
     }
 
     /// 指定了 -PresenceInitialSection（截圖檢查用）也會打開主視窗。
     private var opensWindowAtLaunch: Bool {
-        model.needsAttentionAtLaunch || UserDefaults.standard.string(forKey: "PresenceInitialSection") != nil
+        model.needsAttentionAtLaunch || UserDefaults.standard.string(forKey: "PresenceInitialSection") != nil || Demo.isActive
     }
 
     var body: some Scene {
@@ -40,6 +40,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     let model = AppModel()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        #if DEBUG
+        if Demo.isActive {
+            // 不登記登入項目、不檢查更新、不記錄啟動，免得動到正在執行的 Presence
+            model.startDemo()
+            NSApp.activate()
+            return
+        }
+        #endif
         UNUserNotificationCenter.current().delegate = self
         // 另一份 Presence 被打開時，會請這裡打開主視窗
         DistributedNotificationCenter.default().addObserver(forName: AppInstance.showWindow, object: nil, queue: .main) { _ in

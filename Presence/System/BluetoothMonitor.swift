@@ -89,6 +89,23 @@ final class BluetoothMonitor: NSObject {
         }
     }
 
+    #if DEBUG
+    /// 示範模式：不開藍牙，附近裝置與訊號都由 `demoSample` 餵進來。
+    func startDemo(_ devices: [NearbyDevice]) {
+        availability = .poweredOn
+        nearby = devices
+    }
+
+    func demoSample(_ id: UUID, rssi: Int) {
+        let now = Date()
+        if let i = nearby.firstIndex(where: { $0.id == id }) {
+            nearby[i].rssi = rssi
+            nearby[i].lastSeen = now
+        }
+        onSample?(id, rssi, now)
+    }
+    #endif
+
     // MARK: - 內部
 
     private func publish() {

@@ -23,7 +23,7 @@ enum EventScript {
 
     @discardableResult
     static func run(_ event: Event, rssi: Int?) -> Bool {
-        guard let url, isInstalled else { return false }
+        guard !Demo.isActive, let url, isInstalled else { return false }
         let process = Process()
         process.executableURL = url
         process.arguments = [event.rawValue] + (rssi.map { [String($0)] } ?? [])
@@ -136,6 +136,7 @@ enum Notifier {
     }
 
     static func post(_ title: String, _ body: String, id: String = UUID().uuidString) {
+        if Demo.isActive { return }
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
@@ -143,6 +144,7 @@ enum Notifier {
     }
 
     static func remove(id: String) {
+        if Demo.isActive { return }
         UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [id])
     }
 }

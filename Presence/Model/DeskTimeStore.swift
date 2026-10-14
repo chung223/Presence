@@ -15,6 +15,7 @@ enum DeskTimeStore {
     }
 
     static func save(_ deskTime: DeskTime) {
+        if Demo.isActive { return }
         guard let url, let data = try? JSONEncoder().encode(deskTime) else { return }
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? data.write(to: url, options: .atomic)

@@ -29,6 +29,7 @@ enum ShortcutsRunner {
 
     /// 在背景執行，不等它結束。
     static func run(_ name: String) {
+        if Demo.isActive { return }
         let process = Process()
         process.executableURL = tool
         process.arguments = ["run", name]
