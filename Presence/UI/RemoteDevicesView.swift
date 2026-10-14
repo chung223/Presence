@@ -5,6 +5,8 @@ import SwiftUI
 struct RemoteDevicesView: View {
     let model: AppModel
     @State private var showingPairing = false
+    @State private var testing = false
+    @State private var testResult: String?
 
     var body: some View {
         let link = model.link
@@ -31,6 +33,24 @@ struct RemoteDevicesView: View {
                 }
                 LabeledContent("加入 iPhone") {
                     Button("配對新的 iPhone…") { showingPairing = true }
+                }
+                if !link.devices.isEmpty {
+                    LabeledContent {
+                        HStack {
+                            if testing { ProgressView().controlSize(.small) }
+                            Button("測試") {
+                                testing = true
+                                Task {
+                                    testResult = await model.testCompanionConfirmation()
+                                    testing = false
+                                }
+                            }
+                            .disabled(testing)
+                        }
+                    } label: {
+                        Text("加密確認")
+                        Text(testResult ?? String(localized: "檢查 iPhone 能不能在解鎖前回應 Mac 的確認"))
+                    }
                 }
             } header: {
                 Text("已配對的裝置")

@@ -149,14 +149,11 @@ public final class LinkCentral: NSObject {
         central?.connect(p)
     }
 
+    /// 每次都重新查詢服務：Mac 上的 Presence 重開後服務會重建，沿用快取的特徵會寫到無效的位置。
     private func prepare(_ p: CBPeripheral) {
         p.delegate = self
-        if let service = p.services?.first(where: { $0.uuid == CBUUID(string: LinkIdentifiers.service) }),
-           service.characteristics != nil {
-            didDiscoverCharacteristics(of: service, on: p)
-        } else {
-            p.discoverServices([CBUUID(string: LinkIdentifiers.service)])
-        }
+        command = nil
+        p.discoverServices([CBUUID(string: LinkIdentifiers.service)])
     }
 
     private func didDiscoverCharacteristics(of service: CBService, on p: CBPeripheral) {
@@ -183,6 +180,12 @@ public final class LinkCentral: NSObject {
         verifyTimeout = Task { [weak self] in
             try? await Task.sleep(for: .seconds(5))
             guard !Task.isCancelled, let self, !self.verified, let p = self.peripheral else { return }
+            if let key = self.savedPeripheralKey, UserDefaults.standard.string(forKey: key) == p.identifier.uuidString {
+                // 之前驗證過的就是這台：多半是 Mac 上的 Presence 剛重開，斷線重連就好，不要列入黑名單
+                LinkLog.write("[\(self.deviceName)] 已知的 Mac 沒有回應打招呼，重新連線")
+                self.central?.cancelPeripheralConnection(p)
+                return
+            }
             // 不是自己配對的 Mac：記下來，換下一台
             LinkLog.write("[\(self.deviceName)] \(p.identifier.uuidString.prefix(8)) 沒有回應打招呼，換下一台")
             self.rejectedPeripherals.insert(p.identifier)
@@ -234,15 +237,27 @@ public final class LinkCentral: NSObject {
         guard let pairing, let whole = reassembler.add(chunk),
               let status = try? LinkCrypto.open(LinkStatus.self, from: whole, key: pairing.symmetricKey,
                                                 context: pairing.id.data) else { return }
+        if let reply = status.replyTo, reply == helloID { markVerified() }
+        // 在場確認一定要回，即使這則狀態比手上的舊
+        if let challenge = status.challenge { confirm(challenge) }
         // 比目前更舊的主動通知（例如延遲送達）不要蓋掉新的狀態
         if let current = self.status, status.replyTo == nil, status.sentAt < current.sentAt { return }
-        if let reply = status.replyTo, reply == helloID { markVerified() }
         self.status = status
         lastUpdate = Date()
         onStatus?(status)
         if status.event != nil { onEvent?(status) }
         if let reply = status.replyTo, let waiter = replyWaiters.removeValue(forKey: reply) {
             waiter.resume(returning: status)
+        }
+    }
+
+    /// Mac 要解鎖前的在場確認：馬上送回去。App 在背景時，系統會為了這個通知叫醒它。
+    private func confirm(_ challenge: Data) {
+        LinkLog.write("[\(deviceName)] 回應 Mac 的在場確認")
+        Task {
+            if case .failure(let failure) = await send(.confirm(challenge: challenge), timeout: 5) {
+                LinkLog.write("[\(deviceName)] 在場確認沒有送到：\(failure)")
+            }
         }
     }
 
@@ -348,6 +363,18 @@ extension LinkCentral: CBCentralManagerDelegate, CBPeripheralDelegate {
     public nonisolated func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
         let ok = error == nil && characteristic.isNotifying
         MainActor.assumeIsolated { if ok { sendHello() } }
+    }
+
+    /// Mac 上的 Presence 重開時，連線可能還在、服務卻已重建：重新查詢並再打一次招呼。
+    public nonisolated func peripheral(_ peripheral: CBPeripheral, didModifyServices invalidatedServices: [CBService]) {
+        let ours = invalidatedServices.contains { $0.uuid == CBUUID(string: LinkIdentifiers.service) }
+        MainActor.assumeIsolated {
+            guard ours, peripheral == self.peripheral else { return }
+            LinkLog.write("[\(deviceName)] Mac 的服務變了，重新連線")
+            verified = false
+            if state == .connected { state = .connecting }
+            prepare(peripheral)
+        }
     }
 
     public nonisolated func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {

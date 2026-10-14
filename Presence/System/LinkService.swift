@@ -78,6 +78,8 @@ final class LinkService: NSObject {
     private(set) var pairingCompleted = false
 
     @ObservationIgnored var onCommand: ((LinkCommand) -> Void)?
+    /// 已配對的裝置連上並打過招呼。
+    @ObservationIgnored var onDeviceConnected: ((String) -> Void)?
     /// 提供目前狀態給通知用；event 由呼叫端帶入。
     @ObservationIgnored var statusProvider: (() -> LinkStatus)?
 
@@ -93,6 +95,21 @@ final class LinkService: NSObject {
     @ObservationIgnored private var sessions: [UUID: Session] = [:]
     @ObservationIgnored private var guards: [UUID: ReplayGuard] = [:]
     @ObservationIgnored private var keys: [UUID: Data] = [:]
+    @ObservationIgnored private var challenge: PendingChallenge?
+
+    private struct PendingChallenge {
+        var challenge: PresenceChallenge
+        let lifetime: TimeInterval
+        let continuation: CheckedContinuation<PresenceConfirmation, Never>
+    }
+
+    enum PresenceConfirmation: Equatable {
+        case confirmed(deviceName: String)
+        /// 時限內沒有任何已配對的裝置連著
+        case noDevice
+        /// 有裝置連著，但沒有回應（例如 App 版本太舊）
+        case noResponse
+    }
 
     private var shouldAdvertise: Bool { !devices.isEmpty || pendingPairing != nil }
 
@@ -152,6 +169,36 @@ final class LinkService: NSObject {
             sessions[centralID]?.pairingID = nil
         }
         start()
+    }
+
+    // MARK: - 在場確認
+
+    /// 請已配對的裝置用金鑰送回一個隨機挑戰，證明它此刻真的連在這台 Mac 上。
+    /// 還沒有裝置連著時一直等到時限，期間連上的也會收到挑戰。
+    func confirmPresence(within lifetime: TimeInterval) async -> PresenceConfirmation {
+        finishChallenge(with: .noResponse)
+        let pending = PresenceChallenge()
+        return await withCheckedContinuation { continuation in
+            challenge = PendingChallenge(challenge: pending, lifetime: lifetime, continuation: continuation)
+            for (centralID, session) in sessions {
+                guard let pairingID = session.pairingID, var status = statusProvider?() else { continue }
+                status.challenge = pending.nonce
+                if challenge?.challenge.markSent(to: centralID) == true {
+                    send(status, to: centralID, pairingID: pairingID)
+                }
+            }
+            Task { [weak self] in
+                try? await Task.sleep(for: .seconds(lifetime))
+                guard let self, self.challenge?.challenge.nonce == pending.nonce else { return }
+                self.finishChallenge(with: self.challenge?.challenge.sentTo.isEmpty == false ? .noResponse : .noDevice)
+            }
+        }
+    }
+
+    private func finishChallenge(with result: PresenceConfirmation) {
+        guard let pending = challenge else { return }
+        challenge = nil
+        pending.continuation.resume(returning: result)
     }
 
     // MARK: - 通知
@@ -217,10 +264,20 @@ final class LinkService: NSObject {
         case .lock, .pause, .resume:
             touch(frame.pairingID)
             onCommand?(request.command)
+        case .confirm(let response):
+            touch(frame.pairingID)
+            if let pending = challenge, pending.challenge.accepts(response, at: Date(), within: pending.lifetime) {
+                finishChallenge(with: .confirmed(deviceName: connected[frame.pairingID] ?? name(of: frame.pairingID)))
+            }
         }
         if var status = statusProvider?() {
             status.replyTo = request.id
+            // 剛連上、還沒收過正在等的挑戰：一起帶過去
+            if challenge?.challenge.markSent(to: central.identifier) == true { status.challenge = challenge?.challenge.nonce }
             send(status, to: central.identifier, pairingID: frame.pairingID)
+        }
+        if case .hello(let deviceName) = request.command, devices.contains(where: { $0.id == frame.pairingID }) {
+            onDeviceConnected?(deviceName)
         }
         return true
     }
@@ -239,6 +296,10 @@ final class LinkService: NSObject {
             return
         }
         PairedDeviceStore.save(devices)
+    }
+
+    private func name(of id: UUID) -> String {
+        devices.first { $0.id == id }?.name ?? "iPhone"
     }
 
     private func touch(_ id: UUID) {

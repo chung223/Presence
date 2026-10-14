@@ -10,6 +10,8 @@ struct PresenceApp: App {
     init() {
         // 已經有 Presence 在跑：讓它打開主視窗，這個直接結束
         if !AppInstance.resolveAtLaunch() { exit(0) }
+        AppInstance.installTerminationHandler()
+        ProcessInfo.processInfo.automaticTerminationSupportEnabled = false
     }
 
     /// 指定了 -PresenceInitialSection（截圖檢查用）也會打開主視窗。
@@ -61,11 +63,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private func prepareLoginItem() {
         let defaults = UserDefaults.standard
         if defaults.bool(forKey: "PresenceUnregisterAgent") {
-            // 使用者關掉「登入時自動啟動」，由這個接手的程序取消註冊（見 AppModel.setLaunchAtLogin）
-            try? LoginItem.unregister()
+            // 使用者關掉「登入時自動啟動」：接手時已經取消註冊了（見 AppInstance.resolveAtLaunch）
         } else if defaults.bool(forKey: "PresenceReregisterAgent") {
-            // 剛移到「應用程式」：讓 launchd 改記新的位置，註冊後會由它啟動的 Presence 接手
-            try? LoginItem.unregister()
+            // 剛移到「應用程式」：用新的位置重新註冊，之後會由 launchd 啟動的 Presence 接手
             try? LoginItem.register()
         } else {
             LoginItem.migrateIfNeeded()

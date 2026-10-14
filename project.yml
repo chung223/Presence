@@ -47,6 +47,9 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSApplicationCategoryType: public.app-category.utilities
         LSUIElement: true
+        # 一直在背景監控：不能讓系統在沒有視窗時自動把它關掉（那算正常結束，launchd 不會重開）
+        NSSupportsAutomaticTermination: false
+        NSSupportsSuddenTermination: false
         NSBluetoothAlwaysUsageDescription: Presence 用藍牙偵測你的手機或手錶在不在附近，決定要鎖定還是解鎖這台 Mac。
         NSCameraUsageDescription: 開啟「拍照存證」後，裝置不在附近時有人手動解鎖這台 Mac，Presence 會拍一張照片存在這台 Mac 上。
         NSHumanReadableCopyright: © 2026 Weichung Lai. MIT License.

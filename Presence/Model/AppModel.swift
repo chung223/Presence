@@ -93,6 +93,14 @@ final class AppModel {
     private(set) var smoothed: [UUID: [RSSIPoint]] = [:]
     private(set) var now = Date()
     private(set) var isUnlocking = false
+    /// 正在等 iPhone 的加密確認。
+    private(set) var isConfirmingPresence = false
+    /// 這次自動解鎖是誰加密確認的，寫進事件紀錄用。
+    private var unlockConfirmedBy: String?
+    /// 上次加密確認失敗的時間：之後一分鐘內只在 iPhone 連上時重試，
+    /// 否則「失敗 → 叫醒螢幕 → 螢幕亮起又試一次」會一直循環。
+    private var lastUnconfirmedAt: Date?
+    private var lastUnconfirmedWarningAt: Date?
     private(set) var hasPassword = PasswordStore.exists
     private(set) var accessibilityGranted = Accessibility.isTrusted
     private(set) var loginItemEnabled = LoginItem.isEnabled
@@ -164,6 +172,7 @@ final class AppModel {
         session.start()
         link.statusProvider = { [weak self] in self?.linkStatus ?? LinkStatus(macName: "Mac", presence: .waiting, summary: "", locked: false) }
         link.onCommand = { [weak self] command in self?.handleRemote(command) }
+        link.onDeviceConnected = { [weak self] _ in self?.companionDidConnect() }
         link.start()
 
         // 先讀一次密碼：鑰匙圈要問權限的話，讓對話框趁使用者在電腦前時出現，而不是藏在鎖定畫面後面
@@ -187,6 +196,17 @@ final class AppModel {
             log.add(.warning, String(localized: "Presence 上次沒有正常結束（可能是當機或被系統結束），已重新開啟"))
         }
         log.add(.info, String(localized: "Presence 已啟動"))
+        #if DEBUG
+        // 開發用：-PresenceTestConfirmation YES 等 iPhone 連上（最多 90 秒）後測一次加密確認，不用鎖定 Mac
+        if UserDefaults.standard.bool(forKey: "PresenceTestConfirmation") {
+            Task {
+                for _ in 0..<90 where link.connected.isEmpty {
+                    try? await Task.sleep(for: .seconds(1))
+                }
+                _ = await testCompanionConfirmation()
+            }
+        }
+        #endif
     }
 
     // MARK: - 顯示用
@@ -605,8 +625,14 @@ final class AppModel {
         EventScript.run(reason == .weakSignal ? .away : .lost, rssi: strongestRSSI)
     }
 
-    private func evaluateUnlock() {
-        guard !isUnlocking, preferences.unlockEnabled, hasDevices,
+    /// 自動輸入密碼前要不要先等 iPhone 的加密確認。
+    var requiresCompanionConfirmation: Bool {
+        preferences.requireCompanionConfirmation && !link.devices.isEmpty
+            && preferences.unlockEnabled && preferences.unlockMode == .typePassword
+    }
+
+    private func evaluateUnlock(afterCompanionConnected: Bool = false) {
+        guard !isUnlocking, !isConfirmingPresence, preferences.unlockEnabled, hasDevices,
               session.isSessionActive, !session.isSystemSleeping else { return }
         guard automation.shouldAttemptUnlock(canUnlock: group.canUnlock, screenLocked: session.isLocked, at: Date()) else { return }
         if preferences.context.alsoSuspendUnlock, suspension != nil { return }
@@ -622,6 +648,81 @@ final class AppModel {
         // 沒開「靠近時喚醒螢幕」：等使用者自己按鍵盤或滑鼠叫醒螢幕才解鎖
         if CGDisplayIsAsleep(CGMainDisplayID()) != 0 && !preferences.wakeOnProximity { return }
         guard accessibilityGranted else { return }
+        if requiresCompanionConfirmation, !afterCompanionConnected,
+           let last = lastUnconfirmedAt, Date().timeIntervalSince(last) < 60 { return }
+        automation.didAttemptUnlock(at: Date())
+
+        Task {
+            var confirmedBy: String?
+            if requiresCompanionConfirmation {
+                isConfirmingPresence = true
+                let result = await link.confirmPresence(within: Self.confirmationTimeout)
+                isConfirmingPresence = false
+                guard case .confirmed(let name) = result else {
+                    handleUnconfirmed(result)
+                    return
+                }
+                confirmedBy = name
+                lastUnconfirmedAt = nil
+                // 等確認的期間可能已經被你自己解鎖，或裝置又離開了
+                guard session.isLocked, group.canUnlock else { return }
+            }
+            typePassword(confirmedBy: confirmedBy)
+        }
+    }
+
+    /// 最多等多久：比解鎖嘗試的間隔（10 秒）長，之後才連上的裝置可以重試（見 companionDidConnect）。
+    private static let confirmationTimeout: TimeInterval = 12
+
+    private func handleUnconfirmed(_ result: LinkService.PresenceConfirmation) {
+        let now = Date()
+        lastUnconfirmedAt = now
+        // 你坐在鎖著的 Mac 前、iPhone 一直沒連上時，每分鐘都會再試；警告十分鐘記一次就好
+        if let last = lastUnconfirmedWarningAt, now.timeIntervalSince(last) < 600 {
+            wakeForManualUnlock()
+            return
+        }
+        lastUnconfirmedWarningAt = now
+        let message = switch result {
+        case .noDevice:
+            String(localized: "已配對的 iPhone 沒有連上，無法加密確認，這次不自動解鎖。可以用 Apple Watch、Touch ID 或密碼解鎖。")
+        default:
+            String(localized: "iPhone 沒有回應加密確認，這次不自動解鎖。請確認 iPhone 上的 Presence Remote 沒有被關掉，而且是最新版。")
+        }
+        log.add(.warning, message)
+        wakeForManualUnlock()
+    }
+
+    /// 沒有自動解鎖時叫醒螢幕，讓你可以馬上用 Apple Watch 或 Touch ID 解鎖。
+    private func wakeForManualUnlock() {
+        guard preferences.wakeOnProximity, session.isLocked else { return }
+        Unlocker.dismissScreensaver()
+        ScreenControl.wakeDisplay()
+    }
+
+    /// 「手機與手錶」頁的測試按鈕：跟解鎖前一樣請 iPhone 加密確認，回傳結果並寫進紀錄。
+    func testCompanionConfirmation() async -> String {
+        let started = Date()
+        let result = await link.confirmPresence(within: Self.confirmationTimeout)
+        let message = switch result {
+        case .confirmed(let name):
+            String(localized: "\(name) 已加密確認（\(Int(Date().timeIntervalSince(started) * 1000)) 毫秒）")
+        case .noDevice:
+            String(localized: "沒有已配對的 iPhone 連上")
+        case .noResponse:
+            String(localized: "iPhone 連著但沒有回應，請更新 Presence Remote")
+        }
+        log.add(.info, String(localized: "測試加密確認：\(message)"))
+        return message
+    }
+
+    /// 確認失敗後一分鐘內 iPhone 才連上：再試一次。
+    private func companionDidConnect() {
+        guard let last = lastUnconfirmedAt, Date().timeIntervalSince(last) < 60 else { return }
+        evaluateUnlock(afterCompanionConnected: true)
+    }
+
+    private func typePassword(confirmedBy: String?) {
         let password: String
         switch PasswordStore.read(allowUI: false) {
         case .success(let value):
@@ -639,7 +740,7 @@ final class AppModel {
         }
 
         isUnlocking = true
-        automation.didAttemptUnlock(at: Date())
+        unlockConfirmedBy = confirmedBy
         Task {
             let outcome = await Unlocker.unlock(with: password)
             isUnlocking = false
@@ -687,7 +788,11 @@ final class AppModel {
             link.broadcast(event: group.presence.isAway && !byUs ? .unlockedWhileAway : .unlocked)
             if byUs {
                 let names = nearDeviceNames
-                log.add(.unlocked, String(localized: "\(names.isEmpty ? subject : Self.list(names)) 在附近，已自動解鎖"))
+                if let confirmedBy = unlockConfirmedBy {
+                    log.add(.unlocked, String(localized: "\(names.isEmpty ? subject : Self.list(names)) 在附近，\(confirmedBy) 已加密確認，已自動解鎖"))
+                } else {
+                    log.add(.unlocked, String(localized: "\(names.isEmpty ? subject : Self.list(names)) 在附近，已自動解鎖"))
+                }
                 EventScript.run(.unlocked, rssi: strongestRSSI)
             } else if case .away = group.presence, hasDevices {
                 // 可能是你自己用 Touch ID 解鎖、只是裝置訊號太弱，也可能是別人，所以只陳述事實
@@ -752,7 +857,7 @@ final class AppModel {
             pause(for: TimeInterval(max(1, min(minutes, 24 * 60)) * 60))
         case .resume:
             resume()
-        case .hello, .status:
+        case .hello, .status, .confirm:
             break
         }
         pushLinkStatusIfChanged()

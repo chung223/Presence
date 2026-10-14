@@ -77,6 +77,8 @@ struct Preferences: Equatable {
     var unlockEnabled = true
     var unlockMode: UnlockMode = .typePassword
     var wakeOnProximity = true
+    /// 配對了 iPhone 時，自動輸入密碼前要先收到它的加密確認（見 LinkService.confirmPresence）。
+    var requireCompanionConfirmation = true
 
     var pauseMedia = false
     var activeMode = false
@@ -148,7 +150,7 @@ struct Preferences: Equatable {
 extension Preferences: Codable {
     private enum CodingKeys: String, CodingKey {
         case devices, devicePolicy, lockEnabled, lockDelay, signalTimeout, lockMethod, notifyOnLock
-        case stayUnlockedWhileActive, warnBeforeLock, unlockEnabled, unlockMode, wakeOnProximity
+        case stayUnlockedWhileActive, warnBeforeLock, unlockEnabled, unlockMode, wakeOnProximity, requireCompanionConfirmation
         case pauseMedia, activeMode, showUnnamedDevices, context, lockHotKey
         case shortcutOnLeave, shortcutOnReturn, sittingReminderEnabled, sittingReminderInterval, capturePhotoOnIntrusion
         // 0.1 版只有一台裝置，門檻放在最外層
@@ -186,6 +188,8 @@ extension Preferences: Codable {
         notifyOnLock = try c.decodeIfPresent(Bool.self, forKey: .notifyOnLock) ?? d.notifyOnLock
         unlockEnabled = try c.decodeIfPresent(Bool.self, forKey: .unlockEnabled) ?? d.unlockEnabled
         wakeOnProximity = try c.decodeIfPresent(Bool.self, forKey: .wakeOnProximity) ?? d.wakeOnProximity
+        requireCompanionConfirmation = try c.decodeIfPresent(Bool.self, forKey: .requireCompanionConfirmation)
+            ?? d.requireCompanionConfirmation
         pauseMedia = try c.decodeIfPresent(Bool.self, forKey: .pauseMedia) ?? d.pauseMedia
         activeMode = try c.decodeIfPresent(Bool.self, forKey: .activeMode) ?? d.activeMode
         showUnnamedDevices = try c.decodeIfPresent(Bool.self, forKey: .showUnnamedDevices) ?? d.showUnnamedDevices
@@ -212,6 +216,7 @@ extension Preferences: Codable {
         try c.encode(notifyOnLock, forKey: .notifyOnLock)
         try c.encode(unlockEnabled, forKey: .unlockEnabled)
         try c.encode(wakeOnProximity, forKey: .wakeOnProximity)
+        try c.encode(requireCompanionConfirmation, forKey: .requireCompanionConfirmation)
         try c.encode(pauseMedia, forKey: .pauseMedia)
         try c.encode(activeMode, forKey: .activeMode)
         try c.encode(showUnnamedDevices, forKey: .showUnnamedDevices)

@@ -15,13 +15,20 @@ enum AppInstance {
             .filter { $0.processIdentifier != me }
         guard !others.isEmpty else { return true }
 
-        guard LoginItem.isRunningAsAgent || UserDefaults.standard.bool(forKey: "PresenceTakeOver") else {
+        let defaults = UserDefaults.standard
+        guard LoginItem.isRunningAsAgent || defaults.bool(forKey: "PresenceTakeOver") else {
             DistributedNotificationCenter.default().postNotificationName(showWindow, object: nil, userInfo: nil, deliverImmediately: true)
             return false
         }
-        for app in others { app.terminate() }
+        // 要換掉 launchd 那份時，先取消註冊：launchd 會結束它，而且不會再重開
+        if defaults.bool(forKey: "PresenceUnregisterAgent") || defaults.bool(forKey: "PresenceReregisterAgent") {
+            try? LoginItem.unregister()
+        }
+        // 用訊號而不是 Apple Event 請它結束：開了 hardened runtime 又沒有 automation 權限時，
+        // Apple Event 不一定送得到。收到 SIGTERM 的 Presence 會正常結束（見 installTerminationHandler）。
+        for app in others { kill(app.processIdentifier, SIGTERM) }
         waitForExit(others, timeout: 5)
-        for app in others where isAlive(app) { app.forceTerminate() }
+        for app in others where isAlive(app) { kill(app.processIdentifier, SIGKILL) }
         waitForExit(others, timeout: 2)
         if let requested = UserDefaults.standard.object(forKey: handoffKey) as? Date {
             UserDefaults.standard.removeObject(forKey: handoffKey)
@@ -47,6 +54,17 @@ enum AppInstance {
     }
 
     private static let handoffKey = "handoffOpenWindow"
+    private static var terminationSource: DispatchSourceSignal?
+
+    /// SIGTERM（launchd 在登出、取消註冊時送的，或另一個 Presence 接手時送的）走正常的結束流程，
+    /// 結束碼是 0，launchd 就不會把它當成意外而重開。
+    static func installTerminationHandler() {
+        signal(SIGTERM, SIG_IGN)
+        let source = DispatchSource.makeSignalSource(signal: SIGTERM, queue: .main)
+        source.setEventHandler { NSApp.terminate(nil) }
+        source.resume()
+        terminationSource = source
+    }
 
     private static func isAlive(_ app: NSRunningApplication) -> Bool {
         kill(app.processIdentifier, 0) == 0

@@ -37,6 +37,8 @@ Presence 本來就用藍牙偵測裝置，所以 Mac 端再加一個 `CBPeripher
 4. Mac 回傳的狀態也加密，旁人掃描藍牙看不到你在不在座位上。
 5. 可以在 Mac 上撤銷任何一台已配對的裝置。
 
+6. **解鎖前的加密確認**：Mac 要輸入密碼前，在狀態通知裡帶一個隨機 16 位元組的挑戰（`LinkStatus.challenge`），iPhone 收到就用 `LinkCommand.confirm` 加密送回。Mac 只接受時限內（12 秒）、同一個挑戰的第一個回應（`PresenceChallenge`）。還沒連上的裝置在時限內連上時，挑戰會附在打招呼的回覆裡一起送過去；時限過後一分鐘內才連上，就再試一次。
+
 **沒有解決的問題**：中繼攻擊。攻擊者可以把你手機和 Mac 之間的藍牙訊號轉送到遠處。Apple 內建的手錶解鎖用測距防這種攻擊，第三方 App 拿不到同樣的能力。所以 Face ID 核准仍然需要你本人操作，而不是全自動。
 
 ## 專案結構
@@ -63,7 +65,17 @@ Presence 本來就用藍牙偵測裝置，所以 Mac 端再加一個 `CBPeripher
 | 4 | Apple Watch（Ultra 2、watchOS 27.2）直接連 Mac | ⚠️ 凌晨測試時 **iPhone 連著，手錶就連不上**（連續 3 次、每次 15 秒都停在連線中）；iPhone 斷開後手錶 0.9 秒連上，ping 207 毫秒。早上 09:00 重測，iPhone 連著時手錶也連上了（搜尋 1.4 秒、連線 2.2 秒、指令 107 毫秒）。原因還不確定 |
 | 6 | 手錶經由 iPhone 轉送（WatchConnectivity） | ❌ 第一版失敗：手錶 App 是單獨安裝的，iPhone 的 `isWatchAppInstalled` 一直是 false，iPhone 從沒轉送。改成把手錶 App 包進 iPhone App（Embed Watch Content）後，iPhone 已認得手錶 App；轉送本身還沒驗證 |
 
-**踩到的坑**：系統冷啟動 App 時會交還仍然連著的 Mac（state restoration），這時要重新取得服務與特徵，不能因為「已經連著」就跳過，否則會一直等不到就緒。
+**加密確認實測（10:13–10:14）**：
+- Presence Remote 在前景時，從發出挑戰到確認完成 471 毫秒（含 iPhone 重新連線後的打招呼）。
+- 在背景時 58 毫秒；iPhone 在背景也會自動重連並回應。
+- 但 Mac 上的 Presence 重開後，背景的 iPhone 約 36 秒後才發現服務變了。
+
+**踩到的坑**：
+- **Mac 上的 Presence 重開時，iPhone 的連線不一定會斷**，服務卻重建了。iPhone 沿用快取的特徵寫入，打招呼就石沉大海；第一版還因此把自己的 Mac 列入黑名單，直到 App 重開都連不上。現在：
+  - 每次連上都重新查詢服務。
+  - 收到 `didModifyServices` 就重新打招呼。
+  - 驗證過的 Mac 打招呼逾時，只斷線重連。
+- 系統冷啟動 App 時會交還仍然連著的 Mac（state restoration），這時要重新取得服務與特徵，不能因為「已經連著」就跳過，否則會一直等不到就緒。
 
 **Mac 當週邊可能同時只接受一台裝置連線**（凌晨重現 3 次，早上又沒重現）。為了保險，正式版：
 

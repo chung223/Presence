@@ -49,6 +49,22 @@
         }
       }
     },
+    "%@ 在附近，%@ 已加密確認，已自動解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ nearby and confirmed by %2$@; unlocked automatically"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ 在附近，%2$@ 已加密確認，已自動解鎖"
+          }
+        }
+      }
+    },
     "%@ 在附近，已喚醒螢幕": {
       "localizations": {
         "en": {
@@ -77,6 +93,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ 在附近，已自動解鎖"
+          }
+        }
+      }
+    },
+    "%@ 已加密確認（%lld 毫秒）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ confirmed (%2$lld ms)"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ 已加密確認（%2$lld 毫秒）"
           }
         }
       }
@@ -509,6 +541,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "RSSI"
+          }
+        }
+      }
+    },
+    "iPhone 沒有回應加密確認，這次不自動解鎖。請確認 iPhone 上的 Presence Remote 沒有被關掉，而且是最新版。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone didn't answer the encrypted confirmation, so the Mac wasn't unlocked automatically. Make sure Presence Remote on your iPhone hasn't been closed and is up to date."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone 沒有回應加密確認，這次不自動解鎖。請確認 iPhone 上的 Presence Remote 沒有被關掉，而且是最新版。"
+          }
+        }
+      }
+    },
+    "iPhone 連著但沒有回應，請更新 Presence Remote": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone is connected but didn't answer. Update Presence Remote."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone 連著但沒有回應，請更新 Presence Remote"
           }
         }
       }
@@ -1121,6 +1185,22 @@
         }
       }
     },
+    "加密確認": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encrypted Confirmation"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "加密確認"
+          }
+        }
+      }
+    },
     "匯入": {
       "localizations": {
         "en": {
@@ -1421,6 +1501,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "在「%@」"
+          }
+        }
+      }
+    },
+    "在「手機與手錶」配對 iPhone 後才能使用": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pair an iPhone in Phone & Watch to use this"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在「手機與手錶」配對 iPhone 後才能使用"
           }
         }
       }
@@ -1773,6 +1869,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "已連線（%@）"
+          }
+        }
+      }
+    },
+    "已配對的 iPhone 沒有連上，無法加密確認，這次不自動解鎖。可以用 Apple Watch、Touch ID 或密碼解鎖。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your paired iPhone isn't connected, so it couldn't confirm and the Mac wasn't unlocked automatically. Unlock with Apple Watch, Touch ID, or your password."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已配對的 iPhone 沒有連上，無法加密確認，這次不自動解鎖。可以用 Apple Watch、Touch ID 或密碼解鎖。"
+          }
+        }
+      }
+    },
+    "已配對的 iPhone 目前沒有連上：回來時不會自動解鎖，要用 Apple Watch、Touch ID 或密碼。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your paired iPhone isn't connected right now. When you come back, the Mac won't unlock automatically; use Apple Watch, Touch ID, or your password."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已配對的 iPhone 目前沒有連上：回來時不會自動解鎖，要用 Apple Watch、Touch ID 或密碼。"
           }
         }
       }
@@ -2737,6 +2865,22 @@
         }
       }
     },
+    "檢查 iPhone 能不能在解鎖前回應 Mac 的確認": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check that your iPhone can answer the Mac's confirmation before unlocking"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檢查 iPhone 能不能在解鎖前回應 Mac 的確認"
+          }
+        }
+      }
+    },
     "權限": {
       "localizations": {
         "en": {
@@ -2845,6 +2989,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "沒收到"
+          }
+        }
+      }
+    },
+    "沒有已配對的 iPhone 連上": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No paired iPhone is connected"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有已配對的 iPhone 連上"
           }
         }
       }
@@ -3053,6 +3213,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "清除"
+          }
+        }
+      }
+    },
+    "測試": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "測試"
+          }
+        }
+      }
+    },
+    "測試加密確認：%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encrypted confirmation test: %@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "測試加密確認：%@"
           }
         }
       }
@@ -3649,6 +3841,54 @@
         }
       }
     },
+    "自動解鎖前會先請 %@ 加密確認。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before unlocking automatically, Presence asks %@ for an encrypted confirmation."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動解鎖前會先請 %@ 加密確認。"
+          }
+        }
+      }
+    },
+    "自動解鎖只看訊號強弱。配對 iPhone 後，可以要求它先加密確認，比較安全。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic unlock relies on signal strength only. Pair an iPhone to require an encrypted confirmation first, which is more secure."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動解鎖只看訊號強弱。配對 iPhone 後，可以要求它先加密確認，比較安全。"
+          }
+        }
+      }
+    },
+    "自動解鎖只看訊號強弱，iPhone 加密確認已關閉。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic unlock relies on signal strength only; iPhone encrypted confirmation is off."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動解鎖只看訊號強弱，iPhone 加密確認已關閉。"
+          }
+        }
+      }
+    },
     "自動解鎖失敗，螢幕仍是鎖定": {
       "localizations": {
         "en": {
@@ -4033,18 +4273,34 @@
         }
       }
     },
-    "訊號在幾秒內持續高於解鎖門檻才會解鎖，單一筆異常的強訊號不算。關掉「靠近時喚醒螢幕」後，要等你按鍵盤或滑鼠叫醒螢幕才會解鎖，比較安全。": {
+    "訊號在幾秒內持續高於解鎖門檻才會解鎖，單一筆異常的強訊號不算。關掉「靠近時喚醒螢幕」後，要等你按鍵盤或滑鼠叫醒螢幕才會解鎖，比較安全。\n\n「需要 iPhone 加密確認」：輸入密碼前，先請配對的 iPhone 用只有它有的金鑰回應，所以只偽造藍牙訊號無法讓 Mac 解鎖。iPhone 沒有連上、或 Presence Remote 被你從 App 切換器關掉時，就不會自動解鎖，改用 Apple Watch、Touch ID 或密碼。": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your Mac unlocks only when the signal stays above the unlock threshold for a few seconds; a single unusually strong reading doesn't count. With “Wake display when nearby” off, it unlocks only after you wake the display with the keyboard or mouse, which is safer."
+            "value": "The signal must stay above the unlock threshold for a few seconds; a single unusually strong reading doesn't count. With Wake Display When Nearby off, Presence unlocks only after you wake the display with the keyboard or mouse, which is more secure.\n\nRequire iPhone Encrypted Confirmation: before typing your password, Presence asks your paired iPhone to answer with a key only it has, so a spoofed Bluetooth signal alone can't unlock the Mac. If your iPhone isn't connected, or you closed Presence Remote in the App Switcher, the Mac won't unlock automatically; use Apple Watch, Touch ID, or your password."
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "訊號在幾秒內持續高於解鎖門檻才會解鎖，單一筆異常的強訊號不算。關掉「靠近時喚醒螢幕」後，要等你按鍵盤或滑鼠叫醒螢幕才會解鎖，比較安全。"
+            "value": "訊號在幾秒內持續高於解鎖門檻才會解鎖，單一筆異常的強訊號不算。關掉「靠近時喚醒螢幕」後，要等你按鍵盤或滑鼠叫醒螢幕才會解鎖，比較安全。\n\n「需要 iPhone 加密確認」：輸入密碼前，先請配對的 iPhone 用只有它有的金鑰回應，所以只偽造藍牙訊號無法讓 Mac 解鎖。iPhone 沒有連上、或 Presence Remote 被你從 App 切換器關掉時，就不會自動解鎖，改用 Apple Watch、Touch ID 或密碼。"
+          }
+        }
+      }
+    },
+    "設定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定"
           }
         }
       }
@@ -5069,6 +5325,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "電源"
+          }
+        }
+      }
+    },
+    "需要 iPhone 加密確認": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Require iPhone Encrypted Confirmation"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要 iPhone 加密確認"
           }
         }
       }

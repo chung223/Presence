@@ -47,6 +47,8 @@
   - 之後自己打開時會 `launchctl kickstart`，交回給 launchd 那份。
   - 打開另一份拷貝時，那份會自己結束，請正在跑的打開主視窗。
   - 從 `/Applications` 啟動時，舊的一般登入項目會自動轉成 LaunchAgent；輔助使用、藍牙、鑰匙圈權限都沿用，沒有跳出對話框。
+- **交接用 SIGTERM，不用 Apple Event。** Presence 開了 hardened runtime 又沒有 `com.apple.security.automation.apple-events`，`NSRunningApplication.terminate()` 有時送不到（tccd：`requires entitlement com.apple.security.automation.apple-events`），只好強制結束，launchd 又把它當意外重開，反而把要接手的那個結束掉。現在 Presence 收到 SIGTERM 會走正常結束流程（結束碼 0），launchd 不會重開。
+- **關掉自動終止**（`NSSupportsAutomaticTermination = NO`）：系統紀錄顯示 Presence 被標成沒有視窗時可以自動終止（`_kLSApplicationWouldBeTerminatedByTALKey=1`），那算正常結束，launchd 不會重開。
 - **開發時跑 build 版本**要加 `--args -PresenceTakeOver YES`，否則它會讓位給正在跑的那份。測完結束它，再用 `launchctl kickstart gui/$(id -u)/com.chung.presence.agent` 叫回 `/Applications` 那份。
 
 ## 尚未驗證

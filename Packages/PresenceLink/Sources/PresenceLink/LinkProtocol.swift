@@ -18,6 +18,9 @@ public enum LinkCommand: Codable, Sendable, Equatable {
     case lock
     case pause(minutes: Int)
     case resume
+    /// 回應 Mac 的在場確認：原樣送回 `LinkStatus.challenge`。指令本身用配對金鑰加密，
+    /// Mac 收到就知道是配對過的裝置、而且此刻真的連著。
+    case confirm(challenge: Data)
 }
 
 public struct LinkRequest: Codable, Sendable, Equatable {
@@ -57,10 +60,13 @@ public struct LinkStatus: Codable, Sendable, Equatable {
     public var event: LinkEvent?
     /// 回覆哪一個指令；主動推送是 nil。
     public var replyTo: UUID?
+    /// Mac 要解鎖前的在場確認：收到就馬上用 `LinkCommand.confirm` 送回。
+    public var challenge: Data?
     public var sentAt: Date
 
     public init(macName: String, presence: MacPresence, summary: String, locked: Bool,
-                pausedUntil: Date? = nil, event: LinkEvent? = nil, replyTo: UUID? = nil, sentAt: Date = Date()) {
+                pausedUntil: Date? = nil, event: LinkEvent? = nil, replyTo: UUID? = nil,
+                challenge: Data? = nil, sentAt: Date = Date()) {
         self.macName = macName
         self.presence = presence
         self.summary = summary
@@ -68,6 +74,7 @@ public struct LinkStatus: Codable, Sendable, Equatable {
         self.pausedUntil = pausedUntil
         self.event = event
         self.replyTo = replyTo
+        self.challenge = challenge
         self.sentAt = sentAt
     }
 }

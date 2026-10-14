@@ -134,3 +134,52 @@ struct ReplayGuardTests {
         #expect(later == false)
     }
 }
+
+struct PresenceChallengeTests {
+    let now = Date(timeIntervalSince1970: 1_800_000_000)
+
+    @Test func acceptsTheSameNonceWithinLifetime() {
+        let challenge = PresenceChallenge(issuedAt: now)
+        #expect(challenge.accepts(challenge.nonce, at: now.addingTimeInterval(2), within: 10))
+    }
+
+    @Test("別的挑戰、過期或時間倒退的回應都不算")
+    func rejectsWrongOrLateResponses() {
+        let challenge = PresenceChallenge(issuedAt: now)
+        let other = PresenceChallenge(issuedAt: now)
+        #expect(challenge.nonce != other.nonce)
+        #expect(challenge.accepts(other.nonce, at: now, within: 10) == false)
+        #expect(challenge.accepts(challenge.nonce, at: now.addingTimeInterval(11), within: 10) == false)
+        #expect(challenge.accepts(challenge.nonce, at: now.addingTimeInterval(-1), within: 10) == false)
+    }
+
+    @Test func nonceIs128BitsAndRandom() {
+        let nonces = Set((0..<100).map { _ in PresenceChallenge.randomNonce() })
+        #expect(nonces.count == 100)
+        #expect(nonces.allSatisfy { $0.count == 16 })
+    }
+
+    @Test func remembersWhichConnectionsGotIt() {
+        var challenge = PresenceChallenge(issuedAt: now)
+        let central = UUID()
+        let first = challenge.markSent(to: central)
+        let again = challenge.markSent(to: central)
+        #expect(first)
+        #expect(again == false)
+        #expect(challenge.sentTo == [central])
+    }
+
+    @Test("挑戰與回應經過加密後原樣保留")
+    func challengeSurvivesEncryption() throws {
+        let pairing = PairingInfo.generate(macName: "Mac")
+        let challenge = PresenceChallenge(issuedAt: now)
+        let status = LinkStatus(macName: "Mac", presence: .near, summary: "", locked: true, challenge: challenge.nonce, sentAt: now)
+        let sealed = try LinkCrypto.seal(status, key: pairing.symmetricKey)
+        let opened = try LinkCrypto.open(LinkStatus.self, from: sealed, key: pairing.symmetricKey)
+        #expect(opened.challenge == challenge.nonce)
+
+        let frame = try RequestFrame.make(LinkRequest(.confirm(challenge: try #require(opened.challenge))), pairing: pairing)
+        let decoded = try #require(RequestFrame(encoded: frame.encoded))
+        #expect(try decoded.open(with: pairing).command == .confirm(challenge: challenge.nonce))
+    }
+}

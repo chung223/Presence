@@ -53,6 +53,15 @@ struct LockUnlockView: View {
                     }
                 }
                 }
+                if model.preferences.unlockMode == .typePassword {
+                    Toggle(isOn: $model.preferences.requireCompanionConfirmation) {
+                        Text("需要 iPhone 加密確認")
+                        if model.link.devices.isEmpty {
+                            Text("在「手機與手錶」配對 iPhone 後才能使用")
+                        }
+                    }
+                    .disabled(!model.preferences.unlockEnabled || model.link.devices.isEmpty)
+                }
                 if model.preferences.unlockMode == .typePassword, !model.accessibilityGranted {
                     LabeledContent("輔助使用權限") {
                         HStack {
@@ -75,7 +84,7 @@ struct LockUnlockView: View {
                 if model.preferences.unlockMode == .handOff {
                     Text("Presence 不存密碼，也不需要輔助使用權限：你回來時它只喚醒螢幕，由 macOS 內建的「用 Apple Watch 解鎖」或 Touch ID 完成解鎖。要先在「系統設定 › 觸控 ID 與密碼」開啟用 Apple Watch 解鎖。這是最安全的用法。")
                 } else {
-                    Text("訊號在幾秒內持續高於解鎖門檻才會解鎖，單一筆異常的強訊號不算。關掉「靠近時喚醒螢幕」後，要等你按鍵盤或滑鼠叫醒螢幕才會解鎖，比較安全。")
+                    Text("訊號在幾秒內持續高於解鎖門檻才會解鎖，單一筆異常的強訊號不算。關掉「靠近時喚醒螢幕」後，要等你按鍵盤或滑鼠叫醒螢幕才會解鎖，比較安全。\n\n「需要 iPhone 加密確認」：輸入密碼前，先請配對的 iPhone 用只有它有的金鑰回應，所以只偽造藍牙訊號無法讓 Mac 解鎖。iPhone 沒有連上、或 Presence Remote 被你從 App 切換器關掉時，就不會自動解鎖，改用 Apple Watch、Touch ID 或密碼。")
                 }
             }
 

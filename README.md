@@ -8,6 +8,8 @@ Presence 是 macOS 選單列工具，用藍牙偵測你的 iPhone、Apple Watch 
 
 - **離開自動鎖定**：訊號持續低於門檻幾秒、或完全收不到訊號一段時間，就鎖定螢幕或啟動螢幕保護程式。
 - **回來自動解鎖**：訊號在幾秒內持續夠強，才輸入登入密碼解鎖；單一筆異常的強訊號不會觸發。
+- **iPhone 加密確認**：配對 Presence Remote 後，輸入密碼前會先請 iPhone 用配對金鑰回應，只偽造藍牙訊號無法讓 Mac 解鎖。
+- **意外結束自動重開**：當機或被系統結束時，launchd 會把它重新開起來；從選單結束則不會。
 - **多裝置**：同時監控 iPhone 和 Apple Watch，任一台在附近就算你在；每台裝置有自己的門檻。
 - **即時訊號圖**：看得到每一筆訊號和濾波後的結果，門檻設多少一目了然。
 - **一鍵校準**：分別站在希望解鎖、希望鎖定的位置量 8 秒，同時算出每台裝置的門檻。
@@ -64,6 +66,8 @@ xcodebuild -project Presence.xcodeproj -scheme Presence -configuration Release b
 **手動鎖定**：用 Presence 的「立即鎖定」鎖定後，要離開超過 30 秒再回來才會自動解鎖，訊號短暫變弱不算（原版的 [#137](https://github.com/ts1/BLEUnlock/issues/137)）。
 
 **密碼**：存在鑰匙圈，只在解鎖那一刻讀出，不會寫進任何紀錄。
+
+**加密確認**：只看訊號強弱的話，偽造你手機的藍牙廣播就能讓 Mac 解鎖。配對了 iPhone 時，Presence 在輸入密碼前會送出一個隨機的 128 位元挑戰，只有用配對金鑰加密、在時限內原樣送回的回應才算數；挑戰每次不同、只收一次。iPhone 沒有連上或沒有回應時就不自動解鎖，改由你用 Apple Watch、Touch ID 或密碼解鎖。這擋不了把你手機訊號轉送到遠處的中繼攻擊（見 [docs/companion-app.md](docs/companion-app.md)）。
 
 各項系統行為在 macOS 26.7 的實測結果見 [docs/macos26-findings.md](docs/macos26-findings.md)。
 

@@ -13,6 +13,7 @@ struct OverviewView: View {
                     SetupChecklist(model: model, selection: $selection)
                 }
                 StatusHeader(model: model)
+                UnlockSecurityRow(model: model, selection: $selection)
                 if model.preferences.devices.isEmpty {
                     SignalChart(model: model, device: nil)
                 }
@@ -111,6 +112,60 @@ private struct StatusHeader: View {
         parts.append(p.activeMode ? String(localized: "主動模式") : String(localized: "被動模式"))
         if model.automation.manualHold { parts.append(String(localized: "手動鎖定中")) }
         return parts.joined(separator: " · ")
+    }
+}
+
+// MARK: - 解鎖的安全性
+
+/// 自動輸入密碼前有沒有加密確認、iPhone 現在連著沒有。
+private struct UnlockSecurityRow: View {
+    let model: AppModel
+    @Binding var selection: MainView.Section?
+
+    var body: some View {
+        let p = model.preferences
+        if p.unlockEnabled, p.unlockMode == .typePassword, model.hasDevices {
+            HStack(spacing: 10) {
+                Image(systemName: symbol).foregroundStyle(tint).frame(width: 18)
+                Text(message).font(.callout).fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 8)
+                if model.link.devices.isEmpty {
+                    Button("配對 iPhone") { selection = .remote }
+                } else if !p.requireCompanionConfirmation {
+                    Button("設定") { selection = .lockUnlock }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(tint.opacity(0.1), in: .rect(cornerRadius: 10))
+        }
+    }
+
+    private var connectedNames: [String] {
+        Array(Set(model.link.connected.values)).sorted()
+    }
+
+    private var symbol: String {
+        guard model.requiresCompanionConfirmation else { return "shield" }
+        return connectedNames.isEmpty ? "lock.trianglebadge.exclamationmark" : "lock.shield.fill"
+    }
+
+    private var tint: Color {
+        guard model.requiresCompanionConfirmation else { return .secondary }
+        return connectedNames.isEmpty ? .orange : .green
+    }
+
+    private var message: String {
+        if model.link.devices.isEmpty {
+            return String(localized: "自動解鎖只看訊號強弱。配對 iPhone 後，可以要求它先加密確認，比較安全。")
+        }
+        guard model.requiresCompanionConfirmation else {
+            return String(localized: "自動解鎖只看訊號強弱，iPhone 加密確認已關閉。")
+        }
+        if connectedNames.isEmpty {
+            return String(localized: "已配對的 iPhone 目前沒有連上：回來時不會自動解鎖，要用 Apple Watch、Touch ID 或密碼。")
+        }
+        return String(localized: "自動解鎖前會先請 \(AppModel.list(connectedNames)) 加密確認。")
     }
 }
 
