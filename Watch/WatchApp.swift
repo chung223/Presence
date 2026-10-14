@@ -30,6 +30,7 @@ final class WatchModel: NSObject {
     private(set) var lastRoute: String?
 
     @ObservationIgnored private let link = LinkCentral(deviceName: "Apple Watch", keepConnected: false)
+    @ObservationIgnored private let launchedAt = Date()
 
     override private init() {
         super.init()
@@ -49,6 +50,12 @@ final class WatchModel: NSObject {
         busy = true
         defer { busy = false }
         let session = WCSession.default
+        // App 剛啟動時，跟 iPhone 的即時連線要一下子才建立；這段期間先等，不要馬上改走直接連線
+        if Date().timeIntervalSince(launchedAt) < 3, !session.isReachable {
+            for _ in 0..<10 where !session.isReachable {
+                try? await Task.sleep(for: .milliseconds(200))
+            }
+        }
         LinkLog.write("[手錶] \(command)：WCSession 啟用=\(session.activationState.rawValue) 可達=\(session.isReachable)")
         if session.activationState == .activated, session.isReachable {
             if let result = await sendThroughPhone(command) {

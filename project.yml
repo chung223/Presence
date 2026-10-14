@@ -64,6 +64,8 @@ targets:
     sources: [Remote]
     dependencies:
       - package: PresenceLink
+      # 手錶 App 要包在 iPhone App 裡，WatchConnectivity 才會認得兩者是一組
+      - target: PresenceRemoteWatch
     info:
       path: Remote/Info.plist
       properties:
