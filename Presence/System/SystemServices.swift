@@ -89,6 +89,22 @@ enum LoginItem {
         return process.terminationStatus == 0
     }
 
+    /// 換過 App 之後（自己拖新版進來、或 Sparkle 更新），背景項目管理會把登記作廢，launchd 卻還指著
+    /// 舊的程式，一直啟動失敗（2026-10-14 實測：invalidateLaunchItem 之後 spawn scheduled、
+    /// 「Could not find and/or execute program」）。重新登記也只會沿用舊的那筆，
+    /// 要先把 launchd 的工作移除。重新登記後 launchd 會啟動新的那份，由它接手。
+    static func repair() {
+        let bootout = Process()
+        bootout.executableURL = URL(fileURLWithPath: "/bin/launchctl")
+        bootout.arguments = ["bootout", "gui/\(getuid())/\(agentLabel)"]
+        bootout.standardOutput = FileHandle.nullDevice
+        bootout.standardError = FileHandle.nullDevice
+        try? bootout.run()
+        bootout.waitUntilExit()
+        try? agent.unregister()
+        try? agent.register()
+    }
+
     static func openSettings() {
         SMAppService.openSystemSettingsLoginItems()
     }

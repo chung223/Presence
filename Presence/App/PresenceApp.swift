@@ -70,9 +70,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             try? LoginItem.register()
         } else {
             LoginItem.migrateIfNeeded()
-            // 從選單結束後又自己打開：交還給 launchd，意外結束時才會自動重開
+            // 從選單結束後又自己打開、或更新後重新開啟：交還給 launchd，意外結束時才會自動重開
             if LoginItem.isEnabled, !LoginItem.isRunningAsAgent, !defaults.bool(forKey: "PresenceTakeOver") {
                 LoginItem.kickstart()
+                // launchd 那份正常啟動的話會把這份結束；5 秒後還在，代表 launchd 的工作壞了（例如換過 App）
+                Task { @MainActor in
+                    try? await Task.sleep(for: .seconds(5))
+                    LoginItem.repair()
+                }
             }
         }
         model.refreshStatus()
