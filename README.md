@@ -59,7 +59,7 @@ xcodebuild -project Presence.xcodeproj -scheme Presence -configuration Release b
 
 **不提供 URL scheme**：任何網頁都能觸發 URL scheme，等於讓網頁可以暫停你的自動鎖定。自動化請用「捷徑」動作。
 
-**解鎖流程**：喚醒螢幕 → 先等 3 秒，讓 macOS 內建的「用 Apple Watch 解鎖」有機會先解開 → 還鎖著才輸入密碼。手錶解鎖比較安全，也不會跟 Presence 打字互搶；沒有手錶的話只是晚 3 秒。每送出一段字元前、按 Enter 前，都會確認「仍在鎖定」而且「前景是登入畫面」。如果你在這期間用 Touch ID 或 Apple Watch 先解鎖了，Presence 會立刻停止輸入，密碼不會被打進其他 App（原版的 [#182](https://github.com/ts1/BLEUnlock/issues/182)）。
+**解鎖流程**：喚醒螢幕 → 先等幾秒，讓 macOS 內建的「用 Apple Watch 解鎖」有機會先解開 → 還鎖著才輸入密碼。手錶解鎖比較安全，也不會跟 Presence 打字互搶。預設等 5 秒；如果連續幾次都沒有手錶先解開，就縮短成 1.5 秒。每送出一段字元前、按 Enter 前，都會確認「仍在鎖定」而且「前景是登入畫面」。如果你在這期間用 Touch ID 或 Apple Watch 先解鎖了，Presence 會立刻停止輸入，密碼不會被打進其他 App（原版的 [#182](https://github.com/ts1/BLEUnlock/issues/182)）。
 
 **解鎖時機**：只在訊號剛從不夠近變成夠近（你走回來了），或螢幕被喚醒（你碰了鍵盤滑鼠）時嘗試。連續失敗兩次就停止自動解鎖，直到你手動解鎖一次，避免密碼錯誤累積。
 

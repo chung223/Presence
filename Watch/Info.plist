@@ -22,6 +22,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Presence 用藍牙連到你 Mac 上的 Presence，從手錶鎖定或查看狀態。</string>
+	<key>PresenceSharedKeychainGroup</key>
+	<string>$(AppIdentifierPrefix)com.chung.presence.remote.shared</string>
 	<key>WKApplication</key>
 	<true/>
 	<key>WKCompanionAppBundleIdentifier</key>

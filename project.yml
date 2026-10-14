@@ -87,11 +87,14 @@ targets:
         UIBackgroundModes: [bluetooth-central]
         NSBluetoothAlwaysUsageDescription: Presence Remote 用藍牙連到你 Mac 上的 Presence，從手機鎖定或查看狀態。
         NSCameraUsageDescription: 用相機掃描 Mac 上 Presence 顯示的配對 QR code。
+        PresenceSharedKeychainGroup: $(AppIdentifierPrefix)com.chung.presence.remote.shared
     entitlements:
       path: Remote/PresenceRemote.entitlements
       properties:
-        # 與小工具共用最新狀態（SharedStatusStore）
-        com.apple.security.application-groups: [group.com.chung.presence.remote]
+        # 第一個是 App 自己的（配對金鑰預設存這裡，小工具讀不到）；第二個與小工具共用最新狀態（SharedStatusStore）
+        keychain-access-groups:
+          - $(AppIdentifierPrefix)com.chung.presence.remote
+          - $(AppIdentifierPrefix)com.chung.presence.remote.shared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.chung.presence.remote
@@ -123,10 +126,12 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
+        PresenceSharedKeychainGroup: $(AppIdentifierPrefix)com.chung.presence.remote.shared
     entitlements:
       path: RemoteWidgets/PresenceRemoteWidgets.entitlements
       properties:
-        com.apple.security.application-groups: [group.com.chung.presence.remote]
+        keychain-access-groups:
+          - $(AppIdentifierPrefix)com.chung.presence.remote.shared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.chung.presence.remote.widgets
@@ -159,10 +164,13 @@ targets:
         WKRunsIndependentlyOfCompanionApp: true
         WKCompanionAppBundleIdentifier: com.chung.presence.remote
         NSBluetoothAlwaysUsageDescription: Presence 用藍牙連到你 Mac 上的 Presence，從手錶鎖定或查看狀態。
+        PresenceSharedKeychainGroup: $(AppIdentifierPrefix)com.chung.presence.remote.shared
     entitlements:
       path: Watch/PresenceRemoteWatch.entitlements
       properties:
-        com.apple.security.application-groups: [group.com.chung.presence.remote]
+        keychain-access-groups:
+          - $(AppIdentifierPrefix)com.chung.presence.remote.watchkitapp
+          - $(AppIdentifierPrefix)com.chung.presence.remote.shared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.chung.presence.remote.watchkitapp
@@ -190,10 +198,12 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
+        PresenceSharedKeychainGroup: $(AppIdentifierPrefix)com.chung.presence.remote.shared
     entitlements:
       path: WatchWidgets/PresenceRemoteWatchWidgets.entitlements
       properties:
-        com.apple.security.application-groups: [group.com.chung.presence.remote]
+        keychain-access-groups:
+          - $(AppIdentifierPrefix)com.chung.presence.remote.shared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.chung.presence.remote.watchkitapp.widgets

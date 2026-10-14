@@ -1,6 +1,7 @@
 import Foundation
+import Security
 
-/// App 與小工具共用的最新狀態，存在 App Group 的 UserDefaults。
+/// App 與小工具共用的最新狀態，存在共用的鑰匙圈群組（見 SharedStatusStore）。
 ///
 /// 小工具與控制中心不能自己連藍牙，只能顯示 App 存下來的狀態；按下按鈕時，動作交回 App 執行。
 public struct SharedStatus: Codable, Sendable, Equatable {
@@ -35,13 +36,33 @@ public struct SharedStatus: Codable, Sendable, Equatable {
     }
 }
 
+/// 存在共用的鑰匙圈群組：App 與小工具的 `keychain-access-groups` 都列了它。
+///
+/// 不用 App Group，因為建立 App Group 要登入開發者網站；萬用與正式的描述檔本來就允許
+/// 同一個團隊前綴下的任何鑰匙圈群組。群組全名（含團隊前綴）由 Info.plist 的
+/// `PresenceSharedKeychainGroup` 提供。iPhone 與手錶各自是不同的鑰匙圈。
 public enum SharedStatusStore {
-    /// iPhone 與手錶各自的 App 和小工具共用；名稱相同，但兩台裝置上是不同的容器。
-    public static let appGroup = "group.com.chung.presence.remote"
-    private static let key = "sharedStatus"
+    private static let service = "com.chung.presence.remote.shared"
+    private static let account = "status"
+
+    private static var baseQuery: [String: Any] {
+        var query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account,
+        ]
+        if let group = Bundle.main.object(forInfoDictionaryKey: "PresenceSharedKeychainGroup") as? String, !group.isEmpty {
+            query[kSecAttrAccessGroup as String] = group
+        }
+        return query
+    }
 
     public static func load() -> SharedStatus? {
-        guard let data = UserDefaults(suiteName: appGroup)?.data(forKey: key) else { return nil }
+        var query = baseQuery
+        query[kSecReturnData as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+        var item: CFTypeRef?
+        guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess, let data = item as? Data else { return nil }
         return try? WatchMessage.decode(SharedStatus.self, from: data)
     }
 
@@ -49,8 +70,15 @@ public enum SharedStatusStore {
     @discardableResult
     public static func save(_ shared: SharedStatus) -> Bool {
         let changed = load()?.widgetSignature != shared.widgetSignature
-        if let data = try? WatchMessage.encode(shared) {
-            UserDefaults(suiteName: appGroup)?.set(data, forKey: key)
+        guard let data = try? WatchMessage.encode(shared) else { return changed }
+        let update: [String: Any] = [kSecValueData as String: data]
+        if SecItemUpdate(baseQuery as CFDictionary, update as CFDictionary) == errSecItemNotFound {
+            var item = baseQuery
+            item[kSecValueData as String] = data
+            // 鎖定畫面的小工具要在手機鎖著時也讀得到
+            item[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+            let status = SecItemAdd(item as CFDictionary, nil)
+            if status != errSecSuccess { LinkLog.write("[共用狀態] 寫入失敗（\(status)）") }
         }
         return changed
     }

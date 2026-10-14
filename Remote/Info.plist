@@ -24,6 +24,8 @@
 	<string>Presence Remote 用藍牙連到你 Mac 上的 Presence，從手機鎖定或查看狀態。</string>
 	<key>NSCameraUsageDescription</key>
 	<string>用相機掃描 Mac 上 Presence 顯示的配對 QR code。</string>
+	<key>PresenceSharedKeychainGroup</key>
+	<string>$(AppIdentifierPrefix)com.chung.presence.remote.shared</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>bluetooth-central</string>

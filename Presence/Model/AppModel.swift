@@ -682,9 +682,19 @@ final class AppModel {
         }
     }
 
-    /// 開了「用 Apple Watch 解鎖」的話，螢幕一亮 macOS 就會自己解鎖（實測約 2 秒）。
-    /// 先給它這個機會，太早打字只會跟它搶；沒有手錶或沒開這個功能，就只是晚一點輸入密碼。
-    private static let systemUnlockHeadStart: Duration = .seconds(3)
+    /// 開了「用 Apple Watch 解鎖」的話，螢幕一亮 macOS 就會自己解鎖（實測 2.1 到 3.0 秒）。
+    /// 先給它這個機會，太早打字只會跟它搶。預設等 5 秒；連續 3 次都是 Presence 打字才解開，
+    /// 代表這台 Mac 沒用手錶解鎖，就只等 1.5 秒。之後只要再看到系統自己解開，就恢復 5 秒。
+    private var systemUnlockHeadStart: Duration {
+        UserDefaults.standard.integer(forKey: Self.typedStreakKey) >= 3 ? .milliseconds(1500) : .seconds(5)
+    }
+
+    private static let typedStreakKey = "unlock.typedWithoutSystemStreak"
+
+    private func noteSystemUnlock(_ happened: Bool) {
+        let defaults = UserDefaults.standard
+        defaults.set(happened ? 0 : defaults.integer(forKey: Self.typedStreakKey) + 1, forKey: Self.typedStreakKey)
+    }
 
     /// 叫醒螢幕並等一下，期間被解開（Apple Watch 或你的 Touch ID）就回傳 true。
     private func waitForSystemUnlock() async -> Bool {
@@ -692,10 +702,13 @@ final class AppModel {
         defer { isWaitingForSystemUnlock = false }
         Unlocker.dismissScreensaver()
         ScreenControl.wakeDisplay()
-        let deadline = ContinuousClock.now + Self.systemUnlockHeadStart
+        let deadline = ContinuousClock.now + systemUnlockHeadStart
         while ContinuousClock.now < deadline {
             try? await Task.sleep(for: .milliseconds(100))
-            if ScreenSession.queryLocked() == false { return true }
+            if ScreenSession.queryLocked() == false {
+                noteSystemUnlock(true)
+                return true
+            }
         }
         return false
     }
@@ -777,6 +790,7 @@ final class AppModel {
             case .unlocked:
                 lastAutoUnlockAt = Date()
                 automation.unlockSucceeded()
+                noteSystemUnlock(false)
             case .userIsTyping:
                 break
             case .stillLocked(let diagnostic):
@@ -788,6 +802,8 @@ final class AppModel {
                     log.add(.unlockFailed, String(localized: "自動解鎖失敗，螢幕仍是鎖定"))
                 }
             case .interrupted:
+                // 多半是 Apple Watch 比較慢、在我們打字時才解開
+                if ScreenSession.queryLocked() == false { noteSystemUnlock(true) }
                 log.add(.info, String(localized: "輸入途中螢幕已經解鎖或換了畫面，已停止輸入"))
             case .displayDidNotWake:
                 log.add(.warning, String(localized: "螢幕沒有亮起，這次沒有解鎖"))
