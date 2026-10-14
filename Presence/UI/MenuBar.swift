@@ -5,7 +5,7 @@ struct MenuBarLabel: View {
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        Image(systemName: model.status.symbol)
+        Image(systemName: model.menuBarSymbol)
             // 選單列圖示一直都在，由它負責在需要時打開主視窗（見 AppInstance.showWindow）
             .onReceive(NotificationCenter.default.publisher(for: AppInstance.showWindow)) { _ in
                 openWindow(id: "main")

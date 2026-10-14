@@ -92,6 +92,10 @@ final class AppModel {
     private(set) var samples: [UUID: [RSSIPoint]] = [:]
     private(set) var smoothed: [UUID: [RSSIPoint]] = [:]
     private(set) var now = Date()
+    /// 選單列圖示。只在真的換了時才更新：`status` 會讀 `now`，直接讀它會讓選單列每秒重畫。
+    private(set) var menuBarSymbol = "ellipsis.circle"
+    /// 這台 Mac 的名稱。`Host.current()` 很慢，啟動時查一次就好。
+    private static let macName = Host.current().localizedName ?? "Mac"
     private(set) var isUnlocking = false
     /// 正在自動解鎖的前半段：等 macOS 自己解鎖、等 iPhone 的加密確認。
     private(set) var isConfirmingPresence = false
@@ -459,6 +463,8 @@ final class AppModel {
         }
 
         session.refresh()
+        let symbol = status.symbol
+        if symbol != menuBarSymbol { menuBarSymbol = symbol }
 
         tickCount += 1
         if tickCount.isMultiple(of: 5) { refreshStatus() }
@@ -887,7 +893,7 @@ final class AppModel {
         case .away: .away
         }
         return LinkStatus(
-            macName: Host.current().localizedName ?? "Mac",
+            macName: Self.macName,
             presence: presence,
             summary: statusLine,
             locked: ScreenSession.queryLocked() == true,
