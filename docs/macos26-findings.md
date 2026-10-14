@@ -38,6 +38,10 @@
 
 - **#182 密碼外洩**：不檢查就打字時，假字串和 Enter 送到了解鎖後的前景 App（一次是 Claude，一次是誘餌框）。加上「鎖定＋前景是 loginwindow」檢查後一個字都沒送。
 
+## 跟「用 Apple Watch 解鎖」並行
+
+2026-10-14 09:37 的系統紀錄：螢幕亮起後 loginwindow 顯示「正在透過Apple Watch解鎖⋯」，約 2.1 秒後解鎖。這段期間密碼欄是隱藏的，太早打字只會跟它搶。所以「輸入密碼」模式在叫醒螢幕後先等 3 秒（同時進行 iPhone 加密確認），還鎖著才打字。App 讀不到使用者有沒有開這個功能（`com.apple.sharingd` 只有 `AutoUnlockAlreadyEnabledBefore` 這類不可靠的痕跡），所以一律先等。
+
 ## 執行位置
 
 - **不要從外接硬碟執行。** 2026-10-14 06:48 Mac 進入睡眠時，從外接 SSD 的 build 資料夾執行的 Presence 收到 SIGBUS 結束（`Process exited … SIGBUS(10)`），沒有當機報告，醒來後也不會自己重開。同一時間 USB 儲存裝置正在進入省電；推測是睡眠時讀不到執行檔。日常使用要裝在內建硬碟的 `/Applications`。

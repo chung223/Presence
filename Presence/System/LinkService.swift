@@ -195,6 +195,11 @@ final class LinkService: NSObject {
         }
     }
 
+    /// 已經不需要確認了（例如 Apple Watch 先解開了）。
+    func cancelPresenceConfirmation() {
+        finishChallenge(with: .noResponse)
+    }
+
     private func finishChallenge(with result: PresenceConfirmation) {
         guard let pending = challenge else { return }
         challenge = nil

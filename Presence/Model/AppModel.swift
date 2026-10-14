@@ -93,8 +93,10 @@ final class AppModel {
     private(set) var smoothed: [UUID: [RSSIPoint]] = [:]
     private(set) var now = Date()
     private(set) var isUnlocking = false
-    /// 正在等 iPhone 的加密確認。
+    /// 正在自動解鎖的前半段：等 macOS 自己解鎖、等 iPhone 的加密確認。
     private(set) var isConfirmingPresence = false
+    /// 已叫醒螢幕，正在給 Apple Watch（或你的 Touch ID）先解鎖的機會。
+    private var isWaitingForSystemUnlock = false
     /// 這次自動解鎖是誰加密確認的，寫進事件紀錄用。
     private var unlockConfirmedBy: String?
     /// 上次加密確認失敗的時間：之後一分鐘內只在 iPhone 連上時重試，
@@ -652,23 +654,50 @@ final class AppModel {
            let last = lastUnconfirmedAt, Date().timeIntervalSince(last) < 60 { return }
         automation.didAttemptUnlock(at: Date())
 
+        isConfirmingPresence = true
         Task {
-            var confirmedBy: String?
-            if requiresCompanionConfirmation {
-                isConfirmingPresence = true
-                let result = await link.confirmPresence(within: Self.confirmationTimeout)
+            // iPhone 的加密確認跟下面等 Apple Watch 同時進行，不多花時間
+            let confirmation = requiresCompanionConfirmation
+                ? Task { await link.confirmPresence(within: Self.confirmationTimeout) } : nil
+            if await waitForSystemUnlock() {
+                link.cancelPresenceConfirmation()
                 isConfirmingPresence = false
+                return
+            }
+            var confirmedBy: String?
+            if let confirmation {
+                let result = await confirmation.value
                 guard case .confirmed(let name) = result else {
+                    isConfirmingPresence = false
                     handleUnconfirmed(result)
                     return
                 }
                 confirmedBy = name
                 lastUnconfirmedAt = nil
-                // 等確認的期間可能已經被你自己解鎖，或裝置又離開了
-                guard session.isLocked, group.canUnlock else { return }
             }
+            isConfirmingPresence = false
+            // 等的期間可能已經被你自己解鎖，或裝置又離開了
+            guard session.isLocked, group.canUnlock else { return }
             typePassword(confirmedBy: confirmedBy)
         }
+    }
+
+    /// 開了「用 Apple Watch 解鎖」的話，螢幕一亮 macOS 就會自己解鎖（實測約 2 秒）。
+    /// 先給它這個機會，太早打字只會跟它搶；沒有手錶或沒開這個功能，就只是晚一點輸入密碼。
+    private static let systemUnlockHeadStart: Duration = .seconds(3)
+
+    /// 叫醒螢幕並等一下，期間被解開（Apple Watch 或你的 Touch ID）就回傳 true。
+    private func waitForSystemUnlock() async -> Bool {
+        isWaitingForSystemUnlock = true
+        defer { isWaitingForSystemUnlock = false }
+        Unlocker.dismissScreensaver()
+        ScreenControl.wakeDisplay()
+        let deadline = ContinuousClock.now + Self.systemUnlockHeadStart
+        while ContinuousClock.now < deadline {
+            try? await Task.sleep(for: .milliseconds(100))
+            if ScreenSession.queryLocked() == false { return true }
+        }
+        return false
     }
 
     /// 最多等多久：比解鎖嘗試的間隔（10 秒）長，之後才連上的裝置可以重試（見 companionDidConnect）。
@@ -793,6 +822,10 @@ final class AppModel {
                 } else {
                     log.add(.unlocked, String(localized: "\(names.isEmpty ? subject : Self.list(names)) 在附近，已自動解鎖"))
                 }
+                EventScript.run(.unlocked, rssi: strongestRSSI)
+            } else if isWaitingForSystemUnlock || isConfirmingPresence {
+                let names = nearDeviceNames
+                log.add(.unlocked, String(localized: "\(names.isEmpty ? subject : Self.list(names)) 在附近，已由 Apple Watch 或 Touch ID 解鎖"))
                 EventScript.run(.unlocked, rssi: strongestRSSI)
             } else if case .away = group.presence, hasDevices {
                 // 可能是你自己用 Touch ID 解鎖、只是裝置訊號太弱，也可能是別人，所以只陳述事實
