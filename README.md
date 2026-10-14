@@ -6,6 +6,12 @@
 
 Presence 是 macOS 選單列工具，用藍牙偵測你的 iPhone、Apple Watch 或其他 BLE 裝置在不在附近。想法來自 [BLEUnlock](https://github.com/ts1/BLEUnlock)，針對新版 macOS 重新設計與實作，並修正了原版幾個安全問題。
 
+**手機和手錶不用裝任何 App**：Presence 讀的是它們本來就會發出的藍牙訊號。配套的 [Presence Remote](#presence-remoteiphone-與-apple-watch) 是選用的，裝了可以從手機和手錶遠端鎖定、暫停、收通知，並在解鎖前加密確認。
+
+<img src="docs/images/walkaway-zh-Hant.gif" width="800" alt="離開座位時倒數鎖定，回來後自動解鎖">
+
+▶ [宣傳影片（37 秒）](https://github.com/chung223/Presence/releases/download/v0.1.2/presence-promo-zh-Hant.mp4)
+
 ## 功能
 
 - **離開自動鎖定**：訊號持續低於門檻幾秒、或完全收不到訊號一段時間，就鎖定螢幕或啟動螢幕保護程式。
@@ -24,6 +30,17 @@ Presence 是 macOS 選單列工具，用藍牙偵測你的 iPhone、Apple Watch 
 - **事件腳本**：鎖定或解鎖時執行你自己的腳本（與 BLEUnlock 相容）。
 - **事件紀錄**：什麼時候、為什麼鎖定或解鎖，都查得到；裝置不在時被手動解鎖也會記下來。
 - **沿用 BLEUnlock 的設定**：一鍵匯入裝置與門檻。
+
+## 畫面
+
+| | |
+|---|---|
+| <img src="docs/images/mac/zh-Hant-overview.png" alt="總覽"> | <img src="docs/images/mac/zh-Hant-devices.png" alt="裝置"> |
+| **總覽**：誰在附近、最近 3 分鐘的訊號和最近的事件 | **裝置**：同時監控 iPhone 和 Apple Watch，各自的門檻 |
+| <img src="docs/images/mac/zh-Hant-lockUnlock.png" alt="鎖定與解鎖"> | <img src="docs/images/mac/zh-Hant-context.png" alt="情境"> |
+| **鎖定與解鎖**：鎖定方式、自動解鎖與 iPhone 加密確認 | **情境**：在家、接著電源或時段外不自動鎖定 |
+| <img src="docs/images/mac/zh-Hant-deskTime.png" alt="在座時間"> | <img src="docs/images/mac/zh-Hant-history.png" alt="紀錄"> |
+| **在座時間**：今天坐了多久、最近 7 天、久坐提醒 | **紀錄**：每次鎖定、解鎖的時間和原因 |
 
 ## 系統需求
 
@@ -65,7 +82,7 @@ xcodebuild -project Presence.xcodeproj -scheme Presence -configuration Release b
 <img src="metadata/screenshots/watch-ultra/zh-Hant/01-status.png" width="200" alt="Apple Watch 上的 Presence Remote">
 </p>
 
-Presence Remote 是 Presence 的配套 App，透過藍牙直接連到你的 Mac，不需要帳號或網路。
+Presence Remote 是 Presence 的配套 App，透過藍牙直接連到你的 Mac，不需要帳號或網路。不裝也能使用 Presence 的自動鎖定與解鎖；裝了多了下面這些功能。
 
 - **立即鎖定 Mac**：從 App、Apple Watch、控制中心、動作按鈕、Siri 或「捷徑」。
 - **暫停與恢復**：暫停自動鎖定與解鎖 15 分鐘到 4 小時，或隨時恢復（要先解鎖 iPhone）。
@@ -76,6 +93,8 @@ Presence Remote 是 Presence 的配套 App，透過藍牙直接連到你的 Mac�
 **配對**：在 Mac 的 Presence 打開「手機與手錶」，按「配對新的 iPhone…」，再用 Presence Remote 掃描畫面上的 QR code。Apple Watch 會透過這支 iPhone 取得配對，不用另外設定。
 
 需要 iOS 26、watchOS 26 以上。只在藍牙範圍內（大約同一個房間）有效。
+
+配對後如果把 App 刪掉，請在 Mac 的「手機與手錶」取消配對，或在「鎖定與解鎖」關掉「需要 iPhone 加密確認」。否則 Mac 會一直等不到 iPhone 的確認，就不會自動輸入密碼，只能用 Apple Watch、Touch ID 或密碼解鎖。
 
 ## 運作方式與安全設計
 
@@ -129,8 +148,12 @@ swift scripts/make-icon.swift Presence/Assets.xcassets/AppIcon.appiconset
 xcodebuild -project Presence.xcodeproj -scheme PresenceRemote -destination 'generic/platform=iOS' \
     -derivedDataPath build-ios -allowProvisioningUpdates build
 
-# 發佈 Mac 新版：先改 project.yml 的 MARKETING_VERSION 與 CURRENT_PROJECT_VERSION，再執行
+# 發佈 Mac 新版：先改 project.yml 的 MARKETING_VERSION 與 CURRENT_PROJECT_VERSION，commit 並 push 後執行
 scripts/release.sh
+
+# README 的截圖與宣傳影片：用開發版的示範模式（假裝置、模擬訊號），期間不要碰滑鼠鍵盤
+scripts/promo/screenshots.sh
+scripts/promo/video.sh
 ```
 
 `scripts/release.sh` 會用 Developer ID 簽章、送 Apple 公證、產生用 EdDSA 簽章的 Sparkle 更新清單，並在 GitHub 建立 Release 草稿。簽更新用的私鑰在發佈者的鑰匙圈（Sparkle 的 `generate_keys`），弄丟的話已安裝的人就收不到更新，請另外備份（`generate_keys -x 檔名`）。

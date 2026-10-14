@@ -6,6 +6,12 @@ Walk away from your desk with your phone and your Mac locks itself. Come back an
 
 Presence is a macOS menu bar app that uses Bluetooth to tell whether your iPhone, Apple Watch, or another BLE device is nearby. It's inspired by [BLEUnlock](https://github.com/ts1/BLEUnlock), redesigned and rewritten for current macOS, and it fixes several security issues in the original.
 
+**No app is needed on your phone or watch.** Presence reads the Bluetooth signal they already send. The companion app, [Presence Remote](#presence-remote-iphone-and-apple-watch), is optional: it adds remote lock, pause, and notifications from your iPhone and Apple Watch, plus an encrypted confirmation before unlocking.
+
+<img src="docs/images/walkaway-en.gif" width="800" alt="The Mac counts down and locks when you walk away, then unlocks when you come back">
+
+▶ [Promo video (37 seconds)](https://github.com/chung223/Presence/releases/download/v0.1.2/presence-promo-en.mp4)
+
 ## Features
 
 - **Lock when you leave**: when the signal stays below a threshold for a few seconds, or disappears for a while, Presence locks the screen or starts the screen saver.
@@ -24,6 +30,17 @@ Presence is a macOS menu bar app that uses Bluetooth to tell whether your iPhone
 - **Event scripts**: run your own script when the Mac locks or unlocks (compatible with BLEUnlock).
 - **Event history**: see when and why the Mac locked or unlocked, including manual unlocks while your devices were away.
 - **Import from BLEUnlock**: bring over your devices and thresholds in one step.
+
+## Screenshots
+
+| | |
+|---|---|
+| <img src="docs/images/mac/en-overview.png" alt="Overview"> | <img src="docs/images/mac/en-devices.png" alt="Devices"> |
+| **Overview**: who's nearby, the last 3 minutes of signal, and recent events | **Devices**: watch your iPhone and Apple Watch together, each with its own thresholds |
+| <img src="docs/images/mac/en-lockUnlock.png" alt="Lock & Unlock"> | <img src="docs/images/mac/en-context.png" alt="Conditions"> |
+| **Lock & Unlock**: how to lock, auto-unlock, and iPhone confirmation | **Conditions**: don't lock at home, on power, or outside set hours |
+| <img src="docs/images/mac/en-deskTime.png" alt="Desk Time"> | <img src="docs/images/mac/en-history.png" alt="History"> |
+| **Desk Time**: time at your desk today, the last 7 days, and break reminders | **History**: when and why your Mac locked or unlocked |
 
 ## Requirements
 
@@ -65,7 +82,7 @@ If you use BLEUnlock, turn off its Launch at Login and quit it first. Running bo
 <img src="metadata/screenshots/watch-ultra/en-US/01-status.png" width="200" alt="Presence Remote on Apple Watch">
 </p>
 
-Presence Remote is the companion app for Presence. It connects straight to your Mac over Bluetooth, with no account and no internet connection.
+Presence Remote is the companion app for Presence. It connects straight to your Mac over Bluetooth, with no account and no internet connection. Presence locks and unlocks automatically without it; installing it adds the following.
 
 - **Lock your Mac now** from the app, Apple Watch, Control Center, the Action button, Siri, or Shortcuts.
 - **Pause and resume** automatic locking and unlocking for 15 minutes to 4 hours, or resume at any time (unlock your iPhone first).
@@ -76,6 +93,8 @@ Presence Remote is the companion app for Presence. It connects straight to your 
 **Pairing**: in Presence on your Mac, open iPhone & Watch, click Pair New iPhone…, and scan the QR code with Presence Remote. Your Apple Watch gets the pairing through that iPhone, so there's nothing else to set up.
 
 Requires iOS 26 and watchOS 26 or later. It works only within Bluetooth range, roughly the same room.
+
+If you delete the app after pairing, unpair it in iPhone & Watch on your Mac, or turn off Require iPhone Encrypted Confirmation in Lock & Unlock. Otherwise your Mac keeps waiting for a confirmation that never comes and won't type your password, so you'll have to unlock with your Apple Watch, Touch ID, or password.
 
 ## How it works and security
 
@@ -129,8 +148,13 @@ swift scripts/make-icon.swift Presence/Assets.xcassets/AppIcon.appiconset
 xcodebuild -project Presence.xcodeproj -scheme PresenceRemote -destination 'generic/platform=iOS' \
     -derivedDataPath build-ios -allowProvisioningUpdates build
 
-# Release a new Mac version: update MARKETING_VERSION and CURRENT_PROJECT_VERSION in project.yml, then run
+# Release a new Mac version: update MARKETING_VERSION and CURRENT_PROJECT_VERSION in project.yml, commit and push, then run
 scripts/release.sh
+
+# Screenshots and promo video for the README, made with the debug build's demo mode (fake devices,
+# simulated signal). Don't touch the mouse or keyboard while they run.
+scripts/promo/screenshots.sh
+scripts/promo/video.sh
 ```
 
 `scripts/release.sh` signs with Developer ID, sends the app to Apple for notarization, creates a Sparkle update feed signed with EdDSA, and drafts a GitHub release. The private key for signing updates is in the publisher's Keychain (Sparkle's `generate_keys`). If it's lost, existing users stop receiving updates, so back it up separately (`generate_keys -x <file>`).
