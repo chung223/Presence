@@ -62,9 +62,16 @@ spctl --assess --type execute "$app"
 
 echo "== Sparkle 更新清單"
 ditto -c -k --keepParent "$app" "$out/updates/Presence-$version.zip"
-"$sparkle/generate_appcast" \
+# generate_appcast 第一次讀鑰匙圈會跳授權對話框（鎖定畫面時看不到就會卡住）；
+# generate_keys 本來就有權限，用它把私鑰匯出到只有自己能讀的暫存檔，用完立刻刪掉。
+keydir=$(mktemp -d)
+chmod 700 "$keydir"
+trap 'rm -P "$keydir/ed.key" 2>/dev/null; rm -rf "$keydir"' EXIT
+"$sparkle/generate_keys" -x "$keydir/ed.key" >/dev/null
+"$sparkle/generate_appcast" --ed-key-file "$keydir/ed.key" \
     --download-url-prefix "https://github.com/chung223/Presence/releases/download/$tag/" \
     "$out/updates"
+rm -P "$keydir/ed.key"
 
 echo "== GitHub Release 草稿"
 gh release create "$tag" --draft --title "Presence $version" \
