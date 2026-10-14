@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.chung.presence.agent</string>
+	<key>BundleProgram</key>
+	<string>Contents/MacOS/Presence</string>
+	<key>AssociatedBundleIdentifiers</key>
+	<array>
+		<string>com.chung.presence</string>
+	</array>
+	<!-- 登入時啟動；不是正常結束（當機、被系統結束）就重新開啟，從選單結束則不會 -->
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<dict>
+		<key>SuccessfulExit</key>
+		<false/>
+	</dict>
+	<key>ThrottleInterval</key>
+	<integer>10</integer>
+	<key>ProcessType</key>
+	<string>Interactive</string>
+	<key>LimitLoadToSessionType</key>
+	<string>Aqua</string>
+</dict>
+</plist>

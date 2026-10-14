@@ -11,7 +11,7 @@ struct GeneralView: View {
 
     var body: some View {
         Form {
-            Section("啟動") {
+            Section {
                 Toggle("登入時自動啟動", isOn: Binding(
                     get: { model.loginItemEnabled },
                     set: { loginError = model.setLaunchAtLogin($0) }
@@ -24,6 +24,10 @@ struct GeneralView: View {
                 if let loginError {
                     Text(loginError).font(.callout).foregroundStyle(.red)
                 }
+            } header: {
+                Text("啟動")
+            } footer: {
+                Text("打開後，Presence 意外結束（例如當機或被系統結束）時也會自動重新開啟；從選單結束則不會。")
             }
 
             Section {

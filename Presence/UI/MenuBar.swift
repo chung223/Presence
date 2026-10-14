@@ -2,9 +2,15 @@ import SwiftUI
 
 struct MenuBarLabel: View {
     let model: AppModel
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         Image(systemName: model.status.symbol)
+            // 選單列圖示一直都在，由它負責在需要時打開主視窗（見 AppInstance.showWindow）
+            .onReceive(NotificationCenter.default.publisher(for: AppInstance.showWindow)) { _ in
+                openWindow(id: "main")
+                NSApp.activate()
+            }
     }
 }
 

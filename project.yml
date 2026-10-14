@@ -26,7 +26,14 @@ targets:
   Presence:
     type: application
     platform: macOS
-    sources: [Presence]
+    sources:
+      - Presence
+      # SMAppService.agent 要在 Contents/Library/LaunchAgents 找到設定檔
+      - path: LaunchAgents
+        buildPhase:
+          copyFiles:
+            destination: wrapper
+            subpath: Contents/Library/LaunchAgents
     dependencies:
       - package: PresenceCore
       - package: PresenceLink

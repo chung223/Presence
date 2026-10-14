@@ -36,17 +36,57 @@ enum EventScript {
     }
 }
 
+/// 登入時啟動，而且意外結束（當機、被系統結束）時由 launchd 自動重新開啟；從選單結束則不會。
+///
+/// 用 App 內附的 LaunchAgent（Contents/Library/LaunchAgents）而不是一般的登入項目：
+/// 登入項目只在登入時開一次，Presence 在睡眠時被系統結束就不會再回來。
 enum LoginItem {
-    static var status: SMAppService.Status { SMAppService.mainApp.status }
+    static let agentLabel = "com.chung.presence.agent"
+    private static var agent: SMAppService { SMAppService.agent(plistName: "\(agentLabel).plist") }
+
+    static var status: SMAppService.Status { agent.status }
 
     static var isEnabled: Bool { status == .enabled }
 
-    static func setEnabled(_ enabled: Bool) throws {
-        if enabled {
-            try SMAppService.mainApp.register()
-        } else {
-            try SMAppService.mainApp.unregister()
+    /// 目前這個程序是不是 launchd 依 LaunchAgent 啟動的。
+    static var isRunningAsAgent: Bool {
+        ProcessInfo.processInfo.environment["XPC_SERVICE_NAME"] == agentLabel
+    }
+
+    /// 註冊後 launchd 會立刻啟動一個新的 Presence，由它接手（見 `AppInstance`）。
+    static func register() throws {
+        if SMAppService.mainApp.status == .enabled { try? SMAppService.mainApp.unregister() }
+        try agent.register()
+    }
+
+    /// 注意：取消註冊會連同 launchd 啟動的那個程序一起結束。
+    static func unregister() throws {
+        try agent.unregister()
+    }
+
+    /// 0.1 版用的是一般登入項目，改成 LaunchAgent。只在「應用程式」資料夾裡做，
+    /// 否則 launchd 會記住外接硬碟或「下載」裡的位置。
+    static func migrateIfNeeded() {
+        guard InstallLocation.isInApplications, SMAppService.mainApp.status == .enabled else { return }
+        try? SMAppService.mainApp.unregister()
+        try? agent.register()
+    }
+
+    /// 已註冊但沒在跑（例如使用者從選單結束後又自己打開）：請 launchd 啟動，讓它接手。
+    @discardableResult
+    static func kickstart() -> Bool {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/launchctl")
+        process.arguments = ["kickstart", "gui/\(getuid())/\(agentLabel)"]
+        process.standardOutput = FileHandle.nullDevice
+        process.standardError = FileHandle.nullDevice
+        do {
+            try process.run()
+        } catch {
+            return false
         }
+        process.waitUntilExit()
+        return process.terminationStatus == 0
     }
 
     static func openSettings() {

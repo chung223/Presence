@@ -353,6 +353,22 @@
         }
       }
     },
+    "Presence 上次沒有正常結束（可能是當機或被系統結束），已重新開啟": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence didn't quit normally last time (it may have crashed or been terminated by the system) and has been reopened"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence 上次沒有正常結束（可能是當機或被系統結束），已重新開啟"
+          }
+        }
+      }
+    },
     "Presence 不存密碼，也不需要輔助使用權限：你回來時它只喚醒螢幕，由 macOS 內建的「用 Apple Watch 解鎖」或 Touch ID 完成解鎖。要先在「系統設定 › 觸控 ID 與密碼」開啟用 Apple Watch 解鎖。這是最安全的用法。": {
       "localizations": {
         "en": {
@@ -413,6 +429,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Presence 的想法來自 Takeshi Sone 的 BLEUnlock（MIT 授權），為新版 macOS 重新設計與實作。"
+          }
+        }
+      }
+    },
+    "Presence 目前在「%@」。不在「應用程式」資料夾時，Mac 睡眠後可能被系統結束，登入時也可能開不起來。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence is in “%@”. Outside the Applications folder, macOS may terminate it while the Mac sleeps, and it may not open at login."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence 目前在「%@」。不在「應用程式」資料夾時，Mac 睡眠後可能被系統結束，登入時也可能開不起來。"
           }
         }
       }
@@ -2113,6 +2145,22 @@
         }
       }
     },
+    "打開後，Presence 意外結束（例如當機或被系統結束）時也會自動重新開啟；從選單結束則不會。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence also reopens automatically if it quits unexpectedly, such as after a crash or being terminated by the system. Quitting from the menu won't reopen it."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打開後，Presence 意外結束（例如當機或被系統結束）時也會自動重新開啟；從選單結束則不會。"
+          }
+        }
+      }
+    },
     "打開登入項目設定": {
       "localizations": {
         "en": {
@@ -2913,6 +2961,22 @@
         }
       }
     },
+    "沒有輔助使用權限，無法自動解鎖。請到「系統設定 › 隱私權與安全性 › 輔助使用」打開 Presence": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence can't unlock automatically without Accessibility access. Turn on Presence in System Settings › Privacy & Security › Accessibility"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有輔助使用權限，無法自動解鎖。請到「系統設定 › 隱私權與安全性 › 輔助使用」打開 Presence"
+          }
+        }
+      }
+    },
     "沒有連上網路": {
       "localizations": {
         "en": {
@@ -3293,6 +3357,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "目前連線中"
+          }
+        }
+      }
+    },
+    "移到「應用程式」資料夾": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move to the Applications Folder"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移到「應用程式」資料夾"
+          }
+        }
+      }
+    },
+    "移過去並重新開啟": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move and Reopen"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移過去並重新開啟"
           }
         }
       }

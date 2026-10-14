@@ -68,7 +68,7 @@ final class AppModel {
     }
 
     enum SetupItem: String, CaseIterable, Identifiable {
-        case bluetooth, device, accessibility, password, legacyApp
+        case bluetooth, device, accessibility, password, legacyApp, location
         var id: String { rawValue }
     }
 
@@ -149,7 +149,7 @@ final class AppModel {
         group = PresenceGroup(devices: prefs.proximityByDevice, policy: prefs.devicePolicy, now: Date())
     }
 
-    func start() {
+    func start(afterUnexpectedExit: Bool = false) {
         Self.current = self
         HotKeyCenter.shared.onPress = { [weak self] in self?.lockNow() }
         registerHotKey()
@@ -179,6 +179,12 @@ final class AppModel {
                 try? await Task.sleep(for: .seconds(1))
                 self?.tick()
             }
+        }
+        if preferences.unlockEnabled, preferences.unlockMode == .typePassword, !Accessibility.isTrusted {
+            log.add(.warning, String(localized: "沒有輔助使用權限，無法自動解鎖。請到「系統設定 › 隱私權與安全性 › 輔助使用」打開 Presence"))
+        }
+        if afterUnexpectedExit {
+            log.add(.warning, String(localized: "Presence 上次沒有正常結束（可能是當機或被系統結束），已重新開啟"))
         }
         log.add(.info, String(localized: "Presence 已啟動"))
     }
@@ -256,6 +262,7 @@ final class AppModel {
             if !hasPassword { items.append(.password) }
         }
         if legacyAppRunning { items.append(.legacyApp) }
+        if !InstallLocation.isInApplications { items.append(.location) }
         return items
     }
 
@@ -330,7 +337,32 @@ final class AppModel {
     func setLaunchAtLogin(_ enabled: Bool) -> String? {
         defer { refreshStatus() }
         do {
-            try LoginItem.setEnabled(enabled)
+            if enabled {
+                // 註冊後 launchd 會立刻開一個新的 Presence 接手（這個會被結束），請它回到設定頁
+                AppInstance.requestWindowAfterHandoff()
+                try LoginItem.register()
+            } else if LoginItem.isRunningAsAgent {
+                // 取消註冊會連同目前這個程序一起結束：先開一個一般的 Presence 接手，由它取消註冊
+                Task {
+                    try? await AppInstance.relaunch(arguments: ["-PresenceUnregisterAgent", "YES",
+                                                                "-PresenceInitialSection", MainView.Section.general.rawValue])
+                }
+            } else {
+                try LoginItem.unregister()
+            }
+            return nil
+        } catch {
+            return error.localizedDescription
+        }
+    }
+
+    /// 複製到「應用程式」並從那裡重新開啟；新的那個會結束目前這個。
+    func moveToApplications() async -> String? {
+        do {
+            let url = try InstallLocation.copyToApplications()
+            var arguments = ["-PresenceInitialSection", MainView.Section.overview.rawValue]
+            if LoginItem.isEnabled { arguments += ["-PresenceReregisterAgent", "YES"] }
+            try await AppInstance.relaunch(url, arguments: arguments)
             return nil
         } catch {
             return error.localizedDescription

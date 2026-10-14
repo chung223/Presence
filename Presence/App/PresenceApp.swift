@@ -7,6 +7,11 @@ struct PresenceApp: App {
 
     private var model: AppModel { appDelegate.model }
 
+    init() {
+        // 已經有 Presence 在跑：讓它打開主視窗，這個直接結束
+        if !AppInstance.resolveAtLaunch() { exit(0) }
+    }
+
     /// 指定了 -PresenceInitialSection（截圖檢查用）也會打開主視窗。
     private var opensWindowAtLaunch: Bool {
         model.needsAttentionAtLaunch || UserDefaults.standard.string(forKey: "PresenceInitialSection") != nil
@@ -34,8 +39,42 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         UNUserNotificationCenter.current().delegate = self
-        model.start()
+        // 另一份 Presence 被打開時，會請這裡打開主視窗
+        DistributedNotificationCenter.default().addObserver(forName: AppInstance.showWindow, object: nil, queue: .main) { _ in
+            NotificationCenter.default.post(name: AppInstance.showWindow, object: nil)
+        }
+        model.start(afterUnexpectedExit: LaunchHistory.beginRun())
         if model.needsAttentionAtLaunch { NSApp.activate() }
+        prepareLoginItem()
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        LaunchHistory.endRun()
+    }
+
+    /// 在 Finder 或 Spotlight 再打開一次 Presence：打開主視窗。
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag { NotificationCenter.default.post(name: AppInstance.showWindow, object: nil) }
+        return true
+    }
+
+    private func prepareLoginItem() {
+        let defaults = UserDefaults.standard
+        if defaults.bool(forKey: "PresenceUnregisterAgent") {
+            // 使用者關掉「登入時自動啟動」，由這個接手的程序取消註冊（見 AppModel.setLaunchAtLogin）
+            try? LoginItem.unregister()
+        } else if defaults.bool(forKey: "PresenceReregisterAgent") {
+            // 剛移到「應用程式」：讓 launchd 改記新的位置，註冊後會由它啟動的 Presence 接手
+            try? LoginItem.unregister()
+            try? LoginItem.register()
+        } else {
+            LoginItem.migrateIfNeeded()
+            // 從選單結束後又自己打開：交還給 launchd，意外結束時才會自動重開
+            if LoginItem.isEnabled, !LoginItem.isRunningAsAgent, !defaults.bool(forKey: "PresenceTakeOver") {
+                LoginItem.kickstart()
+            }
+        }
+        model.refreshStatus()
     }
 
     // 選單列 App 幾乎不會在前景，仍要顯示通知

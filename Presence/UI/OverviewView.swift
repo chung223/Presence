@@ -250,6 +250,8 @@ private struct SetupChecklist: View {
     let model: AppModel
     @Binding var selection: MainView.Section?
     @State private var showingPassword = false
+    @State private var moving = false
+    @State private var moveError: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -285,6 +287,7 @@ private struct SetupChecklist: View {
         case .accessibility: String(localized: "允許輔助使用")
         case .password: String(localized: "設定登入密碼")
         case .legacyApp: String(localized: "結束舊版 BLEUnlock")
+        case .location: String(localized: "移到「應用程式」資料夾")
         }
     }
 
@@ -295,6 +298,8 @@ private struct SetupChecklist: View {
         case .accessibility: String(localized: "自動解鎖要模擬鍵盤輸入密碼，需要這個權限。到「系統設定 › 隱私權與安全性 › 輔助使用」打開 Presence。")
         case .password: String(localized: "自動解鎖時用來輸入。會先驗證是否正確，再存進鑰匙圈。")
         case .legacyApp: String(localized: "兩個 App 同時執行會互相干擾。結束前，記得在舊版的選單關掉「登入時啟動」。")
+        case .location:
+            moveError ?? String(localized: "Presence 目前在「\(InstallLocation.currentFolder)」。不在「應用程式」資料夾時，Mac 睡眠後可能被系統結束，登入時也可能開不起來。")
         }
     }
 
@@ -323,6 +328,15 @@ private struct SetupChecklist: View {
             Button("設定密碼…") { showingPassword = true }
         case .legacyApp:
             Button("結束舊版") { model.quitLegacyApp() }
+        case .location:
+            Button("移過去並重新開啟") {
+                moving = true
+                Task {
+                    moveError = await model.moveToApplications()
+                    moving = false
+                }
+            }
+            .disabled(moving)
         }
     }
 }
