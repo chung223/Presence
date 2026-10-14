@@ -20,6 +20,8 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Presence Remote 用藍牙連到你 Mac 上的 Presence，從手機鎖定或查看狀態。</string>
 	<key>NSCameraUsageDescription</key>

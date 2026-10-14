@@ -1,6 +1,6 @@
 {
   "description": "Presence Remote 是 Mac 上 Presence 的配套 App。Presence 會用你的 iPhone 或 Apple Watch 的藍牙訊號判斷你在不在座位上：離開時自動鎖定 Mac，回來時自動解鎖。\n\n有了 Presence Remote，你可以：\n\n• 從 iPhone、Apple Watch、控制中心、鎖定畫面或動作按鈕立即鎖定 Mac\n• 暫停或恢復自動鎖定（暫停與恢復需要先解鎖 iPhone）\n• 隨時查看 Mac 的狀態：你在不在附近、Mac 有沒有鎖著\n• Mac 因為你離開而自動鎖定、或你不在時被人手動解鎖，馬上收到通知\n• 解鎖前的加密確認：Mac 會先請 iPhone 用配對時產生的金鑰回應，只偽造藍牙訊號無法讓 Mac 解鎖\n• 主畫面與鎖定畫面小工具、Apple Watch 錶面複雜功能、Siri 與「捷徑」動作\n\n需要什麼\n• Mac 上安裝免費的 Presence（macOS 26 以上），從 github.com/chung223/Presence 下載\n• 在 Mac 的 Presence 按「配對新的 iPhone」，用這個 App 掃描 QR code\n\n隱私\nPresence Remote 不收集任何資料，也不需要帳號或網路。iPhone 與 Mac 之間只用藍牙直接溝通，每個指令都經過加密與驗證。\n\nPresence 是開放原始碼軟體，想法來自 BLEUnlock。",
-  "keywords": "Mac,鎖定,解鎖,藍牙,遙控,手錶,離開,自動鎖定,安全,BLEUnlock",
+  "keywords": "解鎖,藍牙,遙控,離開,自動上鎖,電腦,安全,隱私,座位,近距離,螢幕鎖,BLEUnlock",
   "promotionalText": "離開座位，Mac 自動鎖定；回來，自動解鎖。用 iPhone 和 Apple Watch 遠端鎖定、暫停，並在 Mac 被鎖定或被解鎖時收到通知。",
   "supportUrl": "https://github.com/chung223/Presence/issues",
   "marketingUrl": "https://github.com/chung223/Presence"

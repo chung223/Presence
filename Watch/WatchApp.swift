@@ -135,8 +135,10 @@ final class WatchModel: NSObject {
         guard let data = try? WatchMessage.encode(command) else { return nil }
         let reply: [String: Any]? = await withCheckedContinuation { continuation in
             let once = Once(continuation)
-            WCSession.default.sendMessage(["command": data], replyHandler: { once.resume($0) },
-                                          errorHandler: { _ in once.resume(nil) })
+            // WatchConnectivity 在背景執行緒呼叫這兩個回呼。不標 @Sendable 的話，Swift 6 會把它們當成
+            // 主執行緒的程式，執行時檢查失敗就中止 App（2026-10-14 手錶 App 一打開就閃退）。
+            WCSession.default.sendMessage(["command": data], replyHandler: { @Sendable reply in once.resume(reply) },
+                                          errorHandler: { @Sendable _ in once.resume(nil) })
             Task {
                 try? await Task.sleep(for: .seconds(8))
                 once.resume(nil)
@@ -172,7 +174,8 @@ final class WatchModel: NSObject {
 }
 
 /// continuation 只能 resume 一次：iPhone 回覆、錯誤、逾時三者先到先用。
-private final class Once: @unchecked Sendable {
+/// 不屬於主執行緒：WatchConnectivity 從背景執行緒呼叫 `resume`，用鎖保護。
+nonisolated private final class Once: @unchecked Sendable {
     private var continuation: CheckedContinuation<[String: Any]?, Never>?
     private let lock = NSLock()
 
