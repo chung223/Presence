@@ -76,6 +76,7 @@ targets:
       - package: PresenceLink
       # 手錶 App 要包在 iPhone App 裡，WatchConnectivity 才會認得兩者是一組
       - target: PresenceRemoteWatch
+      - target: PresenceRemoteWidgets
     info:
       path: Remote/Info.plist
       properties:
@@ -86,6 +87,11 @@ targets:
         UIBackgroundModes: [bluetooth-central]
         NSBluetoothAlwaysUsageDescription: Presence Remote 用藍牙連到你 Mac 上的 Presence，從手機鎖定或查看狀態。
         NSCameraUsageDescription: 用相機掃描 Mac 上 Presence 顯示的配對 QR code。
+    entitlements:
+      path: Remote/PresenceRemote.entitlements
+      properties:
+        # 與小工具共用最新狀態（SharedStatusStore）
+        com.apple.security.application-groups: [group.com.chung.presence.remote]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.chung.presence.remote
@@ -99,6 +105,42 @@ targets:
           CODE_SIGN_IDENTITY: Apple Development
         Release:
           CODE_SIGN_IDENTITY: Apple Distribution
+  PresenceRemoteWidgets:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - RemoteWidgets
+      # 小工具的按鈕用同一組動作；實際由 App 執行（LiveActivityIntent）
+      - Remote/Intents
+    dependencies:
+      - package: PresenceLink
+    info:
+      path: RemoteWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: Presence Remote
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: RemoteWidgets/PresenceRemoteWidgets.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.chung.presence.remote]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.chung.presence.remote.widgets
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) WIDGET_EXTENSION
+      configs:
+        Debug:
+          CODE_SIGN_IDENTITY: Apple Development
+        Release:
+          CODE_SIGN_IDENTITY: Apple Distribution
   PresenceRemoteWatch:
     type: application
     platform: watchOS
@@ -106,6 +148,7 @@ targets:
     sources: [Watch]
     dependencies:
       - package: PresenceLink
+      - target: PresenceRemoteWatchWidgets
     info:
       path: Watch/Info.plist
       properties:
@@ -116,9 +159,44 @@ targets:
         WKRunsIndependentlyOfCompanionApp: true
         WKCompanionAppBundleIdentifier: com.chung.presence.remote
         NSBluetoothAlwaysUsageDescription: Presence 用藍牙連到你 Mac 上的 Presence，從手錶鎖定或查看狀態。
+    entitlements:
+      path: Watch/PresenceRemoteWatch.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.chung.presence.remote]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.chung.presence.remote.watchkitapp
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_STYLE: Automatic
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+      configs:
+        Debug:
+          CODE_SIGN_IDENTITY: Apple Development
+        Release:
+          CODE_SIGN_IDENTITY: Apple Distribution
+  PresenceRemoteWatchWidgets:
+    type: app-extension
+    platform: watchOS
+    deploymentTarget: "26.0"
+    sources: [WatchWidgets]
+    dependencies:
+      - package: PresenceLink
+    info:
+      path: WatchWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: Presence
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: WatchWidgets/PresenceRemoteWatchWidgets.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.chung.presence.remote]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.chung.presence.remote.watchkitapp.widgets
         GENERATE_INFOPLIST_FILE: NO
         CODE_SIGN_STYLE: Automatic
         SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor

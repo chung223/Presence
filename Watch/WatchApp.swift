@@ -2,6 +2,7 @@ import Observation
 import PresenceLink
 import SwiftUI
 import WatchConnectivity
+import WidgetKit
 
 @main
 struct WatchApp: App {
@@ -87,9 +88,17 @@ final class WatchModel: NSObject {
             lastUpdate = Date()
             lastError = nil
             lastRoute = route
+            publishWidgetStatus()
         case .failure(let message):
             lastError = message
         }
+    }
+
+    /// 錶面複雜功能只能讀 App 存下的狀態；顯示的內容變了才請系統重畫。
+    private func publishWidgetStatus() {
+        let shared = SharedStatus(macName: pairing?.macName, status: pairing == nil ? nil : status,
+                                  connected: status != nil, updatedAt: lastUpdate ?? Date())
+        if SharedStatusStore.save(shared) { WidgetCenter.shared.reloadAllTimelines() }
     }
 
     /// 經由 iPhone 轉送；iPhone 沒回應或回傳錯誤時回傳 nil，改走直接連線。
@@ -129,6 +138,7 @@ final class WatchModel: NSObject {
             self.status = status
             lastUpdate = Date()
         }
+        publishWidgetStatus()
     }
 }
 

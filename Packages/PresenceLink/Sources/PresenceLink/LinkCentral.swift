@@ -30,7 +30,11 @@ public final class LinkCentral: NSObject {
     }
 
     public private(set) var state: State = .notPaired {
-        didSet { if state != oldValue { LinkLog.write("[\(deviceName)] 連線狀態：\(oldValue) → \(state)") } }
+        didSet {
+            guard state != oldValue else { return }
+            LinkLog.write("[\(deviceName)] 連線狀態：\(oldValue) → \(state)")
+            onStateChange?(state)
+        }
     }
     public private(set) var status: LinkStatus?
     public private(set) var lastUpdate: Date?
@@ -39,6 +43,8 @@ public final class LinkCentral: NSObject {
     @ObservationIgnored public var onEvent: ((LinkStatus) -> Void)?
     /// 每次收到狀態都呼叫，用來同步給手錶。
     @ObservationIgnored public var onStatus: ((LinkStatus) -> Void)?
+    /// 連線狀態改變時呼叫，用來更新小工具。
+    @ObservationIgnored public var onStateChange: ((State) -> Void)?
 
     public var pairing: PairingInfo? {
         didSet {

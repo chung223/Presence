@@ -183,3 +183,39 @@ struct PresenceChallengeTests {
         #expect(try decoded.open(with: pairing).command == .confirm(challenge: challenge.nonce))
     }
 }
+
+struct SharedStatusTests {
+    let now = Date(timeIntervalSince1970: 1_800_000_000)
+
+    func status(presence: MacPresence = .near, locked: Bool = false, pausedUntil: Date? = nil, summary: String = "") -> LinkStatus {
+        LinkStatus(macName: "Mac", presence: presence, summary: summary, locked: locked, pausedUntil: pausedUntil, sentAt: now)
+    }
+
+    @Test("訊號強度之類的摘要文字變了，不必重畫小工具")
+    func signatureIgnoresSummary() {
+        let a = SharedStatus(macName: "Mac", status: status(summary: "-52 dBm"), connected: true, updatedAt: now)
+        let b = SharedStatus(macName: "Mac", status: status(summary: "-60 dBm"), connected: true, updatedAt: now.addingTimeInterval(5))
+        #expect(a.widgetSignature == b.widgetSignature)
+    }
+
+    @Test(arguments: [
+        SharedStatus(macName: "Mac", status: nil, connected: true),
+        SharedStatus(macName: "Mac", status: LinkStatus(macName: "Mac", presence: .away, summary: "", locked: false), connected: true),
+        SharedStatus(macName: "Mac", status: LinkStatus(macName: "Mac", presence: .near, summary: "", locked: true), connected: true),
+        SharedStatus(macName: "Mac", status: LinkStatus(macName: "Mac", presence: .near, summary: "", locked: false), connected: false),
+    ])
+    func signatureChangesWithVisibleState(other: SharedStatus) {
+        let base = SharedStatus(macName: "Mac", status: status(), connected: true, updatedAt: now)
+        #expect(base.widgetSignature != other.widgetSignature)
+    }
+
+    @Test func pausedAndStale() {
+        let paused = SharedStatus(macName: "Mac", status: status(pausedUntil: now.addingTimeInterval(60)), connected: true, updatedAt: now)
+        #expect(paused.isPaused(at: now))
+        #expect(paused.isPaused(at: now.addingTimeInterval(61)) == false)
+        #expect(paused.isStale(at: now.addingTimeInterval(60)) == false)
+        #expect(paused.isStale(at: now.addingTimeInterval(31 * 60)))
+        let disconnected = SharedStatus(macName: "Mac", status: status(), connected: false, updatedAt: now)
+        #expect(disconnected.isStale(at: now))
+    }
+}
