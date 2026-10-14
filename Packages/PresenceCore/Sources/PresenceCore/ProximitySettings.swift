@@ -14,6 +14,8 @@ public struct ProximitySettings: Sendable, Equatable, Codable {
     public var filterWindow: TimeInterval
     /// 視窗內至少要有幾筆樣本，才能判定靠近或遠離。
     public var minimumSamples: Int
+    /// 樣本稀疏時（例如手錶放下、螢幕暗著時廣播變少），判斷靠近改看這段時間內最近的幾筆。
+    public var sparseWindow: TimeInterval
     /// 手動鎖定後，要離開多久才恢復自動解鎖。
     public var manualLockRearm: TimeInterval
 
@@ -24,6 +26,7 @@ public struct ProximitySettings: Sendable, Equatable, Codable {
         signalTimeout: TimeInterval = 60,
         filterWindow: TimeInterval = 4,
         minimumSamples: Int = 3,
+        sparseWindow: TimeInterval = 12,
         manualLockRearm: TimeInterval = 30
     ) {
         self.unlockRSSI = unlockRSSI
@@ -32,6 +35,7 @@ public struct ProximitySettings: Sendable, Equatable, Codable {
         self.signalTimeout = signalTimeout
         self.filterWindow = filterWindow
         self.minimumSamples = minimumSamples
+        self.sparseWindow = sparseWindow
         self.manualLockRearm = manualLockRearm
     }
 
@@ -55,6 +59,7 @@ public struct ProximitySettings: Sendable, Equatable, Codable {
         s.signalTimeout = max(s.signalTimeout, 5)
         s.filterWindow = max(s.filterWindow, 1)
         s.minimumSamples = max(s.minimumSamples, 1)
+        s.sparseWindow = max(s.sparseWindow, s.filterWindow)
         s.manualLockRearm = max(s.manualLockRearm, 0)
         return s
     }

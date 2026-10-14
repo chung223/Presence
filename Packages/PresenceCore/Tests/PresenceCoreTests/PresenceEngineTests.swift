@@ -188,6 +188,44 @@ struct PresenceEngineTests {
         #expect(arrivals(changes) == 0)
     }
 
+    @Test("樣本稀疏（手錶放下時約 5 秒一筆）也能判定回來")
+    func sparseSamplesStillArrive() {
+        var engine = PresenceEngine(settings: settings, now: t0)
+        feed(&engine, Array(repeating: -85, count: 16), from: 0)
+        #expect(engine.presence != .near)
+        let changes = feed(&engine, [-55, -56, -54], from: 20, every: 5)
+        #expect(engine.presence == .near)
+        #expect(engine.canUnlock)
+        #expect(arrivals(changes) == 1)
+    }
+
+    @Test("稀疏時間隔太久（超過 12 秒湊不到 3 筆）不算")
+    func tooSparseDoesNotArrive() {
+        var engine = PresenceEngine(settings: settings, now: t0)
+        feed(&engine, Array(repeating: -85, count: 16), from: 0)
+        let changes = feed(&engine, [-55, -55, -55], from: 20, every: 7)
+        #expect(arrivals(changes) == 0)
+        #expect(engine.canUnlock == false)
+    }
+
+    @Test("稀疏時單一筆強訊號也不能解鎖")
+    func sparseSingleSpikeDoesNotArrive() {
+        var engine = PresenceEngine(settings: settings, now: t0)
+        feed(&engine, Array(repeating: -85, count: 16), from: 0)
+        let changes = feed(&engine, [-85, -40, -85], from: 20, every: 4)
+        #expect(arrivals(changes) == 0)
+        #expect(engine.canUnlock == false)
+    }
+
+    @Test("稀疏時最新一筆要是剛收到的：停止收到訊號後，舊的強訊號不算")
+    func sparseEvidenceMustBeFresh() throws {
+        var engine = PresenceEngine(settings: settings, now: t0)
+        feed(&engine, [-50, -50, -50], from: 0, every: 4)
+        try #require(engine.canUnlock)
+        engine.tick(at: t0.addingTimeInterval(8 + 5))
+        #expect(engine.canUnlock == false)
+    }
+
     @Test func startingFarAwayCountsDownToLock() {
         var engine = PresenceEngine(settings: settings, now: t0)
         let changes = feed(&engine, Array(repeating: -90, count: 16), from: 0)

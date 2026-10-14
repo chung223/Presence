@@ -39,6 +39,16 @@ public struct RSSIWindow: Sendable, Equatable {
 
     /// 中位數。偶數筆時取較弱的那一個，不取平均：4 筆裡有 2 筆異常強訊號也不會被拉高。
     public var median: Int? {
+        Self.median(of: samples)
+    }
+
+    /// 最近 `count` 筆的中位數；不足 `count` 筆時是 nil。
+    public func median(ofLast count: Int) -> Int? {
+        guard count > 0, samples.count >= count else { return nil }
+        return Self.median(of: samples.suffix(count))
+    }
+
+    private static func median(of samples: some Collection<Sample>) -> Int? {
         guard samples.isEmpty == false else { return nil }
         let sorted = samples.map(\.rssi).sorted()
         return sorted[(sorted.count - 1) / 2]
