@@ -8,6 +8,7 @@ struct GeneralView: View {
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
     @State private var shortcuts: [String] = []
     @State private var cameraDenied = false
+    @State private var autoUpdate = Updater.shared.automaticallyChecks
 
     var body: some View {
         Form {
@@ -163,7 +164,14 @@ struct GeneralView: View {
             }
 
             Section("關於") {
-                LabeledContent("版本", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—")
+                LabeledContent("版本") {
+                    HStack {
+                        Text(Updater.versionDescription).monospacedDigit()
+                        Button("檢查更新…") { Updater.shared.checkForUpdates() }
+                    }
+                }
+                Toggle("自動檢查更新", isOn: $autoUpdate)
+                    .onChange(of: autoUpdate) { Updater.shared.automaticallyChecks = autoUpdate }
                 Text("Presence 的想法來自 Takeshi Sone 的 BLEUnlock（MIT 授權），為新版 macOS 重新設計與實作。")
                     .font(.callout)
                     .foregroundStyle(.secondary)

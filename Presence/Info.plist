@@ -34,5 +34,11 @@
 	<false/>
 	<key>NSSupportsSuddenTermination</key>
 	<false/>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://github.com/chung223/Presence/releases/latest/download/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>61QuEiWz6gHy9PaRTLGpSU3CWFauyxH9OIpwb+O78z4=</string>
 </dict>
 </plist>

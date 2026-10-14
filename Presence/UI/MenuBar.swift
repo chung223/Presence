@@ -48,6 +48,7 @@ struct MenuBarMenu: View {
         Toggle("離開時自動鎖定", isOn: $model.preferences.lockEnabled)
         Toggle("回來時自動解鎖", isOn: $model.preferences.unlockEnabled)
         Divider()
+        Button("檢查更新…") { Updater.shared.checkForUpdates() }
         Button("打開 Presence…") {
             openWindow(id: "main")
             NSApp.activate()

@@ -30,7 +30,13 @@ Presence 是 macOS 選單列工具，用藍牙偵測你的 iPhone、Apple Watch 
 
 ## 安裝
 
-目前還沒有發布版本，請從原始碼建置：
+到 [Releases](https://github.com/chung223/Presence/releases/latest) 下載 `Presence-版本.zip`，解壓縮後把 Presence 拖進「應用程式」資料夾再打開。App 已經過 Apple 公證，之後的新版會透過 Sparkle 自動更新。
+
+**一定要放在「應用程式」資料夾**：從「下載」或外接硬碟執行，系統可能在睡眠時把它結束，登入時也開不起來。放錯地方時，Presence 會提醒你並可以一鍵移過去。
+
+iPhone 與 Apple Watch 的 Presence Remote 還沒上架，目前要從原始碼建置（見「開發」）。
+
+也可以從原始碼建置 Mac 版：
 
 ```bash
 brew install xcodegen
@@ -90,9 +96,18 @@ xcodebuild -project Presence.xcodeproj -scheme Presence -configuration Release b
 # 判斷邏輯的單元測試
 cd Packages/PresenceCore && swift test
 
-# 重新產生 App 圖示
+# 重新產生 App 圖示（iPhone、手錶分別加 ios、watchos）
 swift scripts/make-icon.swift Presence/Assets.xcassets/AppIcon.appiconset
+
+# iPhone 與手錶 App（含小工具），用 Xcode 自動簽章
+xcodebuild -project Presence.xcodeproj -scheme PresenceRemote -destination 'generic/platform=iOS' \
+    -derivedDataPath build-ios -allowProvisioningUpdates build
+
+# 發佈 Mac 新版：先改 project.yml 的 MARKETING_VERSION 與 CURRENT_PROJECT_VERSION，再執行
+scripts/release.sh
 ```
+
+`scripts/release.sh` 會用 Developer ID 簽章、送 Apple 公證、產生用 EdDSA 簽章的 Sparkle 更新清單，並在 GitHub 建立 Release 草稿。簽更新用的私鑰在發佈者的鑰匙圈（Sparkle 的 `generate_keys`），弄丟的話已安裝的人就收不到更新，請另外備份（`generate_keys -x 檔名`）。
 
 `Packages/PresenceCore` 是不碰系統 API 的純邏輯（何時算在附近、何時鎖定、何時嘗試解鎖），App 只負責把藍牙、螢幕狀態和使用者操作接上去。
 

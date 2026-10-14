@@ -9,6 +9,10 @@ packages:
     path: Packages/PresenceCore
   PresenceLink:
     path: Packages/PresenceLink
+  # Mac 版在 App Store 外發佈，用 Sparkle 自動更新
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: 2.6.0
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -37,6 +41,7 @@ targets:
     dependencies:
       - package: PresenceCore
       - package: PresenceLink
+      - package: Sparkle
     info:
       path: Presence/Info.plist
       properties:
@@ -46,6 +51,10 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSApplicationCategoryType: public.app-category.utilities
+        # Sparkle：更新清單放在 GitHub Releases 最新一版；公鑰對應鑰匙圈裡的 EdDSA 私鑰
+        SUFeedURL: https://github.com/chung223/Presence/releases/latest/download/appcast.xml
+        SUPublicEDKey: 61QuEiWz6gHy9PaRTLGpSU3CWFauyxH9OIpwb+O78z4=
+        SUEnableAutomaticChecks: true
         LSUIElement: true
         # 一直在背景監控：不能讓系統在沒有視窗時自動把它關掉（那算正常結束，launchd 不會重開）
         NSSupportsAutomaticTermination: false

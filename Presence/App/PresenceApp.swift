@@ -46,6 +46,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
             NotificationCenter.default.post(name: AppInstance.showWindow, object: nil)
         }
         model.start(afterUnexpectedExit: LaunchHistory.beginRun())
+        _ = Updater.shared
         if model.needsAttentionAtLaunch { NSApp.activate() }
         prepareLoginItem()
     }

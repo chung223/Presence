@@ -2945,6 +2945,22 @@
         }
       }
     },
+    "檢查更新…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check for Updates…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檢查更新…"
+          }
+        }
+      }
+    },
     "權限": {
       "localizations": {
         "en": {
@@ -3901,6 +3917,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "自動執行捷徑"
+          }
+        }
+      }
+    },
+    "自動檢查更新": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatically Check for Updates"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動檢查更新"
           }
         }
       }
