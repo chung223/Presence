@@ -41,6 +41,13 @@
 ## 執行位置
 
 - **不要從外接硬碟執行。** 2026-10-14 06:48 Mac 進入睡眠時，從外接 SSD 的 build 資料夾執行的 Presence 收到 SIGBUS 結束（`Process exited … SIGBUS(10)`），沒有當機報告，醒來後也不會自己重開。同一時間 USB 儲存裝置正在進入省電；推測是睡眠時讀不到執行檔。日常使用要裝在內建硬碟的 `/Applications`。
+- **意外結束後由 launchd 重開。** 「登入時自動啟動」改用 App 內附的 LaunchAgent（`Contents/Library/LaunchAgents/com.chung.presence.agent.plist`，`KeepAlive.SuccessfulExit = false`）。2026-10-14 實測：
+  - `kill -BUS` 後 4 秒內重開，事件紀錄出現「上次沒有正常結束」。
+  - 從選單或 `NSRunningApplication.terminate()` 結束（exit 0）不會重開。
+  - 之後自己打開時會 `launchctl kickstart`，交回給 launchd 那份。
+  - 打開另一份拷貝時，那份會自己結束，請正在跑的打開主視窗。
+  - 從 `/Applications` 啟動時，舊的一般登入項目會自動轉成 LaunchAgent；輔助使用、藍牙、鑰匙圈權限都沿用，沒有跳出對話框。
+- **開發時跑 build 版本**要加 `--args -PresenceTakeOver YES`，否則它會讓位給正在跑的那份。測完結束它，再用 `launchctl kickstart gui/$(id -u)/com.chung.presence.agent` 叫回 `/Applications` 那份。
 
 ## 尚未驗證
 
