@@ -67,7 +67,7 @@ for lang in zh-Hant en; do
 
     # 片頭 3 秒
     ffmpeg -v error -y -framerate 30 -loop 1 -t 3 -i $c/$lang-title.png \
-      -vf "scale=3840:-1,zoompan=z='1+0.0004*on':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=1920x1080:fps=30,fade=t=in:st=0:d=0.4" \
+      -vf "scale=3840:-1,zoompan=z='1+0.0004*on':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=1920x1080:fps=30" \
       -t 3 $enc $out/a.mp4
 
     # 離開→鎖定→回來→解鎖：兩段錄影中間用鎖定畫面接起來。
