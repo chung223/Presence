@@ -1,7 +1,7 @@
 #!/bin/zsh
 # 發佈 Mac 版：Developer ID 簽章 → Apple 公證 → 釘上公證票據 → Sparkle 更新清單 → GitHub Release 草稿。
 #
-#   1. 改 project.yml 的 MARKETING_VERSION（給人看）與 CURRENT_PROJECT_VERSION（Sparkle 比大小用，每版 +1）
+#   1. 改 project.yml 的 MARKETING_VERSION（給人看）與 CURRENT_PROJECT_VERSION（Sparkle 比大小用，每版 +1），commit 並 push
 #   2. scripts/release.sh
 #   3. 到 GitHub 檢查草稿、寫更新說明後按 Publish；發佈後 Sparkle 才看得到
 #
@@ -18,6 +18,13 @@ sparkle="build/SourcePackages/artifacts/sparkle/Sparkle/bin"
 
 if gh release view "$tag" >/dev/null 2>&1; then
     echo "GitHub 已經有 $tag，請先改版本號" >&2
+    exit 1
+fi
+# 標籤要指向這次建置的 commit：沒推上 GitHub 的話，發佈時 GitHub 會把標籤打在遠端 main 上
+commit=$(git rev-parse HEAD)
+git fetch -q origin
+if [[ -n $(git status --porcelain) ]] || ! git merge-base --is-ancestor "$commit" origin/main; then
+    echo "有沒提交或沒推上 GitHub 的改動，請先 commit 並 push" >&2
     exit 1
 fi
 
@@ -74,7 +81,7 @@ trap 'rm -P "$keydir/ed.key" 2>/dev/null; rm -rf "$keydir"' EXIT
 rm -P "$keydir/ed.key"
 
 echo "== GitHub Release 草稿"
-gh release create "$tag" --draft --title "Presence $version" \
+gh release create "$tag" --draft --target "$commit" --title "Presence $version" \
     --notes "Presence $version。下載 Presence-$version.zip，解壓縮後拖進「應用程式」資料夾。" \
     "$out/updates/Presence-$version.zip" "$out/updates/appcast.xml"
 
