@@ -27,6 +27,14 @@ struct OnboardingView: View {
     @State private var scanning = false
     @State private var invalidCode = false
 
+    /// 模擬器沒有相機；截圖的示範模式照樣顯示成可以按。
+    private var scannerAvailable: Bool {
+        #if DEBUG
+        if RemoteModel.isDemo { return true }
+        #endif
+        return DataScannerViewController.isSupported
+    }
+
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
@@ -54,7 +62,7 @@ struct OnboardingView: View {
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
-            .disabled(!DataScannerViewController.isSupported)
+            .disabled(!scannerAvailable)
         }
         .padding(28)
         .sheet(isPresented: $scanning) {

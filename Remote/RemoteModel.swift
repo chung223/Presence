@@ -20,6 +20,12 @@ final class RemoteModel {
 
     private init() {
         link = LinkCentral(deviceName: UIDevice.current.name, keepConnected: true, restoreIdentifier: "presence-remote")
+        #if DEBUG
+        if Self.isDemo {
+            startDemo()
+            return
+        }
+        #endif
         pairing = PairingKeychain.load()
         link.pairing = pairing
         link.onEvent = { status in Self.notify(status) }
@@ -80,7 +86,39 @@ final class RemoteModel {
 
     // MARK: - 通知
 
+    #if DEBUG
+    /// App Store 截圖用：-PresenceDemo YES，-PresenceDemoState 選 near（預設）、locked、paused、onboarding。
+    static var isDemo: Bool { UserDefaults.standard.bool(forKey: "PresenceDemo") }
+
+    private func startDemo() {
+        let state = UserDefaults.standard.string(forKey: "PresenceDemoState") ?? "near"
+        guard state != "onboarding" else { return }
+        let chinese = Locale.preferredLanguages.first?.hasPrefix("zh") == true
+        let demoPairing = PairingInfo(id: UUID(), macName: "MacBook Pro", key: Data(repeating: 7, count: 32))
+        var status = LinkStatus(macName: "MacBook Pro", presence: .near,
+                                summary: chinese ? "Apple Watch 在附近 · -52 dBm" : "Apple Watch nearby · -52 dBm",
+                                locked: false)
+        switch state {
+        case "locked":
+            status.presence = .away
+            status.summary = chinese ? "Apple Watch 離開了" : "Apple Watch is away"
+            status.locked = true
+        case "paused":
+            status.presence = .paused
+            status.summary = chinese ? "已暫停" : "Paused"
+            status.pausedUntil = Date().addingTimeInterval(3600)
+        default:
+            break
+        }
+        pairing = demoPairing
+        link.startDemo(pairing: demoPairing, status: status)
+    }
+    #endif
+
     static func requestNotificationPermission() async {
+        #if DEBUG
+        if isDemo { return }
+        #endif
         _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
     }
 

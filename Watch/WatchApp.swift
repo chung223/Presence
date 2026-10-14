@@ -32,9 +32,26 @@ final class WatchModel: NSObject {
 
     @ObservationIgnored private let link = LinkCentral(deviceName: "Apple Watch", keepConnected: false)
     @ObservationIgnored private let launchedAt = Date()
+    #if DEBUG
+    @ObservationIgnored private var demo = false
+    #endif
 
     override private init() {
         super.init()
+        #if DEBUG
+        // App Store 截圖用：-PresenceDemo YES，不連 iPhone 也不連藍牙
+        if UserDefaults.standard.bool(forKey: "PresenceDemo") {
+            let chinese = Locale.preferredLanguages.first?.hasPrefix("zh") == true
+            pairing = PairingInfo(id: UUID(), macName: "MacBook Pro", key: Data(repeating: 7, count: 32))
+            status = LinkStatus(macName: "MacBook Pro", presence: .near,
+                                summary: chinese ? "Apple Watch 在附近 · -52 dBm" : "Apple Watch nearby · -52 dBm",
+                                locked: false)
+            lastUpdate = Date()
+            lastRoute = String(localized: "經由 iPhone")
+            demo = true
+            return
+        }
+        #endif
         pairing = PairingKeychain.load()
         link.pairing = pairing
         if WCSession.isSupported() {
@@ -45,6 +62,9 @@ final class WatchModel: NSObject {
 
     /// 打開 App 時：先顯示 iPhone 同步過來的狀態，超過一分鐘沒更新才在背景悄悄更新。
     func refreshIfStale() async {
+        #if DEBUG
+        if demo { return }
+        #endif
         if let lastUpdate, Date().timeIntervalSince(lastUpdate) < 60 { return }
         await perform(.status, quiet: true)
     }

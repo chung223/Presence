@@ -1,12 +1,12 @@
 import SwiftUI
 
-/// iPhone 與手錶共用的狀態外觀。
+/// iPhone 與手錶共用的狀態外觀。監控的可能是 iPhone 也可能是手錶，所以圖示不畫特定裝置。
 public extension MacPresence {
     var symbol: String {
         switch self {
-        case .near: "iphone.radiowaves.left.and.right"
+        case .near: "person.wave.2.fill"
         case .leaving: "figure.walk.departure"
-        case .away: "iphone.slash"
+        case .away: "door.left.hand.open"
         case .waiting: "ellipsis.circle"
         case .paused: "pause.circle"
         case .suspended: "house.circle"

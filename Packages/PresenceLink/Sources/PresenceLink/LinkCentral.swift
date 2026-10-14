@@ -71,6 +71,10 @@ public final class LinkCentral: NSObject {
     @ObservationIgnored private var reassembler = LinkReassembler()
     @ObservationIgnored private var verifyTimeout: Task<Void, Never>?
     @ObservationIgnored private var idleDisconnect: Task<Void, Never>?
+    #if DEBUG
+    /// App Store 截圖用的示範模式：不連藍牙，指令直接改示範狀態。
+    @ObservationIgnored private var demo = false
+    #endif
 
     public init(deviceName: String, keepConnected: Bool, restoreIdentifier: String? = nil) {
         self.deviceName = deviceName
@@ -88,9 +92,41 @@ public final class LinkCentral: NSObject {
         central = CBCentralManager(delegate: self, queue: nil, options: options)
     }
 
+    #if DEBUG
+    /// 截圖用：不連藍牙，直接顯示給定的狀態（呼叫前不要 `start()`）。
+    public func startDemo(pairing: PairingInfo, status: LinkStatus) {
+        demo = true
+        self.pairing = pairing
+        self.status = status
+        lastUpdate = Date()
+        state = .connected
+    }
+
+    private func demoReply(to command: LinkCommand) -> LinkStatus {
+        var next = status ?? LinkStatus(macName: pairing?.macName ?? "Mac", presence: .near, summary: "", locked: false)
+        switch command {
+        case .lock: next.locked = true
+        case .pause(let minutes):
+            next.pausedUntil = Date().addingTimeInterval(TimeInterval(minutes * 60))
+            next.presence = .paused
+        case .resume:
+            next.pausedUntil = nil
+            next.presence = .near
+        case .hello, .status, .confirm: break
+        }
+        next.sentAt = Date()
+        status = next
+        lastUpdate = Date()
+        return next
+    }
+    #endif
+
     /// 送出指令並等 Mac 回覆最新狀態。
     public func send(_ command: LinkCommand, timeout: TimeInterval = 10) async -> Result<LinkStatus, Failure> {
         guard pairing != nil else { return .failure(.notPaired) }
+        #if DEBUG
+        if demo { return .success(demoReply(to: command)) }
+        #endif
         start()
         idleDisconnect?.cancel()
         if state != .connected {
