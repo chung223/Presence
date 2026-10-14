@@ -1,0 +1,79 @@
+{
+  "sourceLanguage": "zh-Hant",
+  "strings": {
+    "${applicationName} Mac 狀態": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "${applicationName} Mac status"
+          }
+        },
+        "zh-Hant": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName} Mac 狀態"
+            ]
+          }
+        }
+      }
+    },
+    "用 ${applicationName} 恢復": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume with ${applicationName}"
+          }
+        },
+        "zh-Hant": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "用 ${applicationName} 恢復"
+            ]
+          }
+        }
+      }
+    },
+    "用 ${applicationName} 暫停": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause with ${applicationName}"
+          }
+        },
+        "zh-Hant": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "用 ${applicationName} 暫停"
+            ]
+          }
+        }
+      }
+    },
+    "用 ${applicationName} 鎖定 Mac": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock Mac with ${applicationName}"
+          }
+        },
+        "zh-Hant": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "用 ${applicationName} 鎖定 Mac",
+              "${applicationName} 鎖定"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

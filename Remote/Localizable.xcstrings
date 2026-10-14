@@ -1,0 +1,774 @@
+{
+  "sourceLanguage": "zh-Hant",
+  "strings": {
+    "%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        }
+      }
+    },
+    "%@ 已恢復自動鎖定與解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ resumed automatic lock and unlock"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 已恢復自動鎖定與解鎖"
+          }
+        }
+      }
+    },
+    "%@ 已暫停自動鎖定與解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ paused automatic lock and unlock"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 已暫停自動鎖定與解鎖"
+          }
+        }
+      }
+    },
+    "%@ 已自動鎖定：你離開了": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ locked automatically because you left"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 已自動鎖定：你離開了"
+          }
+        }
+      }
+    },
+    "%@ 已鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is locked"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 已鎖定"
+          }
+        }
+      }
+    },
+    "1 小時": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 Hour"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 小時"
+          }
+        }
+      }
+    },
+    "15 分鐘": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15 Minutes"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15 分鐘"
+          }
+        }
+      }
+    },
+    "4 小時": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4 Hours"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4 小時"
+          }
+        }
+      }
+    },
+    "Mac 因為你離開而自動鎖定、或你不在附近時被手動解鎖，會發通知給你。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You'll be notified when your Mac locks because you left, or when it's unlocked manually while you're away."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 因為你離開而自動鎖定、或你不在附近時被手動解鎖，會發通知給你。"
+          }
+        }
+      }
+    },
+    "Mac 已鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac Locked"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 已鎖定"
+          }
+        }
+      }
+    },
+    "Mac 狀態": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac Status"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 狀態"
+          }
+        }
+      }
+    },
+    "Presence Remote": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remote"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remote"
+          }
+        }
+      }
+    },
+    "Presence Remote 透過藍牙連到 Mac 上的 Presence，指令都經過加密。Apple Watch 會透過這支 iPhone 取得配對。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remote connects to Presence on your Mac over Bluetooth, and every command is encrypted. Your Apple Watch gets the pairing from this iPhone."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remote 透過藍牙連到 Mac 上的 Presence，指令都經過加密。Apple Watch 會透過這支 iPhone 取得配對。"
+          }
+        }
+      }
+    },
+    "之後要重新掃描 QR code 才能再控制這台 Mac。Apple Watch 也會一起取消。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You'll need to scan the QR code again to control this Mac. Your Apple Watch will be unpaired too."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "之後要重新掃描 QR code 才能再控制這台 Mac。Apple Watch 也會一起取消。"
+          }
+        }
+      }
+    },
+    "也可以對 Siri 說「用 Presence Remote 鎖定 Mac」，或把「鎖定 Mac」加到動作按鈕、控制中心旁的「捷徑」。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can also say “Lock Mac with Presence Remote” to Siri, or add Lock Mac to the Action button, Control Center, or Shortcuts."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "也可以對 Siri 說「用 Presence Remote 鎖定 Mac」，或把「鎖定 Mac」加到動作按鈕、控制中心旁的「捷徑」。"
+          }
+        }
+      }
+    },
+    "你不在附近時，%@ 被手動解鎖了": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ was unlocked manually while you were away"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "你不在附近時，%@ 被手動解鎖了"
+          }
+        }
+      }
+    },
+    "分鐘": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minutes"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分鐘"
+          }
+        }
+      }
+    },
+    "取得 Mac 狀態": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get Mac Status"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取得 Mac 狀態"
+          }
+        }
+      }
+    },
+    "取消配對": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unpair"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取消配對"
+          }
+        }
+      }
+    },
+    "名稱": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "名稱"
+          }
+        }
+      }
+    },
+    "回傳 Presence 目前的狀態，例如「Weichung 在附近」。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Returns the current status of Presence, such as “iPhone nearby”."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "回傳 Presence 目前的狀態，例如「Weichung 在附近」。"
+          }
+        }
+      }
+    },
+    "在 Mac 打開 Presence，到「手機與手錶」按「配對新的 iPhone」": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On your Mac, open Presence, go to Phone & Watch, and click Pair New iPhone"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在 Mac 打開 Presence，到「手機與手錶」按「配對新的 iPhone」"
+          }
+        }
+      }
+    },
+    "在指定的時間內，Mac 不會自動鎖定也不會自動解鎖。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For the given time, your Mac won't lock or unlock automatically."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在指定的時間內，Mac 不會自動鎖定也不會自動解鎖。"
+          }
+        }
+      }
+    },
+    "完成": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成"
+          }
+        }
+      }
+    },
+    "從 iPhone 和 Apple Watch 鎖定你的 Mac、暫停或恢復 Presence，Mac 鎖定時也會通知你。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock your Mac and pause or resume Presence from your iPhone and Apple Watch, and get notified when your Mac locks."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "從 iPhone 和 Apple Watch 鎖定你的 Mac、暫停或恢復 Presence，Mac 鎖定時也會通知你。"
+          }
+        }
+      }
+    },
+    "恢復": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢復"
+          }
+        }
+      }
+    },
+    "恢復 Presence": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume Presence"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢復 Presence"
+          }
+        }
+      }
+    },
+    "恢復自動鎖定與解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume Automatic Lock and Unlock"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢復自動鎖定與解鎖"
+          }
+        }
+      }
+    },
+    "打開通知設定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Notification Settings"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打開通知設定"
+          }
+        }
+      }
+    },
+    "掃描 QR code": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan QR Code"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "掃描 QR code"
+          }
+        }
+      }
+    },
+    "暫停": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暫停"
+          }
+        }
+      }
+    },
+    "暫停 Presence": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause Presence"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暫停 Presence"
+          }
+        }
+      }
+    },
+    "暫停 Presence ${minutes} 分鐘": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause Presence for ${minutes} minutes"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暫停 Presence ${minutes} 分鐘"
+          }
+        }
+      }
+    },
+    "暫停或恢復 Presence": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause or Resume Presence"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暫停或恢復 Presence"
+          }
+        }
+      }
+    },
+    "暫停自動鎖定與解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause Automatic Lock and Unlock"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暫停自動鎖定與解鎖"
+          }
+        }
+      }
+    },
+    "更新於 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updated %@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更新於 %@"
+          }
+        }
+      }
+    },
+    "用 Presence 立即鎖定配對的 Mac。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock your paired Mac now with Presence."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用 Presence 立即鎖定配對的 Mac。"
+          }
+        }
+      }
+    },
+    "立即鎖定 Mac": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock Mac Now"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "立即鎖定 Mac"
+          }
+        }
+      }
+    },
+    "結束暫停，恢復自動鎖定與解鎖。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End the pause and resume automatic lock and unlock."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結束暫停，恢復自動鎖定與解鎖。"
+          }
+        }
+      }
+    },
+    "要取消與這台 Mac 的配對嗎？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unpair from this Mac?"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "要取消與這台 Mac 的配對嗎？"
+          }
+        }
+      }
+    },
+    "設定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定"
+          }
+        }
+      }
+    },
+    "這不是 Presence 的配對 QR code。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This isn't a Presence pairing QR code."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這不是 Presence 的配對 QR code。"
+          }
+        }
+      }
+    },
+    "通知": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通知"
+          }
+        }
+      }
+    },
+    "連線": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "連線"
+          }
+        }
+      }
+    },
+    "還沒有收到 Mac 的狀態": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No status from your Mac yet"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "還沒有收到 Mac 的狀態"
+          }
+        }
+      }
+    },
+    "配對的 Mac": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paired Mac"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配對的 Mac"
+          }
+        }
+      }
+    },
+    "鎖定 Mac": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock Mac"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "鎖定 Mac"
+          }
+        }
+      }
+    },
+    "點下面的按鈕，掃描 Mac 上的 QR code": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap the button below and scan the QR code on your Mac"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "點下面的按鈕，掃描 Mac 上的 QR code"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

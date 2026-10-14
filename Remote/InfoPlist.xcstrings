@@ -1,0 +1,40 @@
+{
+  "sourceLanguage": "zh-Hant",
+  "strings": {
+    "NSBluetoothAlwaysUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remote uses Bluetooth to connect to Presence on your Mac, so you can lock it or check its status from your iPhone."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remote 用藍牙連到你 Mac 上的 Presence，從手機鎖定或查看狀態。"
+          }
+        }
+      }
+    },
+    "NSCameraUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The camera is used to scan the pairing QR code shown by Presence on your Mac."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用相機掃描 Mac 上 Presence 顯示的配對 QR code。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

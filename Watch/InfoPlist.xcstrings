@@ -1,0 +1,23 @@
+{
+  "sourceLanguage": "zh-Hant",
+  "strings": {
+    "NSBluetoothAlwaysUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence uses Bluetooth to connect to Presence on your Mac, so you can lock it or check its status from your watch."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence 用藍牙連到你 Mac 上的 Presence，從手錶鎖定或查看狀態。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
