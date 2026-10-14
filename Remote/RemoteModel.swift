@@ -15,6 +15,9 @@ final class RemoteModel {
     private(set) var pairing: PairingInfo?
     private(set) var busy = false
     private(set) var lastError: String?
+    /// 宣傳影片的字幕與結尾畫面（只有開發版的示範腳本會設定）。
+    private(set) var demoCaption: String?
+    private(set) var demoEndCard = false
 
     @ObservationIgnored private let watch = WatchBridge()
 
@@ -112,6 +115,48 @@ final class RemoteModel {
         }
         pairing = demoPairing
         link.startDemo(pairing: demoPairing, status: status)
+        if state == "script" { Task { await runDemoScript(chinese: chinese, start: status) } }
+    }
+
+    /// 宣傳影片：在座位 → 離開自動鎖定 → 回來自動解鎖 → 從 iPhone 鎖定 → 暫停 → 結尾，約 26 秒。
+    private func runDemoScript(chinese: Bool, start: LinkStatus) async {
+        func t(_ zh: String, _ en: String) -> String { chinese ? zh : en }
+        var status = start
+        func step(_ caption: String, seconds: Double, _ change: (inout LinkStatus) -> Void = { _ in }) async {
+            change(&status)
+            status.sentAt = Date()
+            link.updateDemo(status)
+            demoCaption = caption
+            try? await Task.sleep(for: .seconds(seconds))
+        }
+        try? await Task.sleep(for: .seconds(1))
+        await step(t("Presence 會知道\n你在不在座位上", "Presence knows when\nyou're at your desk"), seconds: 3.5)
+        await step(t("離開座位，Mac 自動鎖定", "Walk away and your Mac locks"), seconds: 2) {
+            $0.presence = .leaving
+            $0.summary = t("Apple Watch 離開中…", "Apple Watch is leaving…")
+        }
+        await step(t("離開座位，Mac 自動鎖定", "Walk away and your Mac locks"), seconds: 3.5) {
+            $0.presence = .away
+            $0.summary = t("Apple Watch 離開了", "Apple Watch is away")
+            $0.locked = true
+        }
+        await step(t("回來時，自動解鎖", "Come back and it unlocks"), seconds: 4) {
+            $0.presence = .near
+            $0.summary = t("Apple Watch 在附近 · -55 dBm", "Apple Watch nearby · -55 dBm")
+            $0.locked = false
+        }
+        await step(t("從 iPhone 一鍵鎖定", "Lock it from your iPhone"), seconds: 4) {
+            $0.summary = t("已從 iPhone 鎖定", "Locked from iPhone")
+            $0.locked = true
+        }
+        await step(t("需要時暫停自動鎖定", "Pause it when you need to"), seconds: 4) {
+            $0.presence = .paused
+            $0.summary = t("已暫停", "Paused")
+            $0.locked = false
+            $0.pausedUntil = Date().addingTimeInterval(3600)
+        }
+        demoCaption = nil
+        demoEndCard = true
     }
     #endif
 

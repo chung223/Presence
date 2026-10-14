@@ -102,6 +102,12 @@ public final class LinkCentral: NSObject {
         state = .connected
     }
 
+    /// 宣傳影片用：照腳本換狀態。
+    public func updateDemo(_ status: LinkStatus) {
+        self.status = status
+        lastUpdate = Date()
+    }
+
     private func demoReply(to command: LinkCommand) -> LinkStatus {
         var next = status ?? LinkStatus(macName: pairing?.macName ?? "Mac", presence: .near, summary: "", locked: false)
         switch command {

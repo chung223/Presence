@@ -16,6 +16,11 @@ struct RemoteApp: App {
                 }
             }
             .task { await RemoteModel.requestNotificationPermission() }
+            #if DEBUG
+            // 宣傳影片的結尾蓋住整個畫面（包括導覽列的設定按鈕）
+            .overlay { if model.demoEndCard { DemoEndCard() } }
+            .animation(.easeInOut(duration: 0.6), value: model.demoEndCard)
+            #endif
         }
     }
 }
@@ -181,6 +186,9 @@ struct ControlView: View {
             .task { await model.perform(.status) }
             .sheet(isPresented: $showingSettings) { SettingsView(model: model) }
             .sensoryFeedback(.success, trigger: successCount)
+            #if DEBUG
+            .overlay(alignment: .bottom) { DemoCaption(text: model.demoCaption) }
+            #endif
         }
     }
 
@@ -219,6 +227,7 @@ struct StatusCard: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+            .frame(minHeight: 24) // 出現「Mac 已鎖定」時，卡片高度不變
             if let lastUpdate {
                 Text("更新於 \(lastUpdate.formatted(.relative(presentation: .named)))")
                     .font(.caption2)
@@ -276,3 +285,56 @@ struct SettingsView: View {
         }
     }
 }
+
+#if DEBUG
+// MARK: - 宣傳影片（開發版的示範腳本）
+
+private struct DemoCaption: View {
+    let text: String?
+
+    var body: some View {
+        ZStack {
+            if let text {
+                Text(text)
+                    .font(.system(size: 30, weight: .bold))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 28)
+                    // 舊的先淡出、新的再淡入，兩句不會疊在一起
+                    .transition(.asymmetric(
+                        insertion: .opacity.combined(with: .offset(y: 16)).animation(.easeOut(duration: 0.35).delay(0.25)),
+                        removal: .opacity.animation(.easeIn(duration: 0.2))))
+                    .id(text)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.bottom, 150)
+        .animation(.default, value: text)
+    }
+}
+
+/// 結尾：跟 App 圖示同一組漸層與符號。
+struct DemoEndCard: View {
+    private var chinese: Bool { Locale.preferredLanguages.first?.hasPrefix("zh") == true }
+
+    var body: some View {
+        VStack(spacing: 22) {
+            RoundedRectangle(cornerRadius: 34, style: .continuous)
+                .fill(LinearGradient(colors: [Color(red: 0.20, green: 0.78, blue: 0.70), Color(red: 0.10, green: 0.42, blue: 0.85)],
+                                     startPoint: .topLeading, endPoint: .bottomTrailing))
+                .frame(width: 150, height: 150)
+                .overlay {
+                    Image(systemName: "lock.laptopcomputer")
+                        .font(.system(size: 66, weight: .medium))
+                        .foregroundStyle(.white)
+                }
+            Text("Presence Remote").font(.system(size: 38, weight: .bold))
+            Text(chinese ? "搭配 Mac 上的免費 Presence" : "Works with the free Presence for Mac")
+                .font(.title3)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.background)
+        .transition(.opacity)
+    }
+}
+#endif
