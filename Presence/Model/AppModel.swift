@@ -649,6 +649,7 @@ final class AppModel {
             automation.didAttemptUnlock(at: Date())
             guard CGDisplayIsAsleep(CGMainDisplayID()) != 0, preferences.wakeOnProximity else { return }
             Unlocker.dismissScreensaver()
+            ScreenControl.keepDisplayAwake(for: 60)
             ScreenControl.wakeDisplay()
             log.add(.info, String(localized: "\(Self.list(nearDeviceNames)) 在附近，已喚醒螢幕"))
             return
@@ -707,6 +708,7 @@ final class AppModel {
         isWaitingForSystemUnlock = true
         defer { isWaitingForSystemUnlock = false }
         Unlocker.dismissScreensaver()
+        ScreenControl.keepDisplayAwake(for: 60)
         ScreenControl.wakeDisplay()
         let deadline = ContinuousClock.now + systemUnlockHeadStart
         while ContinuousClock.now < deadline {
@@ -745,6 +747,7 @@ final class AppModel {
     private func wakeForManualUnlock() {
         guard preferences.wakeOnProximity, session.isLocked else { return }
         Unlocker.dismissScreensaver()
+        ScreenControl.keepDisplayAwake(for: 60)
         ScreenControl.wakeDisplay()
     }
 
@@ -836,6 +839,10 @@ final class AppModel {
                 lockedByPresence = false
                 if let name = preferences.shortcutOnReturn { ShortcutsRunner.run(name) }
             }
+            if byUs || isWaitingForSystemUnlock || isConfirmingPresence {
+                // 你可能還沒坐下：別讓螢幕馬上因為閒置變暗又鎖住
+                ScreenControl.keepDisplayAwake(for: 60)
+            }
             link.broadcast(event: group.presence.isAway && !byUs ? .unlockedWhileAway : .unlocked)
             if byUs {
                 let names = nearDeviceNames
@@ -865,6 +872,7 @@ final class AppModel {
                 }
             }
         case .locked:
+            ScreenControl.releaseDisplayAwake()
             if let last = lastLockAt, t.timeIntervalSince(last) < 5 { break }
             log.add(.locked, String(localized: "螢幕已鎖定"))
         case .displayWoke:

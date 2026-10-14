@@ -37,4 +37,34 @@ enum ScreenControl {
             IOPMAssertionRelease(id)
         }
     }
+
+    private static var awakeAssertion: IOPMAssertionID = 0
+    private static var awakeRelease: Task<Void, Never>?
+
+    /// 自動解鎖前後讓螢幕保持亮著。`wakeDisplay` 只宣告「剛剛有人操作」，效果只有幾秒；
+    /// 你還沒碰鍵盤滑鼠前，系統會照閒置計時讓螢幕變暗，設了「螢幕變暗就要密碼」就又鎖住
+    /// （2026-10-14 實測：手錶解開 5 秒後又鎖定）。時間到或再呼叫一次就延長。
+    static func keepDisplayAwake(for seconds: TimeInterval) {
+        if awakeAssertion == 0 {
+            let created = IOPMAssertionCreateWithName(kIOPMAssertionTypePreventUserIdleDisplaySleep as CFString,
+                                                      IOPMAssertionLevel(kIOPMAssertionLevelOn),
+                                                      "Presence: just unlocked, waiting for you to sit down" as CFString,
+                                                      &awakeAssertion)
+            if created != kIOReturnSuccess { awakeAssertion = 0 }
+        }
+        awakeRelease?.cancel()
+        awakeRelease = Task {
+            try? await Task.sleep(for: .seconds(seconds))
+            guard !Task.isCancelled else { return }
+            releaseDisplayAwake()
+        }
+    }
+
+    static func releaseDisplayAwake() {
+        awakeRelease?.cancel()
+        awakeRelease = nil
+        guard awakeAssertion != 0 else { return }
+        IOPMAssertionRelease(awakeAssertion)
+        awakeAssertion = 0
+    }
 }
