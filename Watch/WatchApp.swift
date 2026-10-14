@@ -43,13 +43,20 @@ final class WatchModel: NSObject {
         }
     }
 
-    func perform(_ command: LinkCommand) async {
+    /// 打開 App 時：先顯示 iPhone 同步過來的狀態，超過一分鐘沒更新才在背景悄悄更新。
+    func refreshIfStale() async {
+        if let lastUpdate, Date().timeIntervalSince(lastUpdate) < 60 { return }
+        await perform(.status, quiet: true)
+    }
+
+    /// `quiet`：背景更新，不轉圈、失敗也不顯示錯誤，保留手上的狀態。
+    func perform(_ command: LinkCommand, quiet: Bool = false) async {
         guard pairing != nil else {
             lastError = String(localized: "請先在 iPhone 的 Presence Remote 配對 Mac")
             return
         }
-        busy = true
-        defer { busy = false }
+        if !quiet { busy = true }
+        defer { if !quiet { busy = false } }
         let session = WCSession.default
         // App 剛啟動時，跟 iPhone 的即時連線要一下子才建立；這段期間先等，不要馬上改走直接連線
         if Date().timeIntervalSince(launchedAt) < 3, !session.isReachable {
@@ -66,13 +73,15 @@ final class WatchModel: NSObject {
             }
             LinkLog.write("[手錶] 經由 iPhone 失敗，改直接連線")
         }
+        // 背景更新不值得直接連 Mac：耗手錶的電，也會佔用 Mac 的連線
+        if quiet { return }
         switch await link.send(command) {
         case .success(let status):
             LinkLog.write("[手錶] 直接連線成功")
             apply(.success(status), route: String(localized: "直接連線"))
         case .failure(let failure):
             LinkLog.write("[手錶] 直接連線失敗：\(failure)")
-            apply(.failure(failure.message), route: nil)
+            if !quiet { apply(.failure(failure.message), route: nil) }
         }
     }
 
@@ -197,6 +206,9 @@ struct WatchControlView: View {
                     if model.status?.locked == true {
                         Label("Mac 已鎖定", systemImage: "lock.fill").font(.caption2).foregroundStyle(.orange)
                     }
+                    if let updated = model.lastUpdate {
+                        Text("\(Text(updated, style: .relative))前更新").font(.caption2).foregroundStyle(.secondary)
+                    }
 
                     Button {
                         Task { await model.perform(.lock) }
@@ -222,7 +234,7 @@ struct WatchControlView: View {
                 }
             }
             .navigationTitle(model.pairing?.macName ?? "Presence")
-            .task { await model.perform(.status) }
+            .task { await model.refreshIfStale() }
         }
     }
 }

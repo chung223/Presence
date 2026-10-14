@@ -13,12 +13,14 @@ struct OverviewView: View {
                     SetupChecklist(model: model, selection: $selection)
                 }
                 StatusHeader(model: model)
-                UnlockSecurityRow(model: model, selection: $selection)
-                if model.preferences.devices.isEmpty {
-                    SignalChart(model: model, device: nil)
+                if model.automation.isBlockedByFailures {
+                    BlockedUnlockRow(model: model)
                 }
-                ForEach(model.preferences.devices) { device in
-                    SignalChart(model: model, device: device)
+                UnlockSecurityRow(model: model, selection: $selection)
+                switch model.preferences.devices.count {
+                case 0: SignalChart(model: model, device: nil)
+                case 1: SignalChart(model: model, device: model.preferences.devices[0])
+                default: CombinedSignalChart(model: model)
                 }
                 RecentEvents(log: model.log, selection: $selection)
             }
@@ -57,6 +59,16 @@ private struct StatusHeader: View {
                 .foregroundStyle(status.tint)
                 .frame(width: 60, height: 60)
                 .background(status.tint.opacity(0.15), in: .circle)
+                .overlay {
+                    // 離開中：剩下的時間畫成一圈，一眼看出還有幾秒鎖定
+                    if case .leaving(let remaining) = status, model.group.lockDelay > 0 {
+                        Circle()
+                            .trim(from: 0, to: remaining / model.group.lockDelay)
+                            .stroke(status.tint, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                            .rotationEffect(.degrees(-90))
+                            .animation(.linear(duration: 1), value: remaining)
+                    }
+                }
                 .contentTransition(.symbolEffect(.replace))
 
             VStack(alignment: .leading, spacing: 4) {
@@ -112,6 +124,27 @@ private struct StatusHeader: View {
         parts.append(p.activeMode ? String(localized: "主動模式") : String(localized: "被動模式"))
         if model.automation.manualHold { parts.append(String(localized: "手動鎖定中")) }
         return parts.joined(separator: " · ")
+    }
+}
+
+// MARK: - 自動解鎖停用
+
+/// 連續解鎖失敗兩次後就停用，免得密碼錯誤一直累積；直接在總覽說明並提供恢復。
+private struct BlockedUnlockRow: View {
+    let model: AppModel
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.red).frame(width: 18)
+            Text("連續自動解鎖失敗，已停止自動解鎖。如果改過登入密碼，請到「鎖定與解鎖」重新設定。")
+                .font(.callout)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 8)
+            Button("恢復自動解鎖") { model.resumeAutoUnlock() }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(.red.opacity(0.1), in: .rect(cornerRadius: 10))
     }
 }
 
@@ -233,6 +266,59 @@ private struct SignalChart: View {
                 }
             }
             Text("灰點是每一筆收到的訊號，線是取中位數後的結果。線要高於綠色虛線才會解鎖，低於橘色虛線一段時間就會鎖定。")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .padding(16)
+        .background(.background.secondary, in: .rect(cornerRadius: 14))
+    }
+}
+
+/// 兩台以上的裝置畫在同一張圖，每台一種顏色；門檻都一樣才畫門檻線。
+private struct CombinedSignalChart: View {
+    let model: AppModel
+
+    var body: some View {
+        let p = model.preferences
+        let end = model.now
+        let unlock = Set(p.devices.map(\.unlockRSSI))
+        let lock = Set(p.devices.map(\.lockRSSI))
+        VStack(alignment: .leading, spacing: 8) {
+            Text("最近 3 分鐘的訊號").font(.headline)
+            Chart {
+                ForEach(p.devices) { device in
+                    ForEach(model.samples[device.id] ?? []) { point in
+                        PointMark(x: .value("時間", point.date), y: .value("RSSI", point.rssi))
+                            .symbolSize(10)
+                            .foregroundStyle(by: .value("裝置", device.displayName))
+                            .opacity(0.3)
+                    }
+                    ForEach(model.smoothed[device.id] ?? []) { point in
+                        LineMark(x: .value("時間", point.date), y: .value("濾波後", point.rssi),
+                                 series: .value("裝置", device.displayName))
+                            .interpolationMethod(.monotone)
+                            .foregroundStyle(by: .value("裝置", device.displayName))
+                    }
+                }
+                if p.unlockEnabled, unlock.count == 1, let value = unlock.first {
+                    RuleMark(y: .value("解鎖門檻", value))
+                        .foregroundStyle(.green)
+                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                }
+                if p.lockEnabled, lock.count == 1, let value = lock.first {
+                    RuleMark(y: .value("鎖定門檻", value))
+                        .foregroundStyle(.orange)
+                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
+                }
+            }
+            .chartXScale(domain: end.addingTimeInterval(-180)...end)
+            .chartYScale(domain: -100 ... -30)
+            .chartLegend(position: .top, alignment: .leading)
+            .chartPlotStyle { $0.clipped() }
+            .frame(height: 220)
+            Text(unlock.count == 1 && lock.count == 1
+                 ? String(localized: "綠色虛線是解鎖門檻，橘色虛線是鎖定門檻。")
+                 : String(localized: "各裝置的門檻不同，可以到「裝置」或「鎖定與解鎖」查看。"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

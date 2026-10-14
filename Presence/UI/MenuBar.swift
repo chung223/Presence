@@ -15,13 +15,23 @@ struct MenuBarLabel: View {
 }
 
 struct MenuBarMenu: View {
-    let model: AppModel
+    @Bindable var model: AppModel
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         Text(headline)
         if model.isPaused, let until = model.automation.pausedUntil {
             Text("暫停到 \(until.formatted(date: .omitted, time: .shortened))")
+        }
+        // 只有一台裝置時，第一行已經有訊號強度
+        if model.preferences.devices.count > 1 {
+            ForEach(model.preferences.devices) { device in
+                Text(model.smoothedRSSI(for: device.id).map { "\(device.displayName)：\($0) dBm" }
+                     ?? String(localized: "\(device.displayName)：沒有訊號"))
+            }
+        }
+        if model.hasDevices {
+            Text("今天在座 \(DeskTimeView.format(model.deskTime.total(on: model.now, calendar: .current, now: model.now)))")
         }
         Divider()
         Button("立即鎖定") { model.lockNow() }
@@ -35,6 +45,8 @@ struct MenuBarMenu: View {
                 Button("4 小時") { model.pause(for: 4 * 60 * 60) }
             }
         }
+        Toggle("離開時自動鎖定", isOn: $model.preferences.lockEnabled)
+        Toggle("回來時自動解鎖", isOn: $model.preferences.unlockEnabled)
         Divider()
         Button("打開 Presence…") {
             openWindow(id: "main")

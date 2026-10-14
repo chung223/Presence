@@ -273,6 +273,22 @@
         }
       }
     },
+    "%@：沒有訊號": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: No signal"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@：沒有訊號"
+          }
+        }
+      }
+    },
     "%lld": {
       "localizations": {
         "en": {
@@ -865,6 +881,22 @@
         }
       }
     },
+    "今天在座 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At your desk today: %@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今天在座 %@"
+          }
+        }
+      }
+    },
     "今天最長的一段": {
       "localizations": {
         "en": {
@@ -1357,6 +1389,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "只設定解鎖門檻"
+          }
+        }
+      }
+    },
+    "各裝置的門檻不同，可以到「裝置」或「鎖定與解鎖」查看。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devices use different thresholds. See Devices or Lock & Unlock."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "各裝置的門檻不同，可以到「裝置」或「鎖定與解鎖」查看。"
           }
         }
       }
@@ -3793,6 +3841,22 @@
         }
       }
     },
+    "綠色虛線是解鎖門檻，橘色虛線是鎖定門檻。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The green dashed line is the unlock threshold; the orange one is the lock threshold."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "綠色虛線是解鎖門檻，橘色虛線是鎖定門檻。"
+          }
+        }
+      }
+    },
     "總覽": {
       "localizations": {
         "en": {
@@ -4669,6 +4733,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "連續坐多久提醒一次"
+          }
+        }
+      }
+    },
+    "連續自動解鎖失敗，已停止自動解鎖。如果改過登入密碼，請到「鎖定與解鎖」重新設定。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic unlock failed repeatedly and has been turned off. If you changed your login password, set it again in Lock & Unlock."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "連續自動解鎖失敗，已停止自動解鎖。如果改過登入密碼，請到「鎖定與解鎖」重新設定。"
           }
         }
       }
