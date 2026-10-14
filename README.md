@@ -10,7 +10,7 @@ Presence 是 macOS 選單列工具，用藍牙偵測你的 iPhone、Apple Watch 
 
 <img src="docs/images/walkaway-zh-Hant.gif" width="800" alt="離開座位時倒數鎖定，回來後自動解鎖">
 
-▶ [宣傳影片（37 秒）](https://github.com/chung223/Presence/releases/download/v0.1.2/presence-promo-zh-Hant.mp4)
+https://github.com/user-attachments/assets/329342e3-e860-4f90-9336-d4e9ebd3b911
 
 ## 功能
 
