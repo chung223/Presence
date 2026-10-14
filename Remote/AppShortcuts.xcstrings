@@ -1,19 +1,19 @@
 {
   "sourceLanguage": "zh-Hant",
   "strings": {
-    "${applicationName} Mac 狀態": {
+    "${applicationName} 狀態": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "${applicationName} Mac status"
+            "value": "${applicationName} status"
           }
         },
         "zh-Hant": {
           "stringSet": {
             "state": "translated",
             "values": [
-              "${applicationName} Mac 狀態"
+              "${applicationName} 狀態"
             ]
           }
         }
@@ -55,19 +55,19 @@
         }
       }
     },
-    "用 ${applicationName} 鎖定 Mac": {
+    "用 ${applicationName} 鎖定電腦": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lock Mac with ${applicationName}"
+            "value": "Lock computer with ${applicationName}"
           }
         },
         "zh-Hant": {
           "stringSet": {
             "state": "translated",
             "values": [
-              "用 ${applicationName} 鎖定 Mac",
+              "用 ${applicationName} 鎖定電腦",
               "${applicationName} 鎖定"
             ]
           }

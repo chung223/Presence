@@ -6,6 +6,7 @@ import PresenceLink
 /// 都是 `LiveActivityIntent`：從小工具或控制中心按下時，系統在 App 的程序裡執行（必要時在背景啟動 App），
 /// 因為只有 App 連著 Mac 的藍牙；小工具擴充不能自己連。
 /// 鎖定很安全，鎖著的手機也能執行；暫停與恢復會改變保護，要先解鎖手機。
+/// 說明文字與 Siri 的句子不能出現「Mac」，否則 App Store Connect 會退回（錯誤 90626）。
 
 struct RemoteIntentError: Error, CustomLocalizedStringResourceConvertible {
     let message: String
@@ -22,7 +23,7 @@ func runMacCommand(_ command: LinkCommand) async throws -> LinkStatus {
 
 struct LockMacIntent: LiveActivityIntent {
     static let title: LocalizedStringResource = "鎖定 Mac"
-    static let description = IntentDescription("用 Presence 立即鎖定配對的 Mac。")
+    static let description = IntentDescription("用 Presence 立即鎖定配對的電腦。")
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
@@ -33,7 +34,7 @@ struct LockMacIntent: LiveActivityIntent {
 
 struct PauseMacIntent: LiveActivityIntent {
     static let title: LocalizedStringResource = "暫停 Presence"
-    static let description = IntentDescription("在指定的時間內，Mac 不會自動鎖定也不會自動解鎖。")
+    static let description = IntentDescription("在指定的時間內，電腦不會自動鎖定也不會自動解鎖。")
     static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
     @Parameter(title: "分鐘", default: 60, inclusiveRange: (1, 1440))

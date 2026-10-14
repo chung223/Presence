@@ -171,7 +171,7 @@ struct ControlView: View {
                         Text(error).font(.callout).foregroundStyle(.red).multilineTextAlignment(.center)
                     }
 
-                    Text("也可以對 Siri 說「用 Presence Remote 鎖定 Mac」，或把「鎖定 Mac」加到動作按鈕、控制中心旁的「捷徑」。")
+                    Text("也可以對 Siri 說「用 Presence Remote 鎖定電腦」，或把「鎖定 Mac」加到動作按鈕、控制中心或「捷徑」。")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)

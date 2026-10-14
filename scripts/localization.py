@@ -39,7 +39,8 @@ CATALOGS = [ROOT / c for _, _, catalogs in TARGETS for c in catalogs] + [ROOT / 
 
 def sync():
     for build_dir, target, catalogs in TARGETS:
-        stringsdata = sorted(str(p) for p in (ROOT / build_dir).rglob(f"{target}/**/*.stringsdata"))
+        # 只讀開發版（Debug）的建置：打正式版或封存時留下的 Release 資料可能是舊的，會把刪掉的字串加回來
+        stringsdata = sorted(str(p) for p in (ROOT / build_dir).rglob(f"{target}/**/*.stringsdata") if "/Debug" in str(p))
         if not stringsdata:
             sys.exit(f"找不到 {target} 的 .stringsdata，請先建置（輸出到 {build_dir}/）")
         subprocess.run(["xcrun", "xcstringstool", "sync", *(str(ROOT / c) for c in catalogs),

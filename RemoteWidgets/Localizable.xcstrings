@@ -177,18 +177,18 @@
         }
       }
     },
-    "在指定的時間內，Mac 不會自動鎖定也不會自動解鎖。": {
+    "在指定的時間內，電腦不會自動鎖定也不會自動解鎖。": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "For the given time, your Mac won't lock or unlock automatically."
+            "value": "For the given time, your computer won't lock or unlock automatically."
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "在指定的時間內，Mac 不會自動鎖定也不會自動解鎖。"
+            "value": "在指定的時間內，電腦不會自動鎖定也不會自動解鎖。"
           }
         }
       }
@@ -381,6 +381,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "用 Presence 立即鎖定配對的 Mac。"
+          }
+        }
+      }
+    },
+    "用 Presence 立即鎖定配對的電腦。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock your paired computer now with Presence."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用 Presence 立即鎖定配對的電腦。"
           }
         }
       }
