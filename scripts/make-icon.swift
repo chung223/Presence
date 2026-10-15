@@ -2,7 +2,8 @@
 //   swift scripts/make-icon.swift Presence/Assets.xcassets/AppIcon.appiconset          （Mac）
 //   swift scripts/make-icon.swift Remote/Assets.xcassets/AppIcon.appiconset ios        （iPhone）
 //   swift scripts/make-icon.swift Watch/Assets.xcassets/AppIcon.appiconset watchos     （手錶）
-// 三個平台用同一組漸層；iPhone 與手錶是遙控 App，符號換成「筆電＋鎖」。
+// 三個平台用同一組漸層。Mac 是「手機發出訊號」；iPhone 與手錶是遙控 App（鎖定、暫停、簡報），
+// 畫成「手機發訊號給筆電」，不只代表上鎖。
 import AppKit
 
 let output = URL(fileURLWithPath: CommandLine.arguments[1])
@@ -12,8 +13,25 @@ let canvas: CGFloat = 1024
 // macOS 圖示範本：824×824 的圓角方形置中，四周留給陰影。iOS 與手錶要滿版、不透明，圓角由系統裁。
 let inset: CGFloat = isMac ? 100 : 0
 let radius: CGFloat = isMac ? 185 : 0
-let symbolName = isMac ? "iphone.radiowaves.left.and.right" : "lock.laptopcomputer"
-let symbolSize: CGFloat = isMac ? 360 : 440
+// 手錶圖示會被裁成圓形，內容縮小一點
+let remoteScale: CGFloat = platform == "watchos" ? 0.84 : 1
+
+/// 單色符號染成白色。用 palette 上色會把手機、筆電的螢幕那一層也填滿。
+func symbol(_ name: String, _ size: CGFloat, weight: NSFont.Weight) -> NSImage {
+    let config = NSImage.SymbolConfiguration(pointSize: size, weight: weight)
+    let base = NSImage(systemSymbolName: name, accessibilityDescription: nil)!.withSymbolConfiguration(config)!
+    return NSImage(size: base.size, flipped: false) { rect in
+        base.draw(in: rect)
+        NSColor.white.set()
+        rect.fill(using: .sourceAtop)
+        return true
+    }
+}
+
+func draw(_ image: NSImage, center: CGPoint) {
+    let s = image.size
+    image.draw(in: CGRect(x: center.x - s.width / 2, y: center.y - s.height / 2, width: s.width, height: s.height))
+}
 
 func render(size: Int) -> Data {
     let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: size, pixelsHigh: size, bitsPerSample: 8,
@@ -43,13 +61,20 @@ func render(size: Int) -> Data {
     ])!
     gradient.draw(in: body, angle: -60)
 
-    let config = NSImage.SymbolConfiguration(pointSize: symbolSize, weight: .medium)
-        .applying(.init(paletteColors: [.white]))
-    if let symbol = NSImage(systemSymbolName: symbolName, accessibilityDescription: nil)?
-        .withSymbolConfiguration(config) {
-        let s = symbol.size
-        let rect = CGRect(x: (canvas - s.width) / 2, y: (canvas - s.height) / 2, width: s.width, height: s.height)
-        symbol.draw(in: rect)
+    if isMac {
+        let config = NSImage.SymbolConfiguration(pointSize: 360, weight: .medium).applying(.init(paletteColors: [.white]))
+        if let mark = NSImage(systemSymbolName: "iphone.radiowaves.left.and.right", accessibilityDescription: nil)?
+            .withSymbolConfiguration(config) {
+            draw(mark, center: CGPoint(x: canvas / 2, y: canvas / 2))
+        }
+    } else {
+        // [手機] ))) [筆電]，以畫布中心縮放
+        func at(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+            CGPoint(x: 512 + (x - 512) * remoteScale, y: 512 + (y - 512) * remoteScale)
+        }
+        draw(symbol("iphone.gen3", 300 * remoteScale, weight: .bold), center: at(240, 512))
+        draw(symbol("wave.3.right", 150 * remoteScale, weight: .bold), center: at(410, 528))
+        draw(symbol("laptopcomputer", 300 * remoteScale, weight: .bold), center: at(675, 512))
     }
     NSGraphicsContext.restoreGraphicsState()
     return rep.representation(using: .png, properties: [:])!
