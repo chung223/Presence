@@ -122,7 +122,12 @@ public final class LinkCentral: NSObject {
             next.presenter = active ? .presenting : .enabled
             next.pausedUntil = active ? Date().addingTimeInterval(3 * 3600) : nil
             next.presence = active ? .paused : .near
-        case .hello, .status, .confirm, .presenter: break
+            next.presentationStartedAt = active ? (next.presentationStartedAt ?? Date()) : nil
+            if !active { next.presentationMinutes = nil }
+        case .presentationTimer(let startedAt, let minutes):
+            next.presentationStartedAt = startedAt
+            next.presentationMinutes = minutes
+        case .hello, .status, .confirm, .presenter, .goToSlide: break
         }
         next.sentAt = Date()
         status = next

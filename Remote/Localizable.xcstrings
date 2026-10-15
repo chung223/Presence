@@ -81,6 +81,22 @@
         }
       }
     },
+    "%lld 分鐘": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld min"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld 分鐘"
+          }
+        }
+      }
+    },
     "1 小時": {
       "localizations": {
         "en": {
@@ -157,6 +173,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mac 已鎖定"
+          }
+        }
+      }
+    },
+    "Mac 最前面是「%@」，翻頁的按鍵會送到那裡。請先切回簡報。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” is in front on your Mac, so slide keys will go there. Switch back to your presentation first."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 最前面是「%@」，翻頁的按鍵會送到那裡。請先切回簡報。"
           }
         }
       }
@@ -257,6 +289,22 @@
         }
       }
     },
+    "不限時間": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Time Limit"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不限時間"
+          }
+        }
+      }
+    },
     "之後要重新掃描 QR code 才能再控制這台 Mac。Apple Watch 也會一起取消。": {
       "localizations": {
         "en": {
@@ -317,6 +365,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "分鐘"
+          }
+        }
+      }
+    },
+    "刪除": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "刪除"
+          }
+        }
+      }
+    },
+    "前往": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Go"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "前往"
+          }
+        }
+      }
+    },
+    "剩餘時間": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time remaining"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "剩餘時間"
           }
         }
       }
@@ -429,6 +525,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "完成"
+          }
+        }
+      }
+    },
+    "已經講了 %lld 分鐘。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You've been presenting for %lld minutes."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已經講了 %lld 分鐘。"
           }
         }
       }
@@ -557,6 +669,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "掃描 QR code"
+          }
+        }
+      }
+    },
+    "控制「%@」": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Controlling “%@”"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "控制「%@」"
           }
         }
       }
@@ -705,6 +833,22 @@
         }
       }
     },
+    "演講長度": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Talk Length"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "演講長度"
+          }
+        }
+      }
+    },
     "用 Presence 立即鎖定配對的電腦。": {
       "localizations": {
         "en": {
@@ -737,6 +881,22 @@
         }
       }
     },
+    "簡報剩 5 分鐘": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5 minutes left"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報剩 5 分鐘"
+          }
+        }
+      }
+    },
     "簡報時間": {
       "localizations": {
         "en": {
@@ -749,6 +909,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "簡報時間"
+          }
+        }
+      }
+    },
+    "簡報時間到了": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time's up"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報時間到了"
           }
         }
       }
@@ -913,6 +1089,38 @@
         }
       }
     },
+    "跳到第幾頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Go to Slide"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "跳到第幾頁"
+          }
+        }
+      }
+    },
+    "跳頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Go To"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "跳頁"
+          }
+        }
+      }
+    },
     "這不是 Presence 的配對 QR code。": {
       "localizations": {
         "en": {
@@ -1037,6 +1245,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "開始播放"
+          }
+        }
+      }
+    },
+    "預定講 %lld 分鐘。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your talk is set to %lld minutes."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "預定講 %lld 分鐘。"
           }
         }
       }

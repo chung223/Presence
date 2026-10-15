@@ -8,6 +8,8 @@ import PresenceLink
 nonisolated struct PresenterAttributes: ActivityAttributes {
     nonisolated struct ContentState: Codable, Hashable {
         var startedAt: Date
+        /// 設了演講長度時的預定結束時間：鎖定畫面改成倒數。
+        var endsAt: Date?
     }
 
     var macName: String

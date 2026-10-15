@@ -33,6 +33,22 @@
         }
       }
     },
+    "Mac 最前面是「%@」": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” is in front on your Mac"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 最前面是「%@」"
+          }
+        }
+      }
+    },
     "上一頁": {
       "localizations": {
         "en": {

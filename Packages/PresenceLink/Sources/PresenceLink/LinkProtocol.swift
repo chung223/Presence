@@ -25,6 +25,10 @@ public enum LinkCommand: Codable, Sendable, Equatable {
     case presenter(PresenterAction)
     /// 開始或結束簡報：簡報時 Mac 暫停自動鎖定，拿著手機走到台前也不會鎖。
     case presentation(active: Bool)
+    /// 跳到第幾頁：Mac 輸入頁碼再按 Return（Keynote、PowerPoint、Google 簡報都支援）。
+    case goToSlide(Int)
+    /// 簡報計時：從什麼時候開始算、預定講幾分鐘（nil 表示不限）。存在 Mac 上，手機、手錶、鎖定畫面顯示同一個倒數。
+    case presentationTimer(startedAt: Date, minutes: Int?)
 }
 
 /// 簡報遙控能按的鍵。只有這幾個，Mac 不接受任意按鍵。
@@ -60,6 +64,12 @@ public enum CommandRefusal: String, Codable, Sendable {
 }
 
 extension LinkStatus {
+    /// 預定的結束時間；沒設演講長度是 nil。
+    public var presentationEndsAt: Date? {
+        guard let start = presentationStartedAt, let minutes = presentationMinutes else { return nil }
+        return start.addingTimeInterval(TimeInterval(minutes * 60))
+    }
+
     /// 回覆的指令沒有做成的原因；Mac 用了這版不認得的原因時，給一般的說明。
     public var refusalMessage: String? {
         guard let refusal else { return nil }
@@ -117,6 +127,12 @@ public struct LinkStatus: Codable, Sendable, Equatable {
     public var challenge: Data?
     /// 簡報遙控的狀態；舊版 Mac 不會送，是 nil。
     public var presenter: PresenterSupport?
+    /// 允許簡報遙控時：Mac 最前面的 App（按鍵會送到這裡），以及它是不是能播放簡報的 App。
+    public var frontApp: String?
+    public var frontAppPresents: Bool?
+    /// 簡報計時（見 `LinkCommand.presentationTimer`）。
+    public var presentationStartedAt: Date?
+    public var presentationMinutes: Int?
     /// 回覆的指令沒有做成時的原因（`CommandRefusal` 的 rawValue）。存成字串：新版 Mac 多了原因，
     /// 舊版 iPhone 也還解得開整則狀態。
     public var refusal: String?
@@ -125,6 +141,8 @@ public struct LinkStatus: Codable, Sendable, Equatable {
     public init(macName: String, presence: MacPresence, summary: String, locked: Bool,
                 pausedUntil: Date? = nil, event: LinkEvent? = nil, replyTo: UUID? = nil,
                 challenge: Data? = nil, presenter: PresenterSupport? = nil, refusal: String? = nil,
+                frontApp: String? = nil, frontAppPresents: Bool? = nil,
+                presentationStartedAt: Date? = nil, presentationMinutes: Int? = nil,
                 sentAt: Date = Date()) {
         self.macName = macName
         self.presence = presence
@@ -136,6 +154,10 @@ public struct LinkStatus: Codable, Sendable, Equatable {
         self.challenge = challenge
         self.presenter = presenter
         self.refusal = refusal
+        self.frontApp = frontApp
+        self.frontAppPresents = frontAppPresents
+        self.presentationStartedAt = presentationStartedAt
+        self.presentationMinutes = presentationMinutes
         self.sentAt = sentAt
     }
 }

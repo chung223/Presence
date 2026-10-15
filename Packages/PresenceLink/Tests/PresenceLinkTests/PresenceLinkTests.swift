@@ -262,3 +262,21 @@ struct PresenterProtocolTests {
         #expect(status.refusalMessage == CommandRefusal.screenLocked.message)
     }
 }
+
+struct PresentationTimerTests {
+    @Test(arguments: [LinkCommand.goToSlide(12), .presentationTimer(startedAt: Date(timeIntervalSince1970: 1_800_000_000), minutes: 20),
+                      .presentationTimer(startedAt: Date(timeIntervalSince1970: 1_800_000_000), minutes: nil)])
+    func newCommandsRoundTrip(command: LinkCommand) throws {
+        let pairing = PairingInfo.generate(macName: "Mac")
+        let frame = try RequestFrame.make(LinkRequest(command), pairing: pairing)
+        #expect(try #require(RequestFrame(encoded: frame.encoded)).open(with: pairing).command == command)
+    }
+
+    @Test func endsAtNeedsBothStartAndLength() {
+        let start = Date(timeIntervalSince1970: 1_800_000_000)
+        var status = LinkStatus(macName: "Mac", presence: .paused, summary: "", locked: false, presentationStartedAt: start)
+        #expect(status.presentationEndsAt == nil)
+        status.presentationMinutes = 20
+        #expect(status.presentationEndsAt == start.addingTimeInterval(1200))
+    }
+}

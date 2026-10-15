@@ -124,6 +124,9 @@ final class AppModel {
     private(set) var pendingLock: PendingLock?
     /// 簡報開始時設的暫停到期時間（見 isPresenting）。
     private var presentingUntil: Date?
+    /// 簡報計時：手機設定，Mac 轉給所有連著的手機與手錶（見 LinkCommand.presentationTimer）。
+    private var presentationStartedAt: Date?
+    private var presentationMinutes: Int?
     private(set) var currentNetwork: NetworkIdentity.Current?
     private(set) var onACPower = PowerSource.isOnACPower
     let hasBattery = PowerSource.hasBattery
@@ -937,8 +940,18 @@ final class AppModel {
             summary: statusLine,
             locked: ScreenSession.queryLocked() == true,
             pausedUntil: isPaused ? automation.pausedUntil : nil,
-            presenter: preferences.allowPresenter ? (isPresenting ? .presenting : .enabled) : .disabled
+            presenter: preferences.allowPresenter ? (isPresenting ? .presenting : .enabled) : .disabled,
+            frontApp: front.name,
+            frontAppPresents: front.presents,
+            presentationStartedAt: isPresenting ? presentationStartedAt : nil,
+            presentationMinutes: isPresenting ? presentationMinutes : nil
         )
+    }
+
+    /// 允許簡報遙控時才告訴手機最前面是哪個 App（按鍵會送到那裡）。
+    private var front: (name: String?, presents: Bool?) {
+        guard preferences.allowPresenter, let app = NSWorkspace.shared.frontmostApplication else { return (nil, nil) }
+        return (app.localizedName, app.bundleIdentifier.map(PresenterKeys.presentationApps.contains) ?? false)
     }
 
     /// 做不成時回傳原因，跟著回覆送回 iPhone 或手錶。
@@ -954,19 +967,18 @@ final class AppModel {
             pause(for: TimeInterval(max(1, min(minutes, 24 * 60)) * 60))
         case .resume:
             resume()
-        case .presenter(let action):
-            guard preferences.allowPresenter else { return .presenterNotAllowed }
-            guard Accessibility.isTrusted else {
-                accessibilityGranted = false
-                return .noAccessibility
-            }
-            // 狀態不明也當作鎖著：寧可不翻頁，也不要把按鍵打進登入畫面
-            guard ScreenSession.queryLocked() == false, !ScreenSession.loginWindowIsFrontmost else { return .screenLocked }
+        case .presenter, .goToSlide:
+            if let refusal = presenterRefusal { return refusal }
             if !isPresenting { beginPresentation() }
-            PresenterKeys.press(action)
+            if case .presenter(let action) = command { PresenterKeys.press(action) }
+            if case .goToSlide(let slide) = command { PresenterKeys.goTo(slide: slide) }
         case .presentation(let active):
             guard preferences.allowPresenter else { return .presenterNotAllowed }
             if active { beginPresentation() } else { endPresentation() }
+        case .presentationTimer(let startedAt, let minutes):
+            guard preferences.allowPresenter else { return .presenterNotAllowed }
+            presentationStartedAt = startedAt
+            presentationMinutes = minutes.map { max(1, min($0, 24 * 60)) }
         case .hello, .status, .confirm:
             break
         }
@@ -974,6 +986,18 @@ final class AppModel {
     }
 
     // MARK: - 簡報
+
+    /// 送按鍵前的檢查：沒允許、沒有輔助使用權限、或螢幕鎖著就不送。
+    private var presenterRefusal: CommandRefusal? {
+        guard preferences.allowPresenter else { return .presenterNotAllowed }
+        guard Accessibility.isTrusted else {
+            accessibilityGranted = false
+            return .noAccessibility
+        }
+        // 狀態不明也當作鎖著：寧可不翻頁，也不要把按鍵打進登入畫面
+        guard ScreenSession.queryLocked() == false, !ScreenSession.loginWindowIsFrontmost else { return .screenLocked }
+        return nil
+    }
 
     /// 簡報模式最長暫停多久：忘了結束也不會一直不鎖。
     private static let presentationLimit: TimeInterval = 3 * 3600
@@ -992,6 +1016,8 @@ final class AppModel {
         presentingUntil = until
         now = Date()
         if !alreadyPresenting {
+            presentationStartedAt = Date()
+            presentationMinutes = nil
             log.add(.info, String(localized: "開始簡報，暫停自動鎖定與解鎖（最多 3 小時）"))
         }
     }
@@ -999,6 +1025,8 @@ final class AppModel {
     private func endPresentation() {
         guard isPresenting else { return }
         presentingUntil = nil
+        presentationStartedAt = nil
+        presentationMinutes = nil
         automation.pause(until: nil)
         now = Date()
         log.add(.info, String(localized: "結束簡報，恢復自動鎖定與解鎖"))
@@ -1007,7 +1035,9 @@ final class AppModel {
     /// 狀態有實質改變才推送（訊號強度每秒都在變，不算）。
     private func pushLinkStatusIfChanged() {
         let s = linkStatus
-        let signature = "\(s.presence.rawValue)|\(s.locked)|\(s.pausedUntil?.timeIntervalSince1970 ?? 0)|\(nearDeviceNames)|\(s.presenter?.rawValue ?? "")"
+        let signature = [s.presence.rawValue, "\(s.locked)", "\(s.pausedUntil?.timeIntervalSince1970 ?? 0)", "\(nearDeviceNames)",
+                         s.presenter?.rawValue ?? "", s.frontApp ?? "", "\(s.presentationStartedAt?.timeIntervalSince1970 ?? 0)",
+                         "\(s.presentationMinutes ?? 0)"].joined(separator: "|")
         guard signature != lastLinkSignature else { return }
         lastLinkSignature = signature
         link.broadcast()

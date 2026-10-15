@@ -276,15 +276,18 @@ struct WatchControlView: View {
 }
 
 /// 手錶上的簡報遙控：點按、轉數位錶冠，或用雙指互點（Series 9、Ultra 2 以後）翻到下一頁，翻成功會震一下。
-/// 打開時 Mac 暫停自動鎖定，離開這頁就恢復。外觀跟 iPhone 的簡報畫面一致：橘色的大「下一頁」。
+/// 打開時 Mac 暫停自動鎖定，離開這頁就恢復。計時跟 iPhone 設的演講長度同步，剩 5 分鐘、時間到時震動。
 struct WatchPresenterView: View {
     let model: WatchModel
-    @State private var startedAt = Date()
+    @State private var openedAt = Date()
     @State private var crown = 0.0
     @State private var crownStep = 0
     @State private var nextDone = 0
 
     var body: some View {
+        let status = model.status
+        let presenting = status?.presenter == .presenting
+        let endsAt = presenting ? status?.presentationEndsAt : nil
         VStack(spacing: 8) {
             Button { send(.next) } label: {
                 ZStack {
@@ -313,6 +316,8 @@ struct WatchPresenterView: View {
 
             if let error = model.lastError {
                 Text(error).font(.caption2).foregroundStyle(.orange).lineLimit(2).multilineTextAlignment(.center)
+            } else if status?.frontAppPresents == false, let app = status?.frontApp {
+                Text("Mac 最前面是「\(app)」").font(.caption2).foregroundStyle(.orange).lineLimit(2).multilineTextAlignment(.center)
             }
         }
         .focusable()
@@ -327,14 +332,23 @@ struct WatchPresenterView: View {
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Text(startedAt, style: .timer)
-                    .font(.system(.footnote, design: .rounded).weight(.semibold))
-                    .monospacedDigit()
-                    .foregroundStyle(.orange)
+                WatchClock(start: presenting ? status?.presentationStartedAt ?? openedAt : openedAt,
+                           minutes: presenting ? status?.presentationMinutes : nil)
             }
         }
         .navigationTitle("簡報")
         .task { await model.perform(.presentation(active: true)) }
+        // 剩 5 分鐘、時間到時輕敲手腕（手錶 App 開著時；手機鎖著時 iPhone 的通知也會轉到手錶）
+        .task(id: endsAt) {
+            guard let endsAt else { return }
+            for offset in [-300.0, 0] {
+                let wait = endsAt.addingTimeInterval(offset).timeIntervalSinceNow
+                guard wait > 0 else { continue }
+                try? await Task.sleep(for: .seconds(wait))
+                if Task.isCancelled { return }
+                WKInterfaceDevice.current().play(.notification)
+            }
+        }
         .onDisappear {
             // 沒在簡報（例如 Mac 還沒允許）就不必通知 Mac
             guard model.status?.presenter == .presenting else { return }
@@ -347,6 +361,24 @@ struct WatchPresenterView: View {
             let done = await model.perform(.presenter(action))
             WKInterfaceDevice.current().play(done ? .click : .failure)
             if done, action == .next { nextDone += 1 }
+        }
+    }
+}
+
+/// 有設演講長度就倒數（剩 5 分鐘變橘色、超時變紅色），沒設就顯示講了多久。
+private struct WatchClock: View {
+    let start: Date
+    let minutes: Int?
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 1)) { context in
+            let remaining = minutes.map { start.addingTimeInterval(TimeInterval($0 * 60)).timeIntervalSince(context.date) }
+            let seconds = Int((remaining.map(abs) ?? context.date.timeIntervalSince(start)).rounded(.down))
+            let text = (remaining.map { $0 < 0 } == true ? "+" : "") + String(format: "%d:%02d", seconds / 60, seconds % 60)
+            Text(text)
+                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .monospacedDigit()
+                .foregroundStyle(remaining.map { $0 < 0 ? Color.red : $0 <= 300 ? Color.orange : Color.white } ?? Color.orange)
         }
     }
 }

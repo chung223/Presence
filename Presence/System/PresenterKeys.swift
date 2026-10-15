@@ -12,13 +12,25 @@ enum PresenterKeys {
         var flags: CGEventFlags = []
     }
 
+    static let keynote: Set<String> = ["com.apple.iWork.Keynote", "com.apple.Keynote"]  // 後者是 Creator Studio 版
+    static let powerPoint = "com.microsoft.Powerpoint"
+
+    /// 能播放簡報的 App：簡報軟體、PDF 閱讀器（含 Folium），以及能播放 Google 簡報的瀏覽器。
+    /// 最前面不是這些時，手機會提醒「按鍵會送到別的 App」。
+    static let presentationApps: Set<String> = keynote.union([
+        powerPoint, "com.apple.Preview", "com.adobe.Acrobat.Pro", "com.adobe.Reader", "com.chung.folium",
+        "com.google.Chrome", "com.apple.Safari", "company.thebrowser.Browser", "com.microsoft.edgemac",
+        "org.mozilla.firefox", "com.brave.Browser", "com.operasoftware.Opera", "com.vivaldi.Vivaldi",
+    ])
+
+    /// 數字鍵 0～9 的虛擬鍵碼。
+    private static let digitCodes: [CGKeyCode] = [29, 18, 19, 20, 21, 23, 22, 26, 28, 25]
+
     /// 開始播放的快捷鍵依 App 不同；其他 App（例如瀏覽器裡的 Google 簡報）用 ⌘↩。
     private static func startKey(for bundleID: String?) -> Key {
-        switch bundleID {
-        case "com.apple.iWork.Keynote": Key(code: 35, flags: [.maskCommand, .maskAlternate])   // ⌥⌘P 播放幻燈片秀
-        case "com.microsoft.Powerpoint": Key(code: 36, flags: [.maskCommand, .maskShift])     // ⇧⌘↩ 從頭播放
-        default: Key(code: 36, flags: .maskCommand)                                            // ⌘↩
-        }
+        if let bundleID, keynote.contains(bundleID) { return Key(code: 35, flags: [.maskCommand, .maskAlternate]) }  // ⌥⌘P 播放幻燈片秀
+        if bundleID == powerPoint { return Key(code: 36, flags: [.maskCommand, .maskShift]) }                        // ⇧⌘↩ 從頭播放
+        return Key(code: 36, flags: .maskCommand)                                                                    // ⌘↩
     }
 
     private static func key(for action: PresenterAction, frontmost: String?) -> Key {
@@ -32,7 +44,18 @@ enum PresenterKeys {
     }
 
     static func press(_ action: PresenterAction) {
-        let key = key(for: action, frontmost: NSWorkspace.shared.frontmostApplication?.bundleIdentifier)
+        press(key(for: action, frontmost: NSWorkspace.shared.frontmostApplication?.bundleIdentifier))
+    }
+
+    /// 跳到第幾頁：輸入頁碼再按 Return。Keynote、PowerPoint、Google 簡報播放時都這樣跳頁。
+    static func goTo(slide: Int) {
+        for digit in String(max(1, slide)).compactMap(\.wholeNumberValue) {
+            press(Key(code: digitCodes[digit]))
+        }
+        press(Key(code: 36))
+    }
+
+    private static func press(_ key: Key) {
         let source = CGEventSource(stateID: .hidSystemState)
         for down in [true, false] {
             guard let event = CGEvent(keyboardEventSource: source, virtualKey: key.code, keyDown: down) else { continue }

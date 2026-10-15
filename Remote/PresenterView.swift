@@ -7,22 +7,28 @@ import SwiftUI
 struct PresenterView: View {
     let model: RemoteModel
     @Environment(\.dismiss) private var dismiss
-    @State private var startedAt = Date()
+    @State private var openedAt = Date()
     @State private var taps = 0
     @State private var failures = 0
+    @State private var alerts = 0
     @State private var nextDone = 0
     @State private var previousDone = 0
+    @State private var jumping = false
     @GestureState private var padPressed = false
 
+    private static let lengths = [10, 15, 20, 30, 45, 60]
+
     var body: some View {
+        let status = model.link.status
         let support = model.presenterSupport
         let connected = model.link.state == .connected
         let ready = connected && (support == .enabled || support == .presenting)
+        let endsAt = status?.presenter == .presenting ? status?.presentationEndsAt : nil
 
         VStack(spacing: 14) {
-            header(connected: connected)
+            header(status: status, connected: connected)
 
-            if let message = guidance(support, connected: connected) ?? model.lastError {
+            if let message = guidance(support, connected: connected) ?? model.lastError ?? wrongApp(status) {
                 Notice(message: message)
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
@@ -53,9 +59,10 @@ struct PresenterView: View {
                     .buttonStyle(PadStyle())
 
                 HStack(spacing: 10) {
-                    tile(.start, title: "開始播放", symbol: "play.fill")
-                    tile(.blank, title: "黑畫面", symbol: "eye.slash.fill")
-                    tile(.end, title: "結束播放", symbol: "stop.fill")
+                    tile(title: "開始播放", symbol: "play.fill") { send(.start) }
+                    tile(title: "黑畫面", symbol: "eye.slash.fill") { send(.blank) }
+                    tile(title: "跳頁", symbol: "number") { jumping = true }
+                    tile(title: "結束播放", symbol: "stop.fill") { send(.end) }
                 }
             }
             .disabled(!ready)
@@ -68,6 +75,24 @@ struct PresenterView: View {
         .animation(.snappy, value: model.lastError)
         .sensoryFeedback(.impact(flexibility: .solid, intensity: 0.8), trigger: taps)
         .sensoryFeedback(.error, trigger: failures)
+        .sensoryFeedback(.warning, trigger: alerts)
+        .sheet(isPresented: $jumping) {
+            JumpSheet { slide in
+                taps += 1
+                Task { if await !model.goToSlide(slide) { failures += 1 } }
+            }
+        }
+        // 剩 5 分鐘、時間到時在手上震一下（App 在前景時系統不顯示通知）
+        .task(id: endsAt) {
+            guard let endsAt else { return }
+            for offset in [-300.0, 0] {
+                let wait = endsAt.addingTimeInterval(offset).timeIntervalSinceNow
+                guard wait > 0 else { continue }
+                try? await Task.sleep(for: .seconds(wait))
+                if Task.isCancelled { return }
+                alerts += 1
+            }
+        }
         .onAppear {
             // 簡報中手機不要自動鎖定；鎖了也還有鎖定畫面的翻頁按鈕
             UIApplication.shared.isIdleTimerDisabled = true
@@ -79,8 +104,11 @@ struct PresenterView: View {
         }
     }
 
-    private func header(connected: Bool) -> some View {
-        HStack {
+    private func header(status: LinkStatus?, connected: Bool) -> some View {
+        let presenting = status?.presenter == .presenting
+        let start = presenting ? status?.presentationStartedAt ?? openedAt : openedAt
+        let minutes = presenting ? status?.presentationMinutes : nil
+        return HStack {
             Button { dismiss() } label: {
                 Image(systemName: "xmark").font(.headline).frame(width: 44, height: 44)
             }
@@ -91,16 +119,12 @@ struct PresenterView: View {
             Spacer()
 
             VStack(spacing: 2) {
-                Text(startedAt, style: .timer)
-                    .font(.system(size: 30, weight: .semibold, design: .rounded))
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
-                    .accessibilityLabel("簡報時間")
+                PresentationClock(start: start, minutes: minutes)
                 HStack(spacing: 6) {
                     Circle()
                         .fill(connected ? Color.green : Color.orange)
                         .frame(width: 7, height: 7)
-                    Text(model.pairing?.macName ?? "Mac")
+                    Text(status?.frontApp.map { String(localized: "控制「\($0)」") } ?? model.pairing?.macName ?? "Mac")
                         .lineLimit(1)
                 }
                 .font(.caption)
@@ -111,21 +135,34 @@ struct PresenterView: View {
 
             Spacer()
 
-            Button { startedAt = Date() } label: {
-                Image(systemName: "arrow.counterclockwise").font(.headline).frame(width: 44, height: 44)
+            Menu {
+                Picker("演講長度", selection: Binding(
+                    get: { minutes },
+                    set: { value in Task { await model.setPresentationTimer(minutes: value) } }
+                )) {
+                    Text("不限時間").tag(Int?.none)
+                    ForEach(Self.lengths, id: \.self) { Text("\($0) 分鐘").tag(Int?.some($0)) }
+                }
+                Divider()
+                Button("重新計時", systemImage: "arrow.counterclockwise") {
+                    Task { await model.setPresentationTimer(minutes: minutes, restart: true) }
+                }
+            } label: {
+                Image(systemName: "timer").font(.headline).frame(width: 44, height: 44)
             }
             .buttonStyle(.glass)
             .buttonBorderShape(.circle)
-            .accessibilityLabel("重新計時")
+            .accessibilityLabel("演講長度")
+            .disabled(!presenting)
         }
         .padding(.top, 4)
     }
 
-    private func tile(_ action: PresenterAction, title: LocalizedStringKey, symbol: String) -> some View {
-        Button { send(action) } label: {
+    private func tile(title: LocalizedStringKey, symbol: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
             VStack(spacing: 6) {
                 Image(systemName: symbol).font(.system(size: 18, weight: .semibold))
-                Text(title).font(.caption.weight(.medium))
+                Text(title).font(.caption.weight(.medium)).lineLimit(1).minimumScaleFactor(0.8)
             }
             .frame(maxWidth: .infinity, minHeight: 64)
             .background(Card(radius: 20))
@@ -141,6 +178,12 @@ struct PresenterView: View {
         case .disabled: return CommandRefusal.presenterNotAllowed.message
         case .enabled, .presenting: return nil
         }
+    }
+
+    /// Mac 最前面不是簡報 App 時提醒：按鍵會送到那個 App。
+    private func wrongApp(_ status: LinkStatus?) -> String? {
+        guard status?.frontAppPresents == false, let app = status?.frontApp else { return nil }
+        return String(localized: "Mac 最前面是「\(app)」，翻頁的按鍵會送到那裡。請先切回簡報。")
     }
 
     private func send(_ action: PresenterAction) {
@@ -161,7 +204,39 @@ struct PresenterView: View {
 
 // MARK: - 元件
 
-/// 主要的翻頁區：整塊都能按，Mac 翻頁成功時箭頭彈一下。
+/// 有設演講長度就倒數（剩 5 分鐘變橘色、超時變紅色並顯示超過多久），沒設就顯示講了多久。
+private struct PresentationClock: View {
+    let start: Date
+    let minutes: Int?
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 1)) { context in
+            let now = context.date
+            let remaining = minutes.map { start.addingTimeInterval(TimeInterval($0 * 60)).timeIntervalSince(now) }
+            let (text, color): (String, Color) = switch remaining {
+            case nil: (Self.format(now.timeIntervalSince(start)), .primary)
+            case let r? where r < 0: ("+" + Self.format(-r), .red)
+            case let r? where r <= 300: (Self.format(r), .orange)
+            case let r?: (Self.format(r), .primary)
+            }
+            Text(text)
+                .font(.system(size: 30, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(color)
+                .contentTransition(.numericText())
+                .accessibilityLabel(minutes == nil ? Text("簡報時間") : Text("剩餘時間"))
+                .accessibilityValue(text)
+        }
+    }
+
+    static func format(_ seconds: TimeInterval) -> String {
+        let total = max(0, Int(seconds.rounded(.down)))
+        let h = total / 3600, m = total / 60 % 60, s = total % 60
+        return h > 0 ? String(format: "%d:%02d:%02d", h, m, s) : String(format: "%d:%02d", m, s)
+    }
+}
+
+/// 主要的翻頁區：整塊都能按，Mac 翻頁成功時箭頭動一下。
 private struct NextPad: View {
     let done: Int
 
@@ -208,6 +283,68 @@ private struct PreviousBar: View {
         .frame(height: 72)
         .background(Card(radius: 24))
         .contentShape(.rect(cornerRadius: 24))
+    }
+}
+
+/// 問答時跳到某一頁：輸入頁碼後 Mac 會打頁碼再按 Return。
+private struct JumpSheet: View {
+    let go: (Int) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var digits = ""
+
+    var body: some View {
+        VStack(spacing: 18) {
+            Text("跳到第幾頁").font(.headline).foregroundStyle(.secondary)
+            Text(digits.isEmpty ? "–" : digits)
+                .font(.system(size: 56, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .frame(height: 64)
+                .contentTransition(.numericText())
+                .animation(.snappy, value: digits)
+
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                ForEach([["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]], id: \.self) { row in
+                    GridRow { ForEach(row, id: \.self) { key($0) } }
+                }
+                GridRow {
+                    keyButton(Image(systemName: "delete.backward"), label: Text("刪除")) { digits = String(digits.dropLast()) }
+                    key("0")
+                    Button {
+                        guard let slide = Int(digits), slide > 0 else { return }
+                        go(slide)
+                        dismiss()
+                    } label: {
+                        Text("前往").font(.title3.weight(.bold)).frame(maxWidth: .infinity, minHeight: 60)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.roundedRectangle(radius: 18))
+                    .tint(.orange)
+                    .disabled(Int(digits) ?? 0 < 1)
+                }
+            }
+        }
+        .padding(24)
+        .presentationDetents([.height(520)])
+        .presentationBackground(Color(red: 0.08, green: 0.085, blue: 0.1))
+        .preferredColorScheme(.dark)
+    }
+
+    private func key(_ digit: String) -> some View {
+        keyButton(Text(verbatim: digit), label: Text(verbatim: digit)) {
+            if digits.count < 4 { digits = digits == "0" ? digit : digits + digit }
+        }
+    }
+
+    private func keyButton(_ content: some View, label: Text, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            content
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, minHeight: 60)
+                .background(Card(radius: 18))
+        }
+        .buttonStyle(PadStyle())
+        .accessibilityLabel(label)
     }
 }
 

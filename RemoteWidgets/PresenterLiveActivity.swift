@@ -22,7 +22,7 @@ struct PresenterLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.center) {
                     VStack(spacing: 2) {
                         PresentingLabel()
-                        ElapsedText(startedAt: context.state.startedAt)
+                        ElapsedText(state: context.state)
                             .font(.system(size: 26, weight: .semibold, design: .rounded))
                     }
                 }
@@ -32,7 +32,7 @@ struct PresenterLiveActivity: Widget {
             } compactLeading: {
                 Image(systemName: "play.rectangle.fill").foregroundStyle(Color.orange)
             } compactTrailing: {
-                ElapsedText(startedAt: context.state.startedAt)
+                ElapsedText(state: context.state)
                     .font(.caption.weight(.semibold))
                     .frame(maxWidth: 52)
             } minimal: {
@@ -52,7 +52,7 @@ private struct PresenterLockScreenView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 PresentingLabel()
-                ElapsedText(startedAt: context.state.startedAt)
+                ElapsedText(state: context.state)
                     .font(.system(size: 30, weight: .semibold, design: .rounded))
                     .foregroundStyle(.white)
                 HStack(spacing: 8) {
@@ -128,12 +128,18 @@ private struct EndButton: View {
     }
 }
 
-/// 從開始簡報算起的時間，系統自己每秒更新。
+/// 設了演講長度就倒數剩下的時間，沒設就顯示講了多久；系統自己每秒更新。
 private struct ElapsedText: View {
-    let startedAt: Date
+    let state: PresenterAttributes.ContentState
 
     var body: some View {
-        Text(timerInterval: startedAt...Date.distantFuture, countsDown: false)
-            .monospacedDigit()
+        Group {
+            if let endsAt = state.endsAt, endsAt > state.startedAt {
+                Text(timerInterval: state.startedAt...endsAt, countsDown: true)
+            } else {
+                Text(timerInterval: state.startedAt...Date.distantFuture, countsDown: false)
+            }
+        }
+        .monospacedDigit()
     }
 }

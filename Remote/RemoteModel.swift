@@ -38,6 +38,7 @@ final class RemoteModel {
         link.onStatus = { [weak self] status in
             self?.watch.sync(pairing: self?.pairing, status: status)
             self?.publishWidgetStatus()
+            self?.presentationChanged(status)
         }
         link.onStateChange = { [weak self] _ in self?.publishWidgetStatus() }
         watch.onCommand = { [weak self] command in
@@ -110,6 +111,28 @@ final class RemoteModel {
         }
     }
 
+    /// 跳到第幾頁（問答時常用）。
+    @discardableResult
+    func goToSlide(_ slide: Int) async -> Bool {
+        switch await link.send(.goToSlide(slide), timeout: 5) {
+        case .success(let status):
+            lastError = status.refusalMessage
+            return status.refusal == nil
+        case .failure(let failure):
+            lastError = failure.message
+            return false
+        }
+    }
+
+    /// 設定演講長度（nil 是不限）；`restart` 從現在重新計時。存在 Mac 上，手錶與鎖定畫面一起更新。
+    func setPresentationTimer(minutes: Int?, restart: Bool = false) async {
+        let start = restart ? Date() : link.status?.presentationStartedAt ?? Date()
+        switch await link.send(.presentationTimer(startedAt: start, minutes: minutes)) {
+        case .success(let status): lastError = status.refusalMessage
+        case .failure(let failure): lastError = failure.message
+        }
+    }
+
     /// 開始或結束簡報：Mac 暫停或恢復自動鎖定，鎖定畫面顯示或收起翻頁按鈕。
     func setPresentation(_ active: Bool) async {
         if !active {
@@ -137,9 +160,11 @@ final class RemoteModel {
             return
         }
         let attributes = PresenterAttributes(macName: pairing?.macName ?? "Mac")
+        let state = PresenterAttributes.ContentState(startedAt: link.status?.presentationStartedAt ?? Date(),
+                                                     endsAt: link.status?.presentationEndsAt)
         do {
-            presenterActivity = try Activity.request(attributes: attributes,
-                                                     content: .init(state: .init(startedAt: Date()), staleDate: nil))
+            presenterActivity = try Activity.request(attributes: attributes, content: .init(state: state, staleDate: nil))
+            activityState = state
         } catch {
             LinkLog.write("無法顯示簡報的即時動態：\(error)")
         }
@@ -147,6 +172,7 @@ final class RemoteModel {
 
     private func endPresenterActivity() {
         presenterActivity = nil
+        activityState = nil
         Task { await Self.endPresenterActivities() }
     }
 
@@ -155,6 +181,54 @@ final class RemoteModel {
         for activity in Activity<PresenterAttributes>.activities {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
+    }
+
+    nonisolated private static func updatePresenterActivities(_ state: PresenterAttributes.ContentState) async {
+        for activity in Activity<PresenterAttributes>.activities {
+            await activity.update(.init(state: state, staleDate: nil))
+        }
+    }
+
+    // MARK: - 簡報時間提醒
+
+    @ObservationIgnored private var activityState: PresenterAttributes.ContentState?
+    @ObservationIgnored private var scheduledEnd: Date?
+    private static let fiveMinutesID = "presence.presentation.five-minutes"
+    private static let timeUpID = "presence.presentation.time-up"
+
+    /// Mac 送來新的簡報狀態：更新鎖定畫面的倒數，重排「剩 5 分鐘」「時間到」的通知。
+    /// App 在前景時系統不顯示通知（簡報畫面自己會震動）；手機鎖著時通知會轉到手錶，輕敲手腕。
+    private func presentationChanged(_ status: LinkStatus) {
+        let presenting = status.presenter == .presenting
+        if presenting, presenterActivity != nil, let start = status.presentationStartedAt {
+            let state = PresenterAttributes.ContentState(startedAt: start, endsAt: status.presentationEndsAt)
+            if state != activityState {
+                activityState = state
+                Task { await Self.updatePresenterActivities(state) }
+            }
+        }
+        let endsAt = presenting ? status.presentationEndsAt : nil
+        guard endsAt != scheduledEnd else { return }
+        scheduledEnd = endsAt
+        let center = UNUserNotificationCenter.current()
+        center.removePendingNotificationRequests(withIdentifiers: [Self.fiveMinutesID, Self.timeUpID])
+        guard let endsAt, let minutes = status.presentationMinutes else { return }
+        func schedule(_ id: String, at date: Date, title: String, body: String) {
+            let wait = date.timeIntervalSinceNow
+            guard wait > 1 else { return }
+            let content = UNMutableNotificationContent()
+            content.title = title
+            content.body = body
+            content.sound = .default
+            center.add(UNNotificationRequest(identifier: id, content: content,
+                                             trigger: UNTimeIntervalNotificationTrigger(timeInterval: wait, repeats: false)))
+        }
+        if minutes > 5 {
+            schedule(Self.fiveMinutesID, at: endsAt.addingTimeInterval(-300),
+                     title: String(localized: "簡報剩 5 分鐘"), body: String(localized: "預定講 \(minutes) 分鐘。"))
+        }
+        schedule(Self.timeUpID, at: endsAt,
+                 title: String(localized: "簡報時間到了"), body: String(localized: "已經講了 \(minutes) 分鐘。"))
     }
 
     // MARK: - 通知
@@ -180,6 +254,13 @@ final class RemoteModel {
             status.presence = .paused
             status.summary = chinese ? "已暫停" : "Paused"
             status.pausedUntil = Date().addingTimeInterval(3600)
+        case "presenter":
+            // 講了 12 分半、預定 20 分鐘，Keynote 在最前面
+            status.presenter = .presenting
+            status.presentationStartedAt = Date().addingTimeInterval(-750)
+            status.presentationMinutes = 20
+            status.frontApp = "Keynote"
+            status.frontAppPresents = true
         default:
             break
         }
