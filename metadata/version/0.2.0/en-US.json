@@ -3,5 +3,6 @@
   "keywords": "proximity,bluetooth,unlock,autolock,clicker,slides,presenter,remote,talk timer,desk,BLEUnlock",
   "promotionalText": "New: turn your iPhone and Apple Watch into a presentation clicker, even from the Lock Screen. Walk away and your Mac locks; come back and it unlocks.",
   "supportUrl": "https://github.com/chung223/Presence/issues",
-  "marketingUrl": "https://github.com/chung223/Presence"
+  "marketingUrl": "https://github.com/chung223/Presence",
+  "whatsNew": "New: Presenter Remote (Presence Pro)\n• Change slides, jump to a slide, or black out the screen from your iPhone and Apple Watch\n• Change slides from the Lock Screen and Dynamic Island, even when your phone is locked\n• Talk timer with a tap at 5 minutes left and when time is up\n• Your Mac won't auto-lock while you're on stage\n\nAlso\n• Redesigned home screen with big Lock Now and Presenter Remote cards\n• New app icon\n• Presenter Remote needs Presence 0.2.0 or later on your Mac"
 }
