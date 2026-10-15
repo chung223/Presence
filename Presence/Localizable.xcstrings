@@ -2401,6 +2401,22 @@
         }
       }
     },
+    "手機與手錶上的簡報遙控是 Presence Remote 的付費功能（Presence Pro）；Mac 上的 Presence 一樣免費。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenter Remote on iPhone and Apple Watch is a paid feature of Presence Remote (Presence Pro). Presence for Mac stays free."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手機與手錶上的簡報遙控是 Presence Remote 的付費功能（Presence Pro）；Mac 上的 Presence 一樣免費。"
+          }
+        }
+      }
+    },
     "打開 Presence…": {
       "localizations": {
         "en": {

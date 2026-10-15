@@ -6,7 +6,7 @@ Walk away from your desk with your phone and your Mac locks itself. Come back an
 
 Presence is a macOS menu bar app that uses Bluetooth to tell whether your iPhone, Apple Watch, or another BLE device is nearby. It's inspired by [BLEUnlock](https://github.com/ts1/BLEUnlock), redesigned and rewritten for current macOS, and it fixes several security issues in the original.
 
-**No app is needed on your phone or watch.** Presence reads the Bluetooth signal they already send. The companion app, [Presence Remote](#presence-remote-iphone-and-apple-watch), is optional: it adds remote lock, pause, and notifications from your iPhone and Apple Watch, plus an encrypted confirmation before unlocking.
+**No app is needed on your phone or watch.** Presence reads the Bluetooth signal they already send. The companion app, [Presence Remote](#presence-remote-iphone-and-apple-watch), is optional: it adds remote lock, pause, and notifications from your iPhone and Apple Watch, plus an encrypted confirmation before unlocking. Upgrade to Presence Pro and it becomes a presentation clicker too.
 
 <img src="docs/images/walkaway-en.gif" width="800" alt="The Mac counts down and locks when you walk away, then unlocks when you come back">
 
@@ -18,6 +18,8 @@ https://github.com/user-attachments/assets/f8fd2d65-7006-4385-b623-b9ada55b9a47
 - **Unlock when you return**: Presence types your login password only after the signal has stayed strong for a few seconds. A single unusually strong reading doesn't count.
 - **Encrypted iPhone confirmation**: once you pair Presence Remote, Presence asks your iPhone to answer with the pairing key before it types your password, so a spoofed Bluetooth signal alone can't unlock your Mac.
 - **iPhone and Apple Watch remote**: with the Presence Remote companion app, lock, pause, or resume from your iPhone, Apple Watch, Control Center, widgets, or Siri, and get notified when your Mac locks or someone unlocks it while you're away (see [Presence Remote](#presence-remote-iphone-and-apple-watch)).
+- **No auto-lock during presentations**: while Keynote, PowerPoint, or [Folium](https://chung223.github.io/folium/) is playing a slideshow, automatic locking pauses. When the show ends and you're away, the Mac locks right away.
+- **Presenter Remote**: change slides, jump to a slide, or black out the screen from your iPhone and Apple Watch (Presence Pro, a paid feature of Presence Remote; see [Presenter Remote](docs/presenter-remote.md)). The Mac side stays free and open source.
 - **Relaunch after a crash**: if Presence crashes or the system quits it, launchd starts it again. Quitting from the menu doesn't.
 - **Multiple devices**: watch an iPhone and an Apple Watch at the same time. Either one nearby counts as you being there, and each device has its own thresholds.
 - **Live signal chart**: see every reading and the filtered result, so you can tell where the thresholds should be.
@@ -89,6 +91,10 @@ Presence Remote is the companion app for Presence. It connects straight to your 
 - **See the status**: whether you're nearby and whether the Mac is locked, also on Home Screen and Lock Screen widgets and watch face complications.
 - **Notifications** when your Mac locks because you left, or someone unlocks it by hand while you're away.
 - **Encrypted confirmation before unlocking**: your Mac asks your iPhone to answer with the pairing key before it types your password (see [How it works](#how-it-works-and-security)).
+
+**Presenter Remote (Presence Pro)**: turn your iPhone and Apple Watch into a presentation clicker. Tap or swipe to change slides; jump to a slide, black out the screen, start and end the show; change slides from the Lock Screen and Dynamic Island while your phone is locked; on the watch, tap, turn the Digital Crown, or double tap; a talk timer taps you at 5 minutes left and when time is up; and automatic locking pauses during the talk. Turn on Allow Presenter Remote under iPhone & Watch on your Mac first. How it works, and how other apps can support it: [docs/presenter-remote.md](docs/presenter-remote.md) (in Chinese).
+
+Presence Pro is an in-app purchase: monthly or yearly (both with a 7-day free trial) or a one-time purchase, all shareable with Family Sharing. Locking, pausing, notifications, widgets, and the Mac app are free.
 
 **Pairing**: in Presence on your Mac, open iPhone & Watch, click Pair New iPhone…, and scan the QR code with Presence Remote. Your Apple Watch gets the pairing through that iPhone, so there's nothing else to set up.
 

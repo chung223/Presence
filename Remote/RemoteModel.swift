@@ -42,8 +42,16 @@ final class RemoteModel {
         }
         link.onStateChange = { [weak self] _ in self?.publishWidgetStatus() }
         watch.onCommand = { [weak self] command in
-            await self?.perform(command) ?? .failure(.notPaired)
+            guard let self else { return .failure(.notPaired) }
+            // 手錶的簡報遙控也要 Pro（手錶畫面本來就擋，這裡再擋一次）
+            if command.needsPro, await !ProStore.shared.checkPro() {
+                guard var status = link.status else { return .failure(.notPaired) }
+                status.refusal = CommandRefusal.proRequired.rawValue
+                return .success(status)
+            }
+            return await perform(command)
         }
+        ProStore.shared.onChange = { [weak self] _ in self?.watch.sync(pairing: self?.pairing, status: nil) }
         link.start()
         watch.activate()
         watch.sync(pairing: pairing, status: nil)

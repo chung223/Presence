@@ -17,22 +17,6 @@
         }
       }
     },
-    "Mac 已鎖定": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mac Locked"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mac 已鎖定"
-          }
-        }
-      }
-    },
     "Mac 最前面是「%@」": {
       "localizations": {
         "en": {
@@ -45,6 +29,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mac 最前面是「%@」"
+          }
+        }
+      }
+    },
+    "Presence Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Pro"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Pro"
           }
         }
       }
@@ -145,6 +145,22 @@
         }
       }
     },
+    "用手錶翻頁、轉錶冠或兩指互點，是 Presence Pro 的功能。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changing slides from your watch—by tapping, turning the Digital Crown, or double tapping—is part of Presence Pro."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用手錶翻頁、轉錶冠或兩指互點，是 Presence Pro 的功能。"
+          }
+        }
+      }
+    },
     "直接連線": {
       "localizations": {
         "en": {
@@ -173,22 +189,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "簡報"
-          }
-        }
-      }
-    },
-    "簡報遙控": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Presenter Remote"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "簡報遙控"
           }
         }
       }
@@ -241,18 +241,34 @@
         }
       }
     },
-    "鎖定 Mac": {
+    "請在 iPhone 的 Presence Remote 點「簡報遙控」升級，手錶會自動開通。": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lock Mac"
+            "value": "Upgrade by tapping Presenter Remote in Presence Remote on your iPhone. Your watch will be unlocked automatically."
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "鎖定 Mac"
+            "value": "請在 iPhone 的 Presence Remote 點「簡報遙控」升級，手錶會自動開通。"
+          }
+        }
+      }
+    },
+    "鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "鎖定"
           }
         }
       }

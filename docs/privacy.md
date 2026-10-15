@@ -1,6 +1,6 @@
 # 隱私權政策 · Privacy Policy
 
-適用於 Presence（Mac）與 Presence Remote（iPhone、Apple Watch）。最後更新：2026 年 10 月 14 日。
+適用於 Presence（Mac）與 Presence Remote（iPhone、Apple Watch）。最後更新：2026 年 10 月 15 日。
 
 ## 繁體中文
 
@@ -11,7 +11,8 @@
 - **配對金鑰與登入密碼**：配對金鑰存在各裝置的鑰匙圈。若你啟用 Mac 的「輸入密碼」解鎖方式，登入密碼只存在那台 Mac 的鑰匙圈，只在解鎖時讀出，不會寫進任何紀錄，也不會離開那台 Mac。
 - **事件紀錄與在座時間**：只存在你的 Mac 上，可以隨時在 App 裡清除。
 - **拍照存證**（預設關閉）：若你開啟，裝置不在附近時有人手動解鎖 Mac，Presence 會用 Mac 的相機拍一張照片，存在那台 Mac 上，30 天後自動刪除。
-- **通知**：Mac 被鎖定或解鎖的通知由你的 iPhone 在本機產生，不經過推播伺服器。
+- **通知**：Mac 被鎖定或解鎖的通知、簡報剩 5 分鐘與時間到的提醒，都由你的 iPhone 在本機產生，不經過推播伺服器。
+- **購買 Presence Pro**：付款由 Apple 的 App Store 處理，我們看不到你的付款資料或 Apple 帳號。App 只在你的裝置上向 App Store 查詢有沒有購買，並把「有沒有 Presence Pro」同步給你的 Apple Watch。
 - **自動更新**：Mac 版會向 GitHub 讀取更新清單，只送出一般的網路請求，不附帶任何個人資料。
 
 有問題請到 <https://github.com/chung223/Presence/issues> 提出。
@@ -25,7 +26,8 @@
 - **Pairing keys and login password**: Pairing keys are stored in each device's Keychain. If you turn on the "type password" unlock method on your Mac, your login password is stored only in that Mac's Keychain, read only at the moment of unlocking, never written to any log, and never leaves that Mac.
 - **Event history and desk time**: Stored only on your Mac. You can clear them in the app at any time.
 - **Intrusion photo** (off by default): If you turn it on and someone unlocks your Mac manually while your devices are away, Presence takes a photo with the Mac's camera, stores it on that Mac, and deletes it after 30 days.
-- **Notifications**: Notifications about your Mac locking or unlocking are created locally on your iPhone, not through a push server.
+- **Notifications**: Notifications about your Mac locking or unlocking, and reminders when your talk has 5 minutes left or is over, are created locally on your iPhone, not through a push server.
+- **Presence Pro purchases**: Payments are handled by Apple's App Store. We never see your payment details or Apple Account. The app checks your purchase with the App Store on your device and tells your Apple Watch whether you have Presence Pro.
 - **Automatic updates**: The Mac app reads its update feed from GitHub with an ordinary web request that carries no personal data.
 
 Questions? Open an issue at <https://github.com/chung223/Presence/issues>.

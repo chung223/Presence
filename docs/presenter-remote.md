@@ -2,6 +2,8 @@
 
 Presence Remote（iPhone、Apple Watch）可以當簡報筆。這份文件寫 Presence 怎麼做，也給想配合的 App（例如同一個作者的 [Folium](https://chung223.github.io/folium/)）當規格。
 
+手機與手錶上的簡報遙控是 Presence Remote 的付費功能 **Presence Pro**（2026-10-15 決定）：月訂閱 US$0.99、年訂閱 US$4.99（都可以免費試用 7 天）、一次買斷 US$12.99，都可以家人共享。Mac 這邊（送按鍵、簡報時不自動鎖定）免費。程式在 `Remote/Store/`（購買狀態、付費畫面），判斷規則在 `PresenceLink/ProAccess.swift`；只擋「開始簡報」「翻頁」這些動作，結束簡報永遠可以按，讓 Mac 恢復自動鎖定。手錶從 iPhone 同步「有沒有 Pro」，也自己向 App Store 查；手錶的指令經 iPhone 轉送時，iPhone 再檢查一次。開發時用 `-PresencePro YES|NO` 強制切換，從 Xcode 執行會用 `StoreKit/PresencePro.storekit` 的測試商品。
+
 ## Presence 怎麼控制簡報
 
 Mac 上的 Presence 對**最前面的 App** 按鍵，和自動解鎖輸入密碼一樣用輔助使用權限送出。不需要和簡報 App 另外連線，所以 Keynote、PowerPoint、瀏覽器裡的 Google 簡報都不用特別支援。

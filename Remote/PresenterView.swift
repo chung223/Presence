@@ -244,8 +244,7 @@ private struct NextPad: View {
         VStack(spacing: 22) {
             ZStack {
                 Circle()
-                    .fill(LinearGradient(colors: [Color(red: 1.0, green: 0.66, blue: 0.24), Color(red: 0.97, green: 0.42, blue: 0.08)],
-                                         startPoint: .top, endPoint: .bottom))
+                    .fill(LinearGradient.stageOrange)
                     .shadow(color: Color.orange.opacity(0.45), radius: 28, y: 10)
                 Image(systemName: "chevron.forward")
                     .font(.system(size: 52, weight: .bold))
@@ -349,7 +348,7 @@ private struct JumpSheet: View {
 }
 
 /// 深色半透明的卡片底。
-private struct Card: View {
+struct Card: View {
     let radius: CGFloat
 
     var body: some View {
@@ -363,7 +362,7 @@ private struct Card: View {
 }
 
 /// 按下時縮一點、亮一點。
-private struct PadStyle: ButtonStyle {
+struct PadStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .foregroundStyle(.white)
@@ -388,8 +387,8 @@ private struct Notice: View {
     }
 }
 
-/// 近乎全黑，底部透一點橘色的光，呼應翻頁按鈕。
-private struct StageBackground: View {
+/// 近乎全黑，底部透一點橘色的光，呼應翻頁按鈕。付費畫面也用這個底。
+struct StageBackground: View {
     var body: some View {
         ZStack {
             Color(red: 0.045, green: 0.05, blue: 0.06)
@@ -397,4 +396,10 @@ private struct StageBackground: View {
         }
         .ignoresSafeArea()
     }
+}
+
+extension LinearGradient {
+    /// 「下一頁」與 Presence Pro 的橘色。
+    static let stageOrange = LinearGradient(colors: [Color(red: 1.0, green: 0.66, blue: 0.24), Color(red: 0.97, green: 0.42, blue: 0.08)],
+                                            startPoint: .top, endPoint: .bottom)
 }

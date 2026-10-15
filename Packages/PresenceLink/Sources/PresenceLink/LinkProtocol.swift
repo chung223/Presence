@@ -31,6 +31,16 @@ public enum LinkCommand: Codable, Sendable, Equatable {
     case presentationTimer(startedAt: Date, minutes: Int?)
 }
 
+extension LinkCommand {
+    /// 要 Presence Pro 才能送的簡報指令。結束簡報不算：沒有 Pro 也要能讓 Mac 恢復自動鎖定。
+    public var needsPro: Bool {
+        switch self {
+        case .presenter, .goToSlide, .presentationTimer, .presentation(active: true): true
+        case .hello, .status, .lock, .pause, .resume, .confirm, .presentation(active: false): false
+        }
+    }
+}
+
 /// 簡報遙控能按的鍵。只有這幾個，Mac 不接受任意按鍵。
 public enum PresenterAction: String, Codable, Sendable, CaseIterable {
     case next, previous
@@ -50,6 +60,8 @@ public enum CommandRefusal: String, Codable, Sendable {
     case noAccessibility
     /// Mac 螢幕鎖著：不送按鍵，免得打進登入畫面。
     case screenLocked
+    /// 沒有 Presence Pro（iPhone 代手錶轉送簡報指令時判斷，不是 Mac 回的）。
+    case proRequired
 
     public var message: String {
         switch self {
@@ -59,6 +71,8 @@ public enum CommandRefusal: String, Codable, Sendable {
             String(localized: "Mac 上的 Presence 沒有輔助使用權限，不能翻頁", bundle: .module)
         case .screenLocked:
             String(localized: "Mac 螢幕鎖著，先解鎖才能翻頁", bundle: .module)
+        case .proRequired:
+            String(localized: "簡報遙控是 Presence Pro 的功能，請在 iPhone 的 Presence Remote 升級", bundle: .module)
         }
     }
 }

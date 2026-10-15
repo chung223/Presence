@@ -129,6 +129,22 @@
         }
       }
     },
+    "簡報遙控是 Presence Pro 的功能，請在 iPhone 的 Presence Remote 升級": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenter Remote is part of Presence Pro. Upgrade in Presence Remote on your iPhone."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報遙控是 Presence Pro 的功能，請在 iPhone 的 Presence Remote 升級"
+          }
+        }
+      }
+    },
     "藍牙沒有開啟": {
       "localizations": {
         "en": {

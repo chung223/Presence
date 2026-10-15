@@ -12,6 +12,15 @@ func runMacCommand(_ command: LinkCommand) async throws -> LinkStatus {
     }
 }
 
+/// 翻頁的「捷徑」動作與鎖定畫面的翻頁按鈕：要 Presence Pro。
+@MainActor
+func runPresenterCommand(_ command: LinkCommand) async throws {
+    guard await ProStore.shared.checkPro() else {
+        throw RemoteIntentError(message: String(localized: "簡報遙控是 Presence Pro 的功能，請打開 Presence Remote 升級"))
+    }
+    _ = try await runMacCommand(command)
+}
+
 /// 鎖定畫面的「結束簡報」：同時結束即時動態。
 @MainActor
 func finishPresentation() async throws {

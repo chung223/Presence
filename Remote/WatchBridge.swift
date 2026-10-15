@@ -24,7 +24,8 @@ final class WatchBridge: NSObject {
             return
         }
         if let status, status.event == nil, let last = lastSyncedStatus, Date().timeIntervalSince(last) < 5 { return }
-        var context: [String: Any] = [:]
+        // 手錶靠這個決定簡報遙控能不能用（手錶自己也查 App Store，但開發時的測試購買只在 iPhone 上）
+        var context: [String: Any] = ["pro": ProStore.shared.isPro]
         if let pairing, let data = try? JSONEncoder().encode(pairing) { context["pairing"] = data }
         if let status, let data = try? WatchMessage.encode(status) {
             context["status"] = data

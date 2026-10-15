@@ -1,4 +1,5 @@
 import PresenceLink
+import StoreKit
 import SwiftUI
 import VisionKit
 
@@ -47,7 +48,7 @@ struct OnboardingView: View {
                 .font(.system(size: 72))
                 .foregroundStyle(.tint)
             Text("Presence Remote").font(.largeTitle.bold())
-            Text("從 iPhone 和 Apple Watch 鎖定你的 Mac、暫停或恢復 Presence，Mac 鎖定時也會通知你。")
+            Text("從 iPhone 和 Apple Watch 鎖定你的 Mac、暫停或恢復 Presence，Mac 鎖定時也會通知你。升級 Presence Pro，還能當簡報筆翻頁。")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
             VStack(alignment: .leading, spacing: 10) {
@@ -120,59 +121,41 @@ struct QRScannerView: UIViewControllerRepresentable {
 
 // MARK: - 控制
 
+/// 主畫面：上面是 Mac 的狀態，下面兩張大卡片並排（立即鎖定、簡報遙控），再下面是暫停。
+/// 簡報遙控是 Presence Pro 的功能：沒有 Pro 時卡片上有「PRO」標記，點了打開付費畫面。
 struct ControlView: View {
     let model: RemoteModel
     @State private var showingSettings = false
     @State private var presenting = false
+    @State private var showingPaywall = false
+    @State private var showingIntro = false
     @State private var successCount = 0
+    @AppStorage("seenPresenterIntro") private var seenPresenterIntro = false
+    private var store: ProStore { .shared }
 
     var body: some View {
         let link = model.link
         let status = link.status
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 14) {
                     StatusCard(status: status, connection: link.state, lastUpdate: link.lastUpdate)
 
-                    Button {
-                        run(.lock)
-                    } label: {
-                        Label("立即鎖定 Mac", systemImage: "lock.fill")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 6)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .tint(.orange)
+                    HStack(spacing: 12) {
+                        Button { run(.lock) } label: {
+                            ActionCard(title: "立即鎖定", detail: Text("鎖定 \(model.pairing?.macName ?? "Mac")"),
+                                       symbol: "lock.fill", style: .lock)
+                        }
+                        .buttonStyle(CardPressStyle())
 
-                    if let until = status?.pausedUntil, until > Date() {
-                        Button {
-                            run(.resume)
-                        } label: {
-                            Label("恢復自動鎖定與解鎖", systemImage: "play.fill").frame(maxWidth: .infinity)
+                        Button { openPresenter() } label: {
+                            ActionCard(title: "簡報遙控", detail: Text("翻頁、計時，手錶也能用"),
+                                       symbol: "play.rectangle.fill", style: .presenter, badge: store.isPro ? nil : "PRO")
                         }
-                        .buttonStyle(.bordered)
-                        .controlSize(.large)
-                    } else {
-                        Menu {
-                            Button("15 分鐘") { run(.pause(minutes: 15)) }
-                            Button("1 小時") { run(.pause(minutes: 60)) }
-                            Button("4 小時") { run(.pause(minutes: 240)) }
-                        } label: {
-                            Label("暫停自動鎖定與解鎖", systemImage: "pause.fill").frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.large)
+                        .buttonStyle(CardPressStyle())
                     }
 
-                    Button {
-                        presenting = true
-                    } label: {
-                        Label("簡報遙控", systemImage: "play.rectangle").frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
+                    PauseRow(status: status) { run($0) }
 
                     if model.busy {
                         ProgressView()
@@ -184,6 +167,7 @@ struct ControlView: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
+                        .padding(.top, 6)
                 }
                 .padding()
             }
@@ -194,12 +178,33 @@ struct ControlView: View {
             .refreshable { await model.perform(.status) }
             .task { await model.perform(.status) }
             .sheet(isPresented: $showingSettings) { SettingsView(model: model) }
-            .fullScreenCover(isPresented: $presenting) { PresenterView(model: model) }
-            #if DEBUG
-            .onAppear {
-                if RemoteModel.isDemo, UserDefaults.standard.string(forKey: "PresenceDemoState") == "presenter" { presenting = true }
+            .sheet(isPresented: $showingPaywall) { PaywallView() }
+            .sheet(isPresented: $showingIntro) {
+                PresenterIntroView(isPro: store.isPro) { wantsPresenter in
+                    showingIntro = false
+                    if wantsPresenter { openPresenter() }
+                }
             }
-            #endif
+            .fullScreenCover(isPresented: $presenting) { PresenterView(model: model) }
+            .onAppear {
+                #if DEBUG
+                if RemoteModel.isDemo {
+                    switch UserDefaults.standard.string(forKey: "PresenceDemoState") {
+                    case "presenter": presenting = true
+                    case "paywall": showingPaywall = true
+                    case "intro": showingIntro = true
+                    case "settings": showingSettings = true
+                    default: break
+                    }
+                    return
+                }
+                #endif
+                // 更新後第一次打開：介紹簡報遙控（只出現一次）
+                if !seenPresenterIntro {
+                    seenPresenterIntro = true
+                    showingIntro = true
+                }
+            }
             .sensoryFeedback(.success, trigger: successCount)
             #if DEBUG
             .overlay(alignment: .bottom) { DemoCaption(text: model.demoCaption) }
@@ -211,6 +216,139 @@ struct ControlView: View {
         Task {
             if case .success = await model.perform(command) { successCount += 1 }
         }
+    }
+
+    private func openPresenter() {
+        Task {
+            // 從介紹頁的按鈕過來時，等介紹頁收起來再打開下一個畫面
+            try? await Task.sleep(for: .milliseconds(showingIntro ? 450 : 0))
+            if await store.checkPro() { presenting = true } else { showingPaywall = true }
+        }
+    }
+}
+
+/// 主畫面的大卡片。鎖定是橘色實心；簡報遙控用簡報畫面的深色舞台，配橘色圖示。
+private struct ActionCard: View {
+    enum Style { case lock, presenter }
+
+    let title: LocalizedStringKey
+    let detail: Text
+    let symbol: String
+    let style: Style
+    var badge: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .top) {
+                Image(systemName: symbol)
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 48, height: 48)
+                    .background {
+                        switch style {
+                        case .lock: Circle().fill(.white.opacity(0.22))
+                        case .presenter: Circle().fill(LinearGradient.stageOrange)
+                        }
+                    }
+                Spacer(minLength: 4)
+                if let badge {
+                    Text(badge)
+                        .font(.caption2.weight(.heavy))
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 7).padding(.vertical, 3)
+                        .background(LinearGradient.stageOrange, in: Capsule())
+                } else {
+                    Image(systemName: "chevron.forward")
+                        .font(.footnote.weight(.bold))
+                        .foregroundStyle(.white.opacity(0.6))
+                        .padding(.top, 4)
+                }
+            }
+            Spacer(minLength: 16)
+            Text(title)
+                .font(.title3.weight(.bold))
+                .foregroundStyle(.white)
+            detail
+                .font(.footnote)
+                .foregroundStyle(.white.opacity(0.75))
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 2)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, minHeight: 168, alignment: .topLeading)
+        .background {
+            let shape = RoundedRectangle(cornerRadius: 26, style: .continuous)
+            switch style {
+            case .lock:
+                shape.fill(LinearGradient(colors: [Color(red: 1.0, green: 0.62, blue: 0.2), Color(red: 0.93, green: 0.36, blue: 0.06)],
+                                          startPoint: .topLeading, endPoint: .bottomTrailing))
+            case .presenter:
+                ZStack {
+                    shape.fill(Color(red: 0.07, green: 0.075, blue: 0.09))
+                    shape.fill(RadialGradient(colors: [Color.orange.opacity(0.28), .clear], center: .bottomTrailing,
+                                              startRadius: 0, endRadius: 190))
+                    shape.strokeBorder(.white.opacity(0.08), lineWidth: 1)
+                }
+            }
+        }
+        .contentShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// 卡片按下時縮一點。
+private struct CardPressStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.96 : 1)
+            .animation(.spring(duration: 0.25, bounce: 0.4), value: configuration.isPressed)
+    }
+}
+
+/// 暫停或恢復自動鎖定與解鎖：一整列，看得出現在的狀態。
+private struct PauseRow: View {
+    let status: LinkStatus?
+    let run: (LinkCommand) -> Void
+
+    var body: some View {
+        if let until = status?.pausedUntil, until > Date() {
+            Button { run(.resume) } label: {
+                row(symbol: "play.circle.fill", tint: .green, title: "恢復自動鎖定與解鎖",
+                    detail: Text("暫停到 \(until.formatted(date: .omitted, time: .shortened))"), trailing: nil)
+            }
+            .buttonStyle(.plain)
+        } else {
+            Menu {
+                Button("15 分鐘") { run(.pause(minutes: 15)) }
+                Button("1 小時") { run(.pause(minutes: 60)) }
+                Button("4 小時") { run(.pause(minutes: 240)) }
+            } label: {
+                row(symbol: "pause.circle.fill", tint: .secondary, title: "暫停自動鎖定與解鎖",
+                    detail: Text("借別人用電腦、開會時"), trailing: "chevron.up.chevron.down")
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private func row(symbol: String, tint: Color, title: LocalizedStringKey, detail: Text, trailing: String?) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: symbol)
+                .font(.title2)
+                .foregroundStyle(tint)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.body.weight(.semibold)).foregroundStyle(.primary)
+                detail.font(.footnote).foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 8)
+            if let trailing {
+                Image(systemName: trailing).font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(.background.secondary, in: .rect(cornerRadius: 20))
+        .contentShape(.rect(cornerRadius: 20))
     }
 }
 
@@ -259,10 +397,16 @@ struct SettingsView: View {
     let model: RemoteModel
     @Environment(\.dismiss) private var dismiss
     @State private var confirmingUnpair = false
+    @State private var showingPaywall = false
+    @State private var managingSubscription = false
+    @State private var restoring = false
+    @State private var restoreMessage: String?
+    private var store: ProStore { .shared }
 
     var body: some View {
         NavigationStack {
             Form {
+                proSection
                 Section("配對的 Mac") {
                     LabeledContent("名稱", value: model.pairing?.macName ?? "—")
                     LabeledContent("連線", value: model.link.state.title)
@@ -277,18 +421,24 @@ struct SettingsView: View {
                 } header: {
                     Text("通知")
                 } footer: {
-                    Text("Mac 因為你離開而自動鎖定、或你不在附近時被手動解鎖，會發通知給你。")
+                    Text("Mac 因為你離開而自動鎖定、或你不在附近時被手動解鎖，會發通知給你。簡報設了演講長度時，剩 5 分鐘和時間到也會通知。")
                 }
                 Section {
+                    Link("隱私權政策", destination: LegalLinks.privacy)
+                    Link("使用條款", destination: LegalLinks.terms)
+                } header: {
+                    Text("關於")
+                } footer: {
                     Text("Presence Remote 透過藍牙連到 Mac 上的 Presence，指令都經過加密。Apple Watch 會透過這支 iPhone 取得配對。")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
                 }
             }
             .navigationTitle("設定")
             .toolbar {
                 Button("完成") { dismiss() }
             }
+            .sheet(isPresented: $showingPaywall) { PaywallView() }
+            .manageSubscriptionsSheet(isPresented: $managingSubscription)
+            .task { await store.refresh() }
             .confirmationDialog("要取消與這台 Mac 的配對嗎？", isPresented: $confirmingUnpair, titleVisibility: .visible) {
                 Button("取消配對", role: .destructive) {
                     model.unpair()
@@ -298,6 +448,59 @@ struct SettingsView: View {
                 Text("之後要重新掃描 QR code 才能再控制這台 Mac。Apple Watch 也會一起取消。")
             }
         }
+    }
+
+    @ViewBuilder
+    private var proSection: some View {
+        Section {
+            if store.isPro {
+                LabeledContent("方案", value: planName)
+                if let renewal = store.renewalDate, !store.isLifetime {
+                    LabeledContent("下次續訂", value: renewal.formatted(date: .abbreviated, time: .omitted))
+                }
+                // 買斷不用管理；家人共享的訂閱只能由購買的家人管理
+                if store.subscription != nil, !store.isLifetime, !store.isFamilyShared {
+                    Button("管理訂閱") { managingSubscription = true }
+                }
+            } else {
+                Button {
+                    showingPaywall = true
+                } label: {
+                    Label("升級 Presence Pro", systemImage: "play.rectangle.fill")
+                }
+                Button(restoring ? "正在恢復購買…" : "恢復購買") {
+                    Task {
+                        restoring = true
+                        defer { restoring = false }
+                        do {
+                            let restored = try await store.restore()
+                            restoreMessage = restored ? String(localized: "已恢復 Presence Pro。")
+                                : String(localized: "這個 Apple 帳號沒有 Presence Pro 的購買紀錄。")
+                        } catch {
+                            restoreMessage = String(localized: "恢復購買沒有完成（\(error.localizedDescription)）。")
+                        }
+                    }
+                }
+                .disabled(restoring)
+            }
+        } header: {
+            Text("Presence Pro")
+        } footer: {
+            VStack(alignment: .leading, spacing: 6) {
+                if let restoreMessage { Text(restoreMessage) }
+                Text("簡報遙控（iPhone、Apple Watch、鎖定畫面翻頁）是 Presence Pro 的功能，可以和家人共享。鎖定、暫停、小工具，以及 Mac 上的 Presence 都免費。")
+            }
+        }
+    }
+
+    private var planName: String {
+        if store.isLifetime { return String(localized: "一次買斷") }
+        let name = switch store.subscription {
+        case .monthly: String(localized: "月訂閱")
+        case .yearly: String(localized: "年訂閱")
+        case .lifetime, nil: String(localized: "已啟用")
+        }
+        return store.isFamilyShared ? String(localized: "\(name)（家人共享）") : name
     }
 }
 

@@ -6,7 +6,7 @@
 
 Presence 是 macOS 選單列工具，用藍牙偵測你的 iPhone、Apple Watch 或其他 BLE 裝置在不在附近。想法來自 [BLEUnlock](https://github.com/ts1/BLEUnlock)，針對新版 macOS 重新設計與實作，並修正了原版幾個安全問題。
 
-**手機和手錶不用裝任何 App**：Presence 讀的是它們本來就會發出的藍牙訊號。配套的 [Presence Remote](#presence-remoteiphone-與-apple-watch) 是選用的，裝了可以從手機和手錶遠端鎖定、暫停、收通知，並在解鎖前加密確認。
+**手機和手錶不用裝任何 App**：Presence 讀的是它們本來就會發出的藍牙訊號。配套的 [Presence Remote](#presence-remoteiphone-與-apple-watch) 是選用的，裝了可以從手機和手錶遠端鎖定、暫停、收通知，並在解鎖前加密確認；升級 Presence Pro 還能當簡報筆翻頁。
 
 <img src="docs/images/walkaway-zh-Hant.gif" width="800" alt="離開座位時倒數鎖定，回來後自動解鎖">
 
@@ -18,6 +18,8 @@ https://github.com/user-attachments/assets/ed99e2bb-de2b-4e57-80bd-02ce0df88796
 - **回來自動解鎖**：訊號在幾秒內持續夠強，才輸入登入密碼解鎖；單一筆異常的強訊號不會觸發。
 - **iPhone 加密確認**：配對 Presence Remote 後，輸入密碼前會先請 iPhone 用配對金鑰回應，只偽造藍牙訊號無法讓 Mac 解鎖。
 - **iPhone 與 Apple Watch 遙控**：用配套 App Presence Remote，從手機、手錶、控制中心、小工具或 Siri 立即鎖定、暫停或恢復；Mac 自動鎖定或有人趁你不在手動解鎖時，iPhone 會收到通知（見下方「Presence Remote」）。
+- **簡報時不自動鎖定**：Keynote、PowerPoint 或 [Folium](https://chung223.github.io/folium/) 正在播放簡報時，暫停自動鎖定；結束播放後，人不在附近就馬上鎖定。
+- **簡報遙控**：用 iPhone 和 Apple Watch 翻頁、跳頁、把投影畫面變黑（Presence Remote 的付費功能 Presence Pro，見[簡報遙控](docs/presenter-remote.md)）。Mac 這邊一樣免費、開放原始碼。
 - **意外結束自動重開**：當機或被系統結束時，launchd 會把它重新開起來；從選單結束則不會。
 - **多裝置**：同時監控 iPhone 和 Apple Watch，任一台在附近就算你在；每台裝置有自己的門檻。
 - **即時訊號圖**：看得到每一筆訊號和濾波後的結果，門檻設多少一目了然。
@@ -89,6 +91,10 @@ Presence Remote 是 Presence 的配套 App，透過藍牙直接連到你的 Mac�
 - **查看狀態**：你在不在附近、Mac 有沒有鎖著；主畫面與鎖定畫面小工具、手錶錶面複雜功能都看得到。
 - **通知**：Mac 因為你離開而自動鎖定、或你不在附近時被人手動解鎖，iPhone 會收到通知。
 - **解鎖前的加密確認**：Mac 要輸入密碼前，會先請 iPhone 用配對金鑰回應（見「運作方式與安全設計」）。
+
+**簡報遙控（Presence Pro）**：把 iPhone 和 Apple Watch 變成簡報筆。點一下或滑一下翻頁，也能跳頁、黑畫面、開始與結束播放；手機鎖著時在鎖定畫面與動態島翻頁；手錶點按、轉錶冠或兩指互點；演講倒數，剩 5 分鐘與時間到時震動提醒；簡報中 Mac 暫停自動鎖定。要先在 Mac 的「手機與手錶」打開「允許簡報遙控」。運作方式與給其他 App 的配合指引見 [docs/presenter-remote.md](docs/presenter-remote.md)。
+
+Presence Pro 是 App 內購買：月訂閱、年訂閱（都可以免費試用 7 天）或一次買斷，三種都可以家人共享。鎖定、暫停、通知、小工具與 Mac 版都免費。
 
 **配對**：在 Mac 的 Presence 打開「手機與手錶」，按「配對新的 iPhone…」，再用 Presence Remote 掃描畫面上的 QR code。Apple Watch 會透過這支 iPhone 取得配對，不用另外設定。
 

@@ -1,5 +1,6 @@
 import Observation
 import PresenceLink
+import StoreKit
 import SwiftUI
 import WatchConnectivity
 import WatchKit
@@ -32,6 +33,12 @@ final class WatchModel: NSObject {
     private(set) var busy = false
     private(set) var lastError: String?
     private(set) var lastRoute: String?
+    /// iPhone 同步過來的 Presence Pro 狀態（存起來，手錶 App 重開也記得）。
+    private(set) var phonePro = UserDefaults.standard.bool(forKey: "proFromPhone")
+    /// 手錶自己向 App Store 查到的 Presence Pro（同一個 App 紀錄，iPhone 上買的手錶也查得到）。
+    private(set) var ownPro = false
+    /// 能不能用簡報遙控。
+    var isPro: Bool { phonePro || ownPro }
 
     @ObservationIgnored private let link = LinkCentral(deviceName: "Apple Watch", keepConnected: false)
     @ObservationIgnored private let launchedAt = Date()
@@ -51,16 +58,28 @@ final class WatchModel: NSObject {
                                 locked: false)
             lastUpdate = Date()
             lastRoute = String(localized: "經由 iPhone")
+            phonePro = UserDefaults.standard.object(forKey: "PresencePro").map { _ in UserDefaults.standard.bool(forKey: "PresencePro") } ?? true
             demo = true
             return
         }
         #endif
+        Task { await checkOwnPurchases() }
         pairing = PairingKeychain.load()
         link.pairing = pairing
         if WCSession.isSupported() {
             WCSession.default.delegate = self
             WCSession.default.activate()
         }
+    }
+
+    private func checkOwnPurchases() async {
+        var purchases: [ProPurchase] = []
+        for await entitlement in Transaction.currentEntitlements {
+            guard case .verified(let transaction) = entitlement else { continue }
+            purchases.append(ProPurchase(productID: transaction.productID, expirationDate: transaction.expirationDate,
+                                         revocationDate: transaction.revocationDate, isUpgraded: transaction.isUpgraded))
+        }
+        ownPro = ProAccess.isActive(purchases)
     }
 
     /// 打開 App 時：先顯示 iPhone 同步過來的狀態，超過一分鐘沒更新才在背景悄悄更新。
@@ -176,6 +195,10 @@ final class WatchModel: NSObject {
             self.status = status
             lastUpdate = Date()
         }
+        if let pro = context["pro"] as? Bool, pro != phonePro {
+            phonePro = pro
+            UserDefaults.standard.set(pro, forKey: "proFromPhone")
+        }
         publishWidgetStatus()
     }
 }
@@ -225,39 +248,45 @@ struct WatchControlView: View {
             }
         } else {
             ScrollView {
-                VStack(spacing: 10) {
+                VStack(spacing: 8) {
                     let presence = model.status?.presence ?? .waiting
-                    HStack {
-                        Image(systemName: presence.symbol).foregroundStyle(presence.tint)
-                        Text(model.status?.summary ?? String(localized: "尚未取得狀態"))
-                            .font(.footnote)
-                            .lineLimit(2)
-                    }
-                    if model.status?.locked == true {
-                        Label("Mac 已鎖定", systemImage: "lock.fill").font(.caption2).foregroundStyle(.orange)
-                    }
-                    if let updated = model.lastUpdate {
-                        Text("\(Text(updated, style: .relative))前更新").font(.caption2).foregroundStyle(.secondary)
+                    HStack(spacing: 8) {
+                        Image(systemName: model.status?.locked == true ? "lock.fill" : presence.symbol)
+                            .foregroundStyle(model.status?.locked == true ? .orange : presence.tint)
+                            .frame(width: 22)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(model.status?.summary ?? String(localized: "尚未取得狀態"))
+                                .font(.footnote)
+                                .lineLimit(2)
+                            if let updated = model.lastUpdate {
+                                Text("\(Text(updated, style: .relative))前更新").font(.caption2).foregroundStyle(.secondary)
+                            }
+                        }
+                        Spacer(minLength: 0)
                     }
 
-                    Button {
-                        Task { await model.perform(.lock) }
-                    } label: {
-                        Label("鎖定 Mac", systemImage: "lock.fill").frame(maxWidth: .infinity)
+                    // 跟 iPhone 主畫面一樣，兩個主要動作並排
+                    HStack(spacing: 6) {
+                        Button {
+                            Task { await model.perform(.lock) }
+                        } label: {
+                            WatchTile(title: "鎖定", symbol: "lock.fill", prominent: true)
+                        }
+                        .buttonStyle(.plain)
+
+                        NavigationLink {
+                            if model.isPro { WatchPresenterView(model: model) } else { WatchProView() }
+                        } label: {
+                            WatchTile(title: "簡報", symbol: "play.rectangle.fill", prominent: false, badge: model.isPro ? nil : "PRO")
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .tint(.orange)
 
                     if let until = model.status?.pausedUntil, until > Date() {
                         Button("恢復", systemImage: "play.fill") { Task { await model.perform(.resume) } }
                     } else {
                         Button("暫停 15 分鐘", systemImage: "pause.fill") { Task { await model.perform(.pause(minutes: 15)) } }
                         Button("暫停 1 小時", systemImage: "pause.fill") { Task { await model.perform(.pause(minutes: 60)) } }
-                    }
-
-                    NavigationLink {
-                        WatchPresenterView(model: model)
-                    } label: {
-                        Label("簡報遙控", systemImage: "play.rectangle").frame(maxWidth: .infinity)
                     }
 
                     if model.busy {
@@ -272,6 +301,66 @@ struct WatchControlView: View {
             .navigationTitle(model.pairing?.macName ?? "Presence")
             .task { await model.refreshIfStale() }
         }
+    }
+}
+
+/// 主畫面的大按鈕：鎖定是橘色實心，簡報是深色底配橘色圖示（跟 iPhone 一致）。
+private struct WatchTile: View {
+    let title: LocalizedStringKey
+    let symbol: String
+    let prominent: Bool
+    var badge: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .top) {
+                Image(systemName: symbol)
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(prominent ? .white : .orange)
+                Spacer(minLength: 0)
+                if let badge {
+                    Text(badge)
+                        .font(.system(size: 9, weight: .heavy))
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 4).padding(.vertical, 1)
+                        .background(.orange, in: Capsule())
+                }
+            }
+            Spacer(minLength: 0)
+            Text(title).font(.headline).foregroundStyle(.white)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, minHeight: 78, alignment: .leading)
+        .background {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(prominent
+                      ? AnyShapeStyle(LinearGradient(colors: [Color(red: 1.0, green: 0.66, blue: 0.24), Color(red: 0.97, green: 0.42, blue: 0.08)],
+                                                     startPoint: .top, endPoint: .bottom))
+                      : AnyShapeStyle(Color.white.opacity(0.14)))
+        }
+        .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+}
+
+/// 沒有 Presence Pro 時，簡報按鈕打開這頁：手錶上不賣，請到 iPhone 升級。
+private struct WatchProView: View {
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 10) {
+                Image(systemName: "play.rectangle.fill")
+                    .font(.system(size: 34))
+                    .foregroundStyle(.orange)
+                Text("Presence Pro").font(.headline)
+                Text("用手錶翻頁、轉錶冠或兩指互點，是 Presence Pro 的功能。")
+                    .font(.footnote)
+                    .multilineTextAlignment(.center)
+                Text("請在 iPhone 的 Presence Remote 點「簡報遙控」升級，手錶會自動開通。")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .navigationTitle("簡報")
     }
 }
 

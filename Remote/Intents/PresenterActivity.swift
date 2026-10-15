@@ -21,6 +21,11 @@ nonisolated struct PresenterAttributes: ActivityAttributes {
 func finishPresentation() async throws {
     throw RemoteIntentError(message: String(localized: "請打開 Presence Remote 再試一次"))
 }
+
+@MainActor
+func runPresenterCommand(_ command: LinkCommand) async throws {
+    throw RemoteIntentError(message: String(localized: "請打開 Presence Remote 再試一次"))
+}
 #endif
 
 // 說明文字不能出現「Mac」（App Store Connect 錯誤 90626），用「電腦」。
@@ -31,7 +36,7 @@ struct NextSlideIntent: LiveActivityIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        _ = try await runMacCommand(.presenter(.next))
+        try await runPresenterCommand(.presenter(.next))
         return .result()
     }
 }
@@ -42,7 +47,7 @@ struct PreviousSlideIntent: LiveActivityIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        _ = try await runMacCommand(.presenter(.previous))
+        try await runPresenterCommand(.presenter(.previous))
         return .result()
     }
 }

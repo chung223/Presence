@@ -280,3 +280,60 @@ struct PresentationTimerTests {
         #expect(status.presentationEndsAt == start.addingTimeInterval(1200))
     }
 }
+
+struct ProAccessTests {
+    let now = Date(timeIntervalSince1970: 1_800_000_000)
+
+    @Test func nothingBoughtIsNotPro() {
+        #expect(!ProAccess.isActive([], now: now))
+        #expect(!ProAccess.isActive([ProPurchase(productID: "com.example.other")], now: now))
+    }
+
+    @Test func lifetimeNeverExpires() {
+        let purchases = [ProPurchase(productID: ProProduct.lifetime.rawValue)]
+        #expect(ProAccess.isActive(purchases, now: now))
+        #expect(ProAccess.hasLifetime(purchases))
+        #expect(ProAccess.activeSubscription(purchases, now: now) == nil)
+    }
+
+    @Test("訂閱到期、退款或換方案後就不算")
+    func subscriptionMustBeCurrent() {
+        let id = ProProduct.yearly.rawValue
+        #expect(ProAccess.isActive([ProPurchase(productID: id, expirationDate: now + 60)], now: now))
+        #expect(!ProAccess.isActive([ProPurchase(productID: id, expirationDate: now - 60)], now: now))
+        #expect(!ProAccess.isActive([ProPurchase(productID: id, expirationDate: now + 60, revocationDate: now - 1)], now: now))
+        #expect(!ProAccess.isActive([ProPurchase(productID: id, expirationDate: now + 60, isUpgraded: true)], now: now))
+    }
+
+    @Test("同時有月訂與年訂時，顯示到期最晚的那一個")
+    func activeSubscriptionPicksLatestRenewal() throws {
+        let purchases = [ProPurchase(productID: ProProduct.monthly.rawValue, expirationDate: now + 86_400),
+                         ProPurchase(productID: ProProduct.yearly.rawValue, expirationDate: now + 86_400 * 300)]
+        let active = try #require(ProAccess.activeSubscription(purchases, now: now))
+        #expect(active.product == .yearly)
+        #expect(active.renewal == now + 86_400 * 300)
+    }
+
+    @Test func familySharingOnlyWhenEveryValidPurchaseIsShared() {
+        let shared = ProPurchase(productID: ProProduct.lifetime.rawValue, isFamilyShared: true)
+        let own = ProPurchase(productID: ProProduct.monthly.rawValue, expirationDate: now + 60)
+        #expect(ProAccess.isFamilyShared([shared], now: now))
+        #expect(!ProAccess.isFamilyShared([shared, own], now: now))
+        #expect(!ProAccess.isFamilyShared([], now: now))
+    }
+}
+
+struct NeedsProTests {
+    @Test(arguments: [LinkCommand.presenter(.next), .goToSlide(3), .presentation(active: true),
+                      .presentationTimer(startedAt: Date(timeIntervalSince1970: 0), minutes: 10)])
+    func presenterCommandsNeedPro(command: LinkCommand) {
+        #expect(command.needsPro)
+    }
+
+    @Test("鎖定、暫停與結束簡報不用 Pro")
+    func freeCommands() {
+        for command in [LinkCommand.lock, .status, .pause(minutes: 15), .resume, .presentation(active: false)] {
+            #expect(!command.needsPro)
+        }
+    }
+}

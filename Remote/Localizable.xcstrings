@@ -17,6 +17,22 @@
         }
       }
     },
+    "%@ 一次付清，不會續訂": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ once. No renewals."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 一次付清，不會續訂"
+          }
+        }
+      }
+    },
     "%@ 已恢復自動鎖定與解鎖": {
       "localizations": {
         "en": {
@@ -81,6 +97,22 @@
         }
       }
     },
+    "%@（家人共享）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (Family Sharing)"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@（家人共享）"
+          }
+        }
+      }
+    },
     "%lld 分鐘": {
       "localizations": {
         "en": {
@@ -93,6 +125,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld 分鐘"
+          }
+        }
+      }
+    },
+    "%lld 天後每年 %@，自動續訂，可隨時取消": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%2$@ per year after %1$lld days. Renews automatically; cancel anytime."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld 天後每年 %2$@，自動續訂，可隨時取消"
+          }
+        }
+      }
+    },
+    "%lld 天後每月 %@，自動續訂，可隨時取消": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%2$@ per month after %1$lld days. Renews automatically; cancel anytime."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld 天後每月 %2$@，自動續訂，可隨時取消"
           }
         }
       }
@@ -145,18 +209,66 @@
         }
       }
     },
-    "Mac 因為你離開而自動鎖定、或你不在附近時被手動解鎖，會發通知給你。": {
+    "App Store 暫時沒有提供 Presence Pro 的方案，請稍後再試。": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You'll be notified when your Mac locks because you left, or when it's unlocked manually while you're away."
+            "value": "Presence Pro plans aren't available from the App Store right now. Please try again later."
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mac 因為你離開而自動鎖定、或你不在附近時被手動解鎖，會發通知給你。"
+            "value": "App Store 暫時沒有提供 Presence Pro 的方案，請稍後再試。"
+          }
+        }
+      }
+    },
+    "Apple Watch 也是簡報筆": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Apple Watch is a clicker too"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch 也是簡報筆"
+          }
+        }
+      }
+    },
+    "Apple Watch 也能翻頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change slides from Apple Watch"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch 也能翻頁"
+          }
+        }
+      }
+    },
+    "Mac 因為你離開而自動鎖定、或你不在附近時被手動解鎖，會發通知給你。簡報設了演講長度時，剩 5 分鐘和時間到也會通知。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You'll get a notification when your Mac locks because you left, or is unlocked by hand while you're away. If you set a talk length, you'll also be notified with 5 minutes left and when time is up."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 因為你離開而自動鎖定、或你不在附近時被手動解鎖，會發通知給你。簡報設了演講長度時，剩 5 分鐘和時間到也會通知。"
           }
         }
       }
@@ -209,6 +321,22 @@
         }
       }
     },
+    "Presence Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Pro"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Pro"
+          }
+        }
+      }
+    },
     "Presence Remote": {
       "localizations": {
         "en": {
@@ -257,6 +385,54 @@
         }
       }
     },
+    "iPhone 變成簡報筆": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your iPhone is now a clicker"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone 變成簡報筆"
+          }
+        }
+      }
+    },
+    "·": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "·"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "·"
+          }
+        }
+      }
+    },
+    "一次買斷": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lifetime"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一次買斷"
+          }
+        }
+      }
+    },
     "上一頁": {
       "localizations": {
         "en": {
@@ -269,6 +445,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "上一頁"
+          }
+        }
+      }
+    },
+    "上一頁、跳頁、黑畫面、開始與結束播放": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Go back, jump to a slide, black out the screen, start and end the show"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上一頁、跳頁、黑畫面、開始與結束播放"
           }
         }
       }
@@ -289,6 +481,38 @@
         }
       }
     },
+    "下次續訂": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renews"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下次續訂"
+          }
+        }
+      }
+    },
+    "不用另外買遙控器，也不用裝接收器。Mac 上的 Presence 收到指令，就幫你翻頁。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No clicker to buy and no receiver to plug in. Presence on your Mac changes the slides for you."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不用另外買遙控器，也不用裝接收器。Mac 上的 Presence 收到指令，就幫你翻頁。"
+          }
+        }
+      }
+    },
     "不限時間": {
       "localizations": {
         "en": {
@@ -301,6 +525,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "不限時間"
+          }
+        }
+      }
+    },
+    "之後再說": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not Now"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "之後再說"
           }
         }
       }
@@ -337,6 +577,22 @@
         }
       }
     },
+    "付一次，之後不再收費": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pay once, never again"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "付一次，之後不再收費"
+          }
+        }
+      }
+    },
     "你不在附近時，%@ 被手動解鎖了": {
       "localizations": {
         "en": {
@@ -349,6 +605,70 @@
           "stringUnit": {
             "state": "translated",
             "value": "你不在附近時，%@ 被手動解鎖了"
+          }
+        }
+      }
+    },
+    "你的 iPhone\n就是簡報筆": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your iPhone is\nyour clicker"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "你的 iPhone\n就是簡報筆"
+          }
+        }
+      }
+    },
+    "使用條款": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terms of Use"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用條款"
+          }
+        }
+      }
+    },
+    "借別人用電腦、開會時": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For meetings, or lending your computer"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "借別人用電腦、開會時"
+          }
+        }
+      }
+    },
+    "免費試用 %lld 天": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try Free for %lld Days"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "免費試用 %lld 天"
           }
         }
       }
@@ -385,6 +705,38 @@
         }
       }
     },
+    "前 %lld 天免費": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld days free"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "前 %lld 天免費"
+          }
+        }
+      }
+    },
+    "前 %lld 天免費，隨時可以取消": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld days free, cancel anytime"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "前 %lld 天免費，隨時可以取消"
+          }
+        }
+      }
+    },
     "前往": {
       "localizations": {
         "en": {
@@ -401,6 +753,38 @@
         }
       }
     },
+    "剩 5 分鐘、時間到時震動提醒": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A tap on your wrist with 5 minutes left and when time is up"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "剩 5 分鐘、時間到時震動提醒"
+          }
+        }
+      }
+    },
+    "剩 5 分鐘、時間到時震動提醒你": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vibrates with 5 minutes left and when time is up"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "剩 5 分鐘、時間到時震動提醒你"
+          }
+        }
+      }
+    },
     "剩餘時間": {
       "localizations": {
         "en": {
@@ -413,6 +797,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "剩餘時間"
+          }
+        }
+      }
+    },
+    "升級 Presence Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upgrade to Presence Pro"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "升級 Presence Pro"
           }
         }
       }
@@ -481,6 +881,22 @@
         }
       }
     },
+    "回到這裡，點「簡報遙控」": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Come back here and tap Presenter Remote"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "回到這裡，點「簡報遙控」"
+          }
+        }
+      }
+    },
     "在 Mac 打開 Presence，到「手機與手錶」按「配對新的 iPhone」": {
       "localizations": {
         "en": {
@@ -493,6 +909,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "在 Mac 打開 Presence，到「手機與手錶」按「配對新的 iPhone」"
+          }
+        }
+      }
+    },
+    "在 Mac 的 Presence 打開「手機與手錶 › 允許簡報遙控」": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Presence on your Mac, turn on Phone & Watch › Allow Presenter Remote"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在 Mac 的 Presence 打開「手機與手錶 › 允許簡報遙控」"
           }
         }
       }
@@ -529,6 +961,38 @@
         }
       }
     },
+    "已啟用": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已啟用"
+          }
+        }
+      }
+    },
+    "已恢復 Presence Pro。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Pro has been restored."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已恢復 Presence Pro。"
+          }
+        }
+      }
+    },
     "已經講了 %lld 分鐘。": {
       "localizations": {
         "en": {
@@ -561,18 +1025,34 @@
         }
       }
     },
-    "從 iPhone 和 Apple Watch 鎖定你的 Mac、暫停或恢復 Presence，Mac 鎖定時也會通知你。": {
+    "年訂閱": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lock your Mac and pause or resume Presence from your iPhone and Apple Watch, and get notified when your Mac locks."
+            "value": "Yearly"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "從 iPhone 和 Apple Watch 鎖定你的 Mac、暫停或恢復 Presence，Mac 鎖定時也會通知你。"
+            "value": "年訂閱"
+          }
+        }
+      }
+    },
+    "從 iPhone 和 Apple Watch 鎖定你的 Mac、暫停或恢復 Presence，Mac 鎖定時也會通知你。升級 Presence Pro，還能當簡報筆翻頁。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock your Mac, or pause and resume Presence, from your iPhone and Apple Watch, and get notified when your Mac locks. Upgrade to Presence Pro to use them as a presentation clicker too."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "從 iPhone 和 Apple Watch 鎖定你的 Mac、暫停或恢復 Presence，Mac 鎖定時也會通知你。升級 Presence Pro，還能當簡報筆翻頁。"
           }
         }
       }
@@ -625,6 +1105,38 @@
         }
       }
     },
+    "恢復購買": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore Purchases"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢復購買"
+          }
+        }
+      }
+    },
+    "恢復購買沒有完成（%@）。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't restore purchases (%@)."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢復購買沒有完成（%@）。"
+          }
+        }
+      }
+    },
     "或向右滑": {
       "localizations": {
         "en": {
@@ -641,6 +1153,38 @@
         }
       }
     },
+    "手機鎖著也能在鎖定畫面翻頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Even from the Lock Screen when your phone is locked"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手機鎖著也能在鎖定畫面翻頁"
+          }
+        }
+      }
+    },
+    "手機鎖著也能翻頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Works on the Lock Screen"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手機鎖著也能翻頁"
+          }
+        }
+      }
+    },
     "打開通知設定": {
       "localizations": {
         "en": {
@@ -653,6 +1197,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "打開通知設定"
+          }
+        }
+      }
+    },
+    "把 Mac 上的 Presence 更新到最新版": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Update Presence on your Mac to the latest version"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "把 Mac 上的 Presence 更新到最新版"
           }
         }
       }
@@ -705,6 +1265,38 @@
         }
       }
     },
+    "新功能": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新功能"
+          }
+        }
+      }
+    },
+    "方案": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "方案"
+          }
+        }
+      }
+    },
     "暫停": {
       "localizations": {
         "en": {
@@ -753,6 +1345,22 @@
         }
       }
     },
+    "暫停到 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused until %@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暫停到 %@"
+          }
+        }
+      }
+    },
     "暫停或恢復 Presence": {
       "localizations": {
         "en": {
@@ -785,6 +1393,22 @@
         }
       }
     },
+    "暫時無法連線到 App Store（%@）。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't connect to the App Store (%@)."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暫時無法連線到 App Store（%@）。"
+          }
+        }
+      }
+    },
     "更新於 %@": {
       "localizations": {
         "en": {
@@ -797,6 +1421,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "更新於 %@"
+          }
+        }
+      }
+    },
+    "最划算": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best Value"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最划算"
+          }
+        }
+      }
+    },
+    "月訂閱": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月訂閱"
           }
         }
       }
@@ -817,6 +1473,54 @@
         }
       }
     },
+    "正在恢復購買…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restoring…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在恢復購買…"
+          }
+        }
+      }
+    },
+    "正在等待核准（例如家長同意），核准後就會生效。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for approval (for example, from a parent). It'll take effect once approved."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在等待核准（例如家長同意），核准後就會生效。"
+          }
+        }
+      }
+    },
+    "正在載入方案…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading plans…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在載入方案…"
+          }
+        }
+      }
+    },
     "正在連線到 Mac…": {
       "localizations": {
         "en": {
@@ -829,6 +1533,118 @@
           "stringUnit": {
             "state": "translated",
             "value": "正在連線到 Mac…"
+          }
+        }
+      }
+    },
+    "每年": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "per year"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每年"
+          }
+        }
+      }
+    },
+    "每年 %@，自動續訂，可隨時取消": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ per year. Renews automatically; cancel anytime."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每年 %@，自動續訂，可隨時取消"
+          }
+        }
+      }
+    },
+    "每月": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "per month"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每月"
+          }
+        }
+      }
+    },
+    "每月 %@，自動續訂，可隨時取消": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ per month. Renews automatically; cancel anytime."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每月 %@，自動續訂，可隨時取消"
+          }
+        }
+      }
+    },
+    "永久": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "forever"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "永久"
+          }
+        }
+      }
+    },
+    "演講倒數": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Talk timer"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "演講倒數"
+          }
+        }
+      }
+    },
+    "演講倒數提醒": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Talk timer with reminders"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "演講倒數提醒"
           }
         }
       }
@@ -865,18 +1681,98 @@
         }
       }
     },
-    "立即鎖定 Mac": {
+    "看看 Presence Pro": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lock Mac Now"
+            "value": "See Presence Pro"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "立即鎖定 Mac"
+            "value": "看看 Presence Pro"
+          }
+        }
+      }
+    },
+    "示範模式不能購買。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purchases aren't available in demo mode."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "示範模式不能購買。"
+          }
+        }
+      }
+    },
+    "立即鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock Now"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "立即鎖定"
+          }
+        }
+      }
+    },
+    "站在台上，用手機或手錶翻 Mac 上的簡報。Keynote、PowerPoint、Google 簡報、PDF 都可以。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change the slides on your Mac from your phone or watch while you're on stage. Works with Keynote, PowerPoint, Google Slides, and PDFs."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "站在台上，用手機或手錶翻 Mac 上的簡報。Keynote、PowerPoint、Google 簡報、PDF 都可以。"
+          }
+        }
+      }
+    },
+    "管理訂閱": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage Subscription"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "管理訂閱"
+          }
+        }
+      }
+    },
+    "簡報中暫停自動鎖定，結束後恢復": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-lock pauses during your talk and resumes afterward"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報中暫停自動鎖定，結束後恢復"
           }
         }
       }
@@ -945,6 +1841,70 @@
         }
       }
     },
+    "簡報遙控是 Presence Pro 的功能，訂閱可以免費試用。鎖定、暫停、小工具照樣免費。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenter Remote is part of Presence Pro, and subscriptions start with a free trial. Locking, pausing, and widgets stay free."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報遙控是 Presence Pro 的功能，訂閱可以免費試用。鎖定、暫停、小工具照樣免費。"
+          }
+        }
+      }
+    },
+    "簡報遙控是 Presence Pro 的功能，請打開 Presence Remote 升級": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenter Remote is part of Presence Pro. Open Presence Remote to upgrade."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報遙控是 Presence Pro 的功能，請打開 Presence Remote 升級"
+          }
+        }
+      }
+    },
+    "簡報遙控（iPhone、Apple Watch、鎖定畫面翻頁）是 Presence Pro 的功能，可以和家人共享。鎖定、暫停、小工具，以及 Mac 上的 Presence 都免費。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenter Remote (on iPhone, Apple Watch, and the Lock Screen) is part of Presence Pro and can be shared with your family. Locking, pausing, widgets, and Presence for Mac are free."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報遙控（iPhone、Apple Watch、鎖定畫面翻頁）是 Presence Pro 的功能，可以和家人共享。鎖定、暫停、小工具，以及 Mac 上的 Presence 都免費。"
+          }
+        }
+      }
+    },
+    "約每月 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "about %@/month"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "約每月 %@"
+          }
+        }
+      }
+    },
     "結束播放": {
       "localizations": {
         "en": {
@@ -1009,6 +1969,22 @@
         }
       }
     },
+    "翻頁、計時，手錶也能用": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clicker and talk timer"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "翻頁、計時，手錶也能用"
+          }
+        }
+      }
+    },
     "要取消與這台 Mac 的配對嗎？": {
       "localizations": {
         "en": {
@@ -1021,6 +1997,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "要取消與這台 Mac 的配對嗎？"
+          }
+        }
+      }
+    },
+    "訂閱": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscribe"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "訂閱"
           }
         }
       }
@@ -1089,6 +2081,54 @@
         }
       }
     },
+    "購買": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buy"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "購買"
+          }
+        }
+      }
+    },
+    "購買沒有完成（%@）。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The purchase didn't go through (%@)."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "購買沒有完成（%@）。"
+          }
+        }
+      }
+    },
+    "走上台，Mac 也不會鎖住": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Walk on stage without your Mac locking"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "走上台，Mac 也不會鎖住"
+          }
+        }
+      }
+    },
     "跳到第幾頁": {
       "localizations": {
         "en": {
@@ -1133,6 +2173,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "這不是 Presence 的配對 QR code。"
+          }
+        }
+      }
+    },
+    "這個 Apple 帳號沒有 Presence Pro 的購買紀錄。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This Apple Account has no Presence Pro purchases."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這個 Apple 帳號沒有 Presence Pro 的購買紀錄。"
           }
         }
       }
@@ -1217,6 +2273,38 @@
         }
       }
     },
+    "重新載入": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try Again"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新載入"
+          }
+        }
+      }
+    },
+    "鎖定 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock %@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "鎖定 %@"
+          }
+        }
+      }
+    },
     "鎖定 Mac": {
       "localizations": {
         "en": {
@@ -1233,6 +2321,38 @@
         }
       }
     },
+    "鎖定畫面和動態島上有翻頁按鈕": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slide buttons on the Lock Screen and in the Dynamic Island"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "鎖定畫面和動態島上有翻頁按鈕"
+          }
+        }
+      }
+    },
+    "開始前": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before you start"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開始前"
+          }
+        }
+      }
+    },
     "開始播放": {
       "localizations": {
         "en": {
@@ -1245,6 +2365,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "開始播放"
+          }
+        }
+      }
+    },
+    "開始簡報遙控": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Presenter Remote"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開始簡報遙控"
+          }
+        }
+      }
+    },
+    "關於": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "關於"
+          }
+        }
+      }
+    },
+    "關閉": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "關閉"
+          }
+        }
+      }
+    },
+    "隨時可以取消": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel anytime"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "隨時可以取消"
+          }
+        }
+      }
+    },
+    "隱私權政策": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy Policy"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "隱私權政策"
           }
         }
       }
@@ -1281,6 +2481,22 @@
         }
       }
     },
+    "點一下或滑一下就翻頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap or swipe to change slides"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "點一下或滑一下就翻頁"
+          }
+        }
+      }
+    },
     "點一下，或向左滑": {
       "localizations": {
         "en": {
@@ -1309,6 +2525,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "點下面的按鈕，掃描 Mac 上的 QR code"
+          }
+        }
+      }
+    },
+    "點按、轉錶冠，或兩指互點": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap, turn the Digital Crown, or double tap"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "點按、轉錶冠，或兩指互點"
+          }
+        }
+      }
+    },
+    "，": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": ", "
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "，"
           }
         }
       }

@@ -19,8 +19,8 @@ settings:
     DEVELOPMENT_TEAM: 52A8DH7GF9
     CODE_SIGN_STYLE: Manual
     ENABLE_HARDENED_RUNTIME: YES
-    MARKETING_VERSION: "0.1.2"
-    CURRENT_PROJECT_VERSION: "5"
+    MARKETING_VERSION: "0.2.0"
+    CURRENT_PROJECT_VERSION: "6"
   configs:
     Debug:
       CODE_SIGN_IDENTITY: "Apple Development: WEICHUNG LAI (C2R6HR9R2C)"
@@ -81,6 +81,9 @@ targets:
     platform: iOS
     deploymentTarget: "26.0"
     sources: [Remote]
+    # 從 Xcode 執行時用本機的測試商品（Presence Pro），不必連 App Store
+    scheme:
+      storeKitConfiguration: StoreKit/PresencePro.storekit
     dependencies:
       - package: PresenceLink
       # 手錶 App 要包在 iPhone App 裡，WatchConnectivity 才會認得兩者是一組

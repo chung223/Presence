@@ -1,0 +1,138 @@
+{
+  "identifier" : "6D7A3C1E",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "12.99",
+      "familyShareable" : true,
+      "internalID" : "6822700003",
+      "localizations" : [
+        {
+          "description" : "Presenter remote on iPhone and Apple Watch, one-time purchase.",
+          "displayName" : "Presence Pro Lifetime",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "用 iPhone 和 Apple Watch 遙控簡報，一次買斷。",
+          "displayName" : "Presence Pro 買斷",
+          "locale" : "zh_Hant"
+        }
+      ],
+      "productID" : "com.chung.presence.pro.lifetime",
+      "referenceName" : "Presence Pro Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6822611221",
+    "_developerTeamID" : "52A8DH7GF9",
+    "_failTransactionsEnabled" : false,
+    "_locale" : "zh_Hant",
+    "_storefront" : "TWN",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21800001",
+      "localizations" : [
+        {
+          "description" : "",
+          "displayName" : "Presence Pro",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "",
+          "displayName" : "Presence Pro",
+          "locale" : "zh_Hant"
+        }
+      ],
+      "name" : "Presence Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "0.99",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "6822700001",
+          "introductoryOffer" : {
+            "internalID" : "6822700011",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Presenter remote on iPhone and Apple Watch.",
+              "displayName" : "Presence Pro Monthly",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "用 iPhone 和 Apple Watch 遙控簡報。",
+              "displayName" : "Presence Pro 月訂閱",
+              "locale" : "zh_Hant"
+            }
+          ],
+          "productID" : "com.chung.presence.pro.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Presence Pro Monthly",
+          "subscriptionGroupID" : "21800001",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "6822700002",
+          "introductoryOffer" : {
+            "internalID" : "6822700012",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Presenter remote on iPhone and Apple Watch.",
+              "displayName" : "Presence Pro Yearly",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "用 iPhone 和 Apple Watch 遙控簡報。",
+              "displayName" : "Presence Pro 年訂閱",
+              "locale" : "zh_Hant"
+            }
+          ],
+          "productID" : "com.chung.presence.pro.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Presence Pro Yearly",
+          "subscriptionGroupID" : "21800001",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
