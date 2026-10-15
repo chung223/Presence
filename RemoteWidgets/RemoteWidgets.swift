@@ -9,6 +9,7 @@ struct RemoteWidgets: WidgetBundle {
         MacStatusWidget()
         LockMacControl()
         PausePresenceControl()
+        PresenterLiveActivity()
     }
 }
 

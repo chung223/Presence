@@ -57,6 +57,22 @@ struct RemoteDevicesView: View {
             } footer: {
                 Text("在 iPhone 安裝 Presence Remote 並配對後，可以從手機、Apple Watch、Siri 或「捷徑」立即鎖定這台 Mac、暫停或恢復，Mac 鎖定時也會通知你。連線走藍牙，指令都經過加密；Apple Watch 會透過 iPhone 取得同一組配對。")
             }
+
+            Section {
+                Toggle("允許簡報遙控", isOn: Binding(
+                    get: { model.preferences.allowPresenter },
+                    set: { model.preferences.allowPresenter = $0 }
+                ))
+                if model.preferences.allowPresenter, !model.accessibilityGranted {
+                    LabeledContent("需要輔助使用權限才能翻頁") {
+                        Button("打開設定") { Accessibility.openSettings() }
+                    }
+                }
+            } header: {
+                Text("簡報遙控")
+            } footer: {
+                Text("讓配對的 iPhone 和 Apple Watch 像簡報筆一樣翻頁、開始與結束播放、把投影畫面變黑。Presence 會對最前面的 App 按方向鍵，Keynote、PowerPoint、Google 簡報和 PDF 都適用；只會送這幾個鍵，螢幕鎖著時也不會送。簡報時暫停自動鎖定（最多 3 小時），在手機上結束簡報就恢復。")
+            }
         }
         .formStyle(.grouped)
         .navigationTitle("手機與手錶")

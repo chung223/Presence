@@ -41,7 +41,7 @@ extension AppModel.Status {
         case .leaving: .orange
         case .away: .secondary
         case .waiting: .secondary
-        case .paused: .blue
+        case .paused, .presenting: .blue
         case .suspended, .lockPending: .orange
         case .needsDevice, .bluetoothUnavailable: .yellow
         }
@@ -83,7 +83,11 @@ private struct StatusHeader: View {
 
             HStack {
                 if model.isPaused {
-                    Button("恢復", systemImage: "play.fill") { model.resume() }
+                    if model.isPresenting {
+                        Button("結束簡報", systemImage: "stop.fill") { model.resume() }
+                    } else {
+                        Button("恢復", systemImage: "play.fill") { model.resume() }
+                    }
                 } else {
                     Menu("暫停", systemImage: "pause.fill") {
                         Button("15 分鐘") { model.pause(for: 15 * 60) }
@@ -113,6 +117,9 @@ private struct StatusHeader: View {
     private var detail: String {
         if case .paused(let until) = model.status {
             return String(localized: "自動鎖定與解鎖暫停到 \(until.formatted(date: .omitted, time: .shortened))")
+        }
+        if case .presenting(let until) = model.status {
+            return String(localized: "從 iPhone 或手錶簡報中，自動鎖定與解鎖暫停到 \(until.formatted(date: .omitted, time: .shortened))")
         }
         let p = model.preferences
         var parts = p.devices.map { device in

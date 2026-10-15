@@ -219,3 +219,46 @@ struct SharedStatusTests {
         #expect(disconnected.isStale(at: now))
     }
 }
+
+struct PresenterProtocolTests {
+    let pairing = PairingInfo.generate(macName: "Mac")
+
+    @Test(arguments: PresenterAction.allCases.map(LinkCommand.presenter) + [.presentation(active: true), .presentation(active: false)])
+    func presenterCommandsRoundTrip(command: LinkCommand) throws {
+        let frame = try RequestFrame.make(LinkRequest(command), pairing: pairing)
+        let decoded = try #require(RequestFrame(encoded: frame.encoded))
+        #expect(try decoded.open(with: pairing).command == command)
+    }
+
+    @Test("舊版 Mac 送的狀態沒有簡報欄位，新版 iPhone 照樣解得開")
+    func oldStatusDecodes() throws {
+        let json = #"{"macName":"Mac","presence":"near","summary":"","locked":false,"sentAt":0}"#
+        let status = try JSONDecoder().decode(LinkStatus.self, from: Data(json.utf8))
+        #expect(status.presenter == nil)
+        #expect(status.refusalMessage == nil)
+    }
+
+    @Test("新版 Mac 多送的欄位，舊版 iPhone 會略過")
+    func newStatusDecodesWithOldFields() throws {
+        struct OldStatus: Decodable { var macName: String; var presence: MacPresence; var locked: Bool }
+        let status = LinkStatus(macName: "Mac", presence: .paused, summary: "", locked: false,
+                                presenter: .presenting, refusal: CommandRefusal.screenLocked.rawValue)
+        let old = try JSONDecoder().decode(OldStatus.self, from: JSONEncoder().encode(status))
+        #expect(old.macName == "Mac" && old.presence == .paused)
+    }
+
+    @Test func statusWithPresenterRoundTrips() throws {
+        let status = LinkStatus(macName: "Mac", presence: .near, summary: "", locked: false, presenter: .enabled,
+                                refusal: CommandRefusal.noAccessibility.rawValue, sentAt: Date(timeIntervalSince1970: 1_800_000_000))
+        let sealed = try LinkCrypto.seal(status, key: pairing.symmetricKey)
+        #expect(try LinkCrypto.open(LinkStatus.self, from: sealed, key: pairing.symmetricKey) == status)
+    }
+
+    @Test("不認得的拒絕原因給一般的說明，不會整則解不開")
+    func unknownRefusalFallsBack() {
+        var status = LinkStatus(macName: "Mac", presence: .near, summary: "", locked: false, refusal: "somethingNew")
+        #expect(status.refusalMessage == String(localized: "Mac 沒有接受這個指令", bundle: .module))
+        status.refusal = CommandRefusal.screenLocked.rawValue
+        #expect(status.refusalMessage == CommandRefusal.screenLocked.message)
+    }
+}

@@ -225,6 +225,38 @@
         }
       }
     },
+    "上一頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous Slide"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上一頁"
+          }
+        }
+      }
+    },
+    "下一頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next Slide"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下一頁"
+          }
+        }
+      }
+    },
     "之後要重新掃描 QR code 才能再控制這台 Mac。Apple Watch 也會一起取消。": {
       "localizations": {
         "en": {
@@ -401,6 +433,22 @@
         }
       }
     },
+    "已連線": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connected"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已連線"
+          }
+        }
+      }
+    },
     "從 iPhone 和 Apple Watch 鎖定你的 Mac、暫停或恢復 Presence，Mac 鎖定時也會通知你。": {
       "localizations": {
         "en": {
@@ -461,6 +509,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "恢復自動鎖定與解鎖"
+          }
+        }
+      }
+    },
+    "或向右滑": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "or swipe right"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "或向右滑"
           }
         }
       }
@@ -609,6 +673,38 @@
         }
       }
     },
+    "未連線": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not Connected"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未連線"
+          }
+        }
+      }
+    },
+    "正在連線到 Mac…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecting to your Mac…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在連線到 Mac…"
+          }
+        }
+      }
+    },
     "用 Presence 立即鎖定配對的電腦。": {
       "localizations": {
         "en": {
@@ -641,6 +737,54 @@
         }
       }
     },
+    "簡報時間": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presentation time"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報時間"
+          }
+        }
+      }
+    },
+    "簡報遙控": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenter Remote"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報遙控"
+          }
+        }
+      }
+    },
+    "結束播放": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End Show"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結束播放"
+          }
+        }
+      }
+    },
     "結束暫停，恢復自動鎖定與解鎖。": {
       "localizations": {
         "en": {
@@ -653,6 +797,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "結束暫停，恢復自動鎖定與解鎖。"
+          }
+        }
+      }
+    },
+    "結束簡報": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End Presentation"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結束簡報"
+          }
+        }
+      }
+    },
+    "結束簡報遙控，電腦恢復自動鎖定與解鎖。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ends the presenter remote so your computer locks and unlocks automatically again."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結束簡報遙控，電腦恢復自動鎖定與解鎖。"
           }
         }
       }
@@ -685,6 +861,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "設定"
+          }
+        }
+      }
+    },
+    "請把 Mac 上的 Presence 更新到最新版，才能簡報遙控": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Update Presence on your Mac to the latest version to use the presenter remote."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請把 Mac 上的 Presence 更新到最新版，才能簡報遙控"
+          }
+        }
+      }
+    },
+    "讓電腦上的簡報回到上一頁。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Goes back one slide in the presentation on your computer."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "讓電腦上的簡報回到上一頁。"
+          }
+        }
+      }
+    },
+    "讓電腦上的簡報翻到下一頁。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Advances the presentation on your computer to the next slide."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "讓電腦上的簡報翻到下一頁。"
           }
         }
       }
@@ -769,6 +993,22 @@
         }
       }
     },
+    "重新計時": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart Timer"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新計時"
+          }
+        }
+      }
+    },
     "鎖定 Mac": {
       "localizations": {
         "en": {
@@ -781,6 +1021,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "鎖定 Mac"
+          }
+        }
+      }
+    },
+    "開始播放": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Show"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開始播放"
+          }
+        }
+      }
+    },
+    "黑畫面": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Black Screen"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "黑畫面"
+          }
+        }
+      }
+    },
+    "點一下，或向左滑": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap, or swipe left"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "點一下，或向左滑"
           }
         }
       }

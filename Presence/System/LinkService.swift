@@ -80,7 +80,8 @@ final class LinkService: NSObject {
     /// 等待中的配對剛剛完成。
     private(set) var pairingCompleted = false
 
-    @ObservationIgnored var onCommand: ((LinkCommand) -> Void)?
+    /// 收到鎖定、暫停、簡報等指令；做不成時回傳原因，跟著回覆送回 iPhone 或手錶。
+    @ObservationIgnored var onCommand: ((LinkCommand) -> CommandRefusal?)?
     /// 已配對的裝置連上並打過招呼。
     @ObservationIgnored var onDeviceConnected: ((String) -> Void)?
     /// 提供目前狀態給通知用；event 由呼叫端帶入。
@@ -273,14 +274,15 @@ final class LinkService: NSObject {
         if sessions[central.identifier] == nil { sessions[central.identifier] = Session(central: central) }
         sessions[central.identifier]?.pairingID = frame.pairingID
 
+        var refusal: CommandRefusal?
         switch request.command {
         case .hello(let deviceName):
             register(frame.pairingID, name: deviceName)
         case .status:
             touch(frame.pairingID)
-        case .lock, .pause, .resume:
+        case .lock, .pause, .resume, .presenter, .presentation:
             touch(frame.pairingID)
-            onCommand?(request.command)
+            refusal = onCommand?(request.command)
         case .confirm(let response):
             touch(frame.pairingID)
             if let pending = challenge, pending.challenge.accepts(response, at: Date(), within: pending.lifetime) {
@@ -289,6 +291,7 @@ final class LinkService: NSObject {
         }
         if var status = statusProvider?() {
             status.replyTo = request.id
+            status.refusal = refusal?.rawValue
             // 剛連上、還沒收過正在等的挑戰：一起帶過去
             if challenge?.challenge.markSent(to: central.identifier) == true { status.challenge = challenge?.challenge.nonce }
             send(status, to: central.identifier, pairingID: frame.pairingID)

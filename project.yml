@@ -96,6 +96,8 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
         UIBackgroundModes: [bluetooth-central]
+        # 簡報中在鎖定畫面與動態島顯示翻頁按鈕（PresenterAttributes）
+        NSSupportsLiveActivities: true
         NSBluetoothAlwaysUsageDescription: Presence Remote 用藍牙連到你 Mac 上的 Presence，從手機鎖定或查看狀態。
         NSCameraUsageDescription: 用相機掃描 Mac 上 Presence 顯示的配對 QR code。
         # 出口合規：只用 Apple CryptoKit 的標準加密保護自己裝置之間的藍牙指令，2026-10-14 使用者選擇豁免

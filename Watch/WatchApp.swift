@@ -2,6 +2,7 @@ import Observation
 import PresenceLink
 import SwiftUI
 import WatchConnectivity
+import WatchKit
 import WidgetKit
 
 @main
@@ -10,7 +11,9 @@ struct WatchApp: App {
 
     var body: some Scene {
         WindowGroup {
-            WatchControlView(model: model)
+            NavigationStack {
+                WatchControlView(model: model)
+            }
         }
     }
 }
@@ -69,11 +72,12 @@ final class WatchModel: NSObject {
         await perform(.status, quiet: true)
     }
 
-    /// `quiet`：背景更新，不轉圈、失敗也不顯示錯誤，保留手上的狀態。
-    func perform(_ command: LinkCommand, quiet: Bool = false) async {
+    /// `quiet`：背景更新，不轉圈、失敗也不顯示錯誤，保留手上的狀態。回傳 Mac 有沒有做成。
+    @discardableResult
+    func perform(_ command: LinkCommand, quiet: Bool = false) async -> Bool {
         guard pairing != nil else {
             lastError = String(localized: "請先在 iPhone 的 Presence Remote 配對 Mac")
-            return
+            return false
         }
         if !quiet { busy = true }
         defer { if !quiet { busy = false } }
@@ -88,20 +92,19 @@ final class WatchModel: NSObject {
         if session.activationState == .activated, session.isReachable {
             if let result = await sendThroughPhone(command) {
                 LinkLog.write("[手錶] 經由 iPhone 成功")
-                apply(result, route: String(localized: "經由 iPhone"))
-                return
+                return apply(result, route: String(localized: "經由 iPhone"))
             }
             LinkLog.write("[手錶] 經由 iPhone 失敗，改直接連線")
         }
         // 背景更新不值得直接連 Mac：耗手錶的電，也會佔用 Mac 的連線
-        if quiet { return }
+        if quiet { return false }
         switch await link.send(command) {
         case .success(let status):
             LinkLog.write("[手錶] 直接連線成功")
-            apply(.success(status), route: String(localized: "直接連線"))
+            return apply(.success(status), route: String(localized: "直接連線"))
         case .failure(let failure):
             LinkLog.write("[手錶] 直接連線失敗：\(failure)")
-            if !quiet { apply(.failure(failure.message), route: nil) }
+            return apply(.failure(failure.message), route: nil)
         }
     }
 
@@ -110,16 +113,20 @@ final class WatchModel: NSObject {
         case failure(String)
     }
 
-    private func apply(_ outcome: Outcome, route: String?) {
+    /// 回傳 Mac 有沒有做成：收到回覆但 Mac 拒絕（例如沒允許簡報遙控）也算失敗。
+    @discardableResult
+    private func apply(_ outcome: Outcome, route: String?) -> Bool {
         switch outcome {
         case .success(let status):
             self.status = status
             lastUpdate = Date()
-            lastError = nil
+            lastError = status.refusalMessage
             lastRoute = route
             publishWidgetStatus()
+            return status.refusal == nil
         case .failure(let message):
             lastError = message
+            return false
         }
     }
 
@@ -247,6 +254,12 @@ struct WatchControlView: View {
                         Button("暫停 1 小時", systemImage: "pause.fill") { Task { await model.perform(.pause(minutes: 60)) } }
                     }
 
+                    NavigationLink {
+                        WatchPresenterView(model: model)
+                    } label: {
+                        Label("簡報遙控", systemImage: "play.rectangle").frame(maxWidth: .infinity)
+                    }
+
                     if model.busy {
                         ProgressView()
                     } else if let error = model.lastError {
@@ -258,6 +271,82 @@ struct WatchControlView: View {
             }
             .navigationTitle(model.pairing?.macName ?? "Presence")
             .task { await model.refreshIfStale() }
+        }
+    }
+}
+
+/// 手錶上的簡報遙控：點按、轉數位錶冠，或用雙指互點（Series 9、Ultra 2 以後）翻到下一頁，翻成功會震一下。
+/// 打開時 Mac 暫停自動鎖定，離開這頁就恢復。外觀跟 iPhone 的簡報畫面一致：橘色的大「下一頁」。
+struct WatchPresenterView: View {
+    let model: WatchModel
+    @State private var startedAt = Date()
+    @State private var crown = 0.0
+    @State private var crownStep = 0
+    @State private var nextDone = 0
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Button { send(.next) } label: {
+                ZStack {
+                    Circle()
+                        .fill(LinearGradient(colors: [Color(red: 1.0, green: 0.66, blue: 0.24), Color(red: 0.97, green: 0.42, blue: 0.08)],
+                                             startPoint: .top, endPoint: .bottom))
+                    VStack(spacing: 2) {
+                        Image(systemName: "chevron.forward")
+                            .font(.system(size: 34, weight: .bold))
+                            .symbolEffect(.wiggle.forward, value: nextDone)
+                        Text("下一頁").font(.caption.weight(.semibold))
+                    }
+                    .foregroundStyle(.white)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .buttonStyle(.plain)
+            .handGestureShortcut(.primaryAction)
+
+            Button { send(.previous) } label: {
+                Label("上一頁", systemImage: "chevron.backward")
+                    .font(.footnote.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonBorderShape(.capsule)
+
+            if let error = model.lastError {
+                Text(error).font(.caption2).foregroundStyle(.orange).lineLimit(2).multilineTextAlignment(.center)
+            }
+        }
+        .focusable()
+        .digitalCrownRotation($crown, from: -10_000, through: 10_000, by: 1, sensitivity: .low,
+                              isContinuous: false, isHapticFeedbackEnabled: true)
+        .onChange(of: crown) { _, value in
+            // 轉超過幾格才翻一頁，免得碰到錶冠就翻
+            let step = Int((value / 4).rounded(.towardZero))
+            guard step != crownStep else { return }
+            send(step > crownStep ? .next : .previous)
+            crownStep = step
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Text(startedAt, style: .timer)
+                    .font(.system(.footnote, design: .rounded).weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(.orange)
+            }
+        }
+        .navigationTitle("簡報")
+        .task { await model.perform(.presentation(active: true)) }
+        .onDisappear {
+            // 沒在簡報（例如 Mac 還沒允許）就不必通知 Mac
+            guard model.status?.presenter == .presenting else { return }
+            Task { await model.perform(.presentation(active: false)) }
+        }
+    }
+
+    private func send(_ action: PresenterAction) {
+        Task {
+            let done = await model.perform(.presenter(action))
+            WKInterfaceDevice.current().play(done ? .click : .failure)
+            if done, action == .next { nextDone += 1 }
         }
     }
 }

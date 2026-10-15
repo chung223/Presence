@@ -113,6 +113,38 @@
         }
       }
     },
+    "上一頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous Slide"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上一頁"
+          }
+        }
+      }
+    },
+    "下一頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next Slide"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下一頁"
+          }
+        }
+      }
+    },
     "先在 App 配對 Mac": {
       "localizations": {
         "en": {
@@ -417,6 +449,22 @@
         }
       }
     },
+    "簡報中": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenting"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報中"
+          }
+        }
+      }
+    },
     "結束暫停，恢復自動鎖定與解鎖。": {
       "localizations": {
         "en": {
@@ -429,6 +477,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "結束暫停，恢復自動鎖定與解鎖。"
+          }
+        }
+      }
+    },
+    "結束簡報": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End Presentation"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結束簡報"
+          }
+        }
+      }
+    },
+    "結束簡報遙控，電腦恢復自動鎖定與解鎖。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ends the presenter remote so your computer locks and unlocks automatically again."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結束簡報遙控，電腦恢復自動鎖定與解鎖。"
           }
         }
       }
@@ -461,6 +541,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "請打開 Presence Remote 再試一次"
+          }
+        }
+      }
+    },
+    "讓電腦上的簡報回到上一頁。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Goes back one slide in the presentation on your computer."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "讓電腦上的簡報回到上一頁。"
+          }
+        }
+      }
+    },
+    "讓電腦上的簡報翻到下一頁。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Advances the presentation on your computer to the next slide."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "讓電腦上的簡報翻到下一頁。"
           }
         }
       }

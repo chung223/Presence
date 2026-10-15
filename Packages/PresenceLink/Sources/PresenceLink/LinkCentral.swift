@@ -118,7 +118,11 @@ public final class LinkCentral: NSObject {
         case .resume:
             next.pausedUntil = nil
             next.presence = .near
-        case .hello, .status, .confirm: break
+        case .presentation(let active):
+            next.presenter = active ? .presenting : .enabled
+            next.pausedUntil = active ? Date().addingTimeInterval(3 * 3600) : nil
+            next.presence = active ? .paused : .near
+        case .hello, .status, .confirm, .presenter: break
         }
         next.sentAt = Date()
         status = next

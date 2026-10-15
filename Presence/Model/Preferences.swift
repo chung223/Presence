@@ -91,6 +91,8 @@ struct Preferences: Equatable {
     var capturePhotoOnIntrusion = false
 
     var context = ContextRules()
+    /// 讓配對的 iPhone 與 Apple Watch 翻頁、開始與結束播放（見 PresenterKeys）。
+    var allowPresenter = false
     /// 立即鎖定的全域快捷鍵；nil 表示沒有設定。
     var lockHotKey: HotKey?
 
@@ -151,7 +153,7 @@ extension Preferences: Codable {
     private enum CodingKeys: String, CodingKey {
         case devices, devicePolicy, lockEnabled, lockDelay, signalTimeout, lockMethod, notifyOnLock
         case stayUnlockedWhileActive, warnBeforeLock, unlockEnabled, unlockMode, wakeOnProximity, requireCompanionConfirmation
-        case pauseMedia, activeMode, showUnnamedDevices, context, lockHotKey
+        case pauseMedia, activeMode, showUnnamedDevices, context, lockHotKey, allowPresenter
         case shortcutOnLeave, shortcutOnReturn, sittingReminderEnabled, sittingReminderInterval, capturePhotoOnIntrusion
         // 0.1 版只有一台裝置，門檻放在最外層
         case targetID, targetName, unlockRSSI, lockRSSI
@@ -195,6 +197,7 @@ extension Preferences: Codable {
         showUnnamedDevices = try c.decodeIfPresent(Bool.self, forKey: .showUnnamedDevices) ?? d.showUnnamedDevices
         context = (try? c.decodeIfPresent(ContextRules.self, forKey: .context)) ?? d.context
         lockHotKey = try? c.decodeIfPresent(HotKey.self, forKey: .lockHotKey)
+        allowPresenter = try c.decodeIfPresent(Bool.self, forKey: .allowPresenter) ?? d.allowPresenter
     }
 
     func encode(to encoder: Encoder) throws {
@@ -222,6 +225,7 @@ extension Preferences: Codable {
         try c.encode(showUnnamedDevices, forKey: .showUnnamedDevices)
         try c.encode(context, forKey: .context)
         try c.encodeIfPresent(lockHotKey, forKey: .lockHotKey)
+        try c.encode(allowPresenter, forKey: .allowPresenter)
     }
 }
 

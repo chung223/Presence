@@ -123,6 +123,7 @@ struct QRScannerView: UIViewControllerRepresentable {
 struct ControlView: View {
     let model: RemoteModel
     @State private var showingSettings = false
+    @State private var presenting = false
     @State private var successCount = 0
 
     var body: some View {
@@ -165,6 +166,14 @@ struct ControlView: View {
                         .controlSize(.large)
                     }
 
+                    Button {
+                        presenting = true
+                    } label: {
+                        Label("簡報遙控", systemImage: "play.rectangle").frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+
                     if model.busy {
                         ProgressView()
                     } else if let error = model.lastError {
@@ -185,6 +194,12 @@ struct ControlView: View {
             .refreshable { await model.perform(.status) }
             .task { await model.perform(.status) }
             .sheet(isPresented: $showingSettings) { SettingsView(model: model) }
+            .fullScreenCover(isPresented: $presenting) { PresenterView(model: model) }
+            #if DEBUG
+            .onAppear {
+                if RemoteModel.isDemo, UserDefaults.standard.string(forKey: "PresenceDemoState") == "presenter" { presenting = true }
+            }
+            #endif
             .sensoryFeedback(.success, trigger: successCount)
             #if DEBUG
             .overlay(alignment: .bottom) { DemoCaption(text: model.demoCaption) }

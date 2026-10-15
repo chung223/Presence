@@ -1,3 +1,4 @@
+import ActivityKit
 import Foundation
 import Observation
 import PresenceLink
@@ -20,6 +21,8 @@ final class RemoteModel {
     private(set) var demoEndCard = false
 
     @ObservationIgnored private let watch = WatchBridge()
+    /// 簡報中的即時動態。App 被系統結束後再被叫醒時，接手還在顯示的那一個。
+    @ObservationIgnored private var presenterActivity = Activity<PresenterAttributes>.activities.first
 
     private init() {
         link = LinkCentral(deviceName: UIDevice.current.name, keepConnected: true, restoreIdentifier: "presence-remote")
@@ -81,16 +84,83 @@ final class RemoteModel {
         defer { busy = false }
         let result = await link.send(command)
         switch result {
-        case .success: lastError = nil
+        case .success(let status): lastError = status.refusalMessage
         case .failure(let failure): lastError = failure.message
         }
         return result
     }
 
+    // MARK: - 簡報遙控
+
+    /// Mac 對簡報遙控的支援；nil 表示還沒收到狀態，或 Mac 上的 Presence 太舊。
+    var presenterSupport: PresenterSupport? { link.status?.presenter }
+
+    /// 翻頁等按鍵：不轉圈，做不成時把原因放在 `lastError`。
+    @discardableResult
+    func present(_ action: PresenterAction) async -> Bool {
+        switch await link.send(.presenter(action), timeout: 5) {
+        case .success(let status):
+            lastError = status.refusalMessage
+            // 一開始 Mac 還沒允許、後來才打開：第一次翻頁時 Mac 會開始簡報，這裡補上鎖定畫面的按鈕
+            if status.refusal == nil { startPresenterActivity() }
+            return status.refusal == nil
+        case .failure(let failure):
+            lastError = failure.message
+            return false
+        }
+    }
+
+    /// 開始或結束簡報：Mac 暫停或恢復自動鎖定，鎖定畫面顯示或收起翻頁按鈕。
+    func setPresentation(_ active: Bool) async {
+        if !active {
+            endPresenterActivity()
+            // 沒在簡報（例如 Mac 還沒允許）就不必通知 Mac，免得多一則錯誤訊息
+            guard presenterSupport == .presenting else { return }
+        }
+        switch await link.send(.presentation(active: active)) {
+        case .success(let status):
+            lastError = status.refusalMessage
+            if active, status.refusal == nil { startPresenterActivity() }
+        case .failure(let failure):
+            lastError = failure.message
+        }
+    }
+
+    private func startPresenterActivity() {
+        guard presenterActivity == nil else { return }
+        #if DEBUG
+        // 截圖用的示範模式不開即時動態：模擬器第一次開會跳出通知權限的對話框蓋住畫面
+        if Self.isDemo, !UserDefaults.standard.bool(forKey: "PresenceDemoActivity") { return }
+        #endif
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+            LinkLog.write("即時動態已關閉，鎖定畫面不會有翻頁按鈕")
+            return
+        }
+        let attributes = PresenterAttributes(macName: pairing?.macName ?? "Mac")
+        do {
+            presenterActivity = try Activity.request(attributes: attributes,
+                                                     content: .init(state: .init(startedAt: Date()), staleDate: nil))
+        } catch {
+            LinkLog.write("無法顯示簡報的即時動態：\(error)")
+        }
+    }
+
+    private func endPresenterActivity() {
+        presenterActivity = nil
+        Task { await Self.endPresenterActivities() }
+    }
+
+    /// Activity 不是 Sendable：在同一個非隔離的函式裡取得並結束，不跨執行緒傳遞。
+    nonisolated private static func endPresenterActivities() async {
+        for activity in Activity<PresenterAttributes>.activities {
+            await activity.end(nil, dismissalPolicy: .immediate)
+        }
+    }
+
     // MARK: - 通知
 
     #if DEBUG
-    /// App Store 截圖用：-PresenceDemo YES，-PresenceDemoState 選 near（預設）、locked、paused、onboarding。
+    /// App Store 截圖用：-PresenceDemo YES，-PresenceDemoState 選 near（預設）、locked、paused、onboarding、presenter。
     static var isDemo: Bool { UserDefaults.standard.bool(forKey: "PresenceDemo") }
 
     private func startDemo() {
@@ -100,7 +170,7 @@ final class RemoteModel {
         let demoPairing = PairingInfo(id: UUID(), macName: "MacBook Pro", key: Data(repeating: 7, count: 32))
         var status = LinkStatus(macName: "MacBook Pro", presence: .near,
                                 summary: chinese ? "Apple Watch 在附近 · -52 dBm" : "Apple Watch nearby · -52 dBm",
-                                locked: false)
+                                locked: false, presenter: .enabled)
         switch state {
         case "locked":
             status.presence = .away

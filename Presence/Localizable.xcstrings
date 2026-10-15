@@ -1089,6 +1089,22 @@
         }
       }
     },
+    "允許簡報遙控": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow Presenter Remote"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "允許簡報遙控"
+          }
+        }
+      }
+    },
     "允許輔助使用": {
       "localizations": {
         "en": {
@@ -2093,6 +2109,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "建議鎖定"
+          }
+        }
+      }
+    },
+    "從 iPhone 或手錶簡報中，自動鎖定與解鎖暫停到 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenting from iPhone or Apple Watch. Auto-lock and auto-unlock are paused until %@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "從 iPhone 或手錶簡報中，自動鎖定與解鎖暫停到 %@"
           }
         }
       }
@@ -3761,6 +3793,38 @@
         }
       }
     },
+    "簡報中": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenting"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報中"
+          }
+        }
+      }
+    },
+    "簡報遙控": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenter Remote"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報遙控"
+          }
+        }
+      }
+    },
     "紀錄": {
       "localizations": {
         "en": {
@@ -3821,6 +3885,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "結束暫停，恢復自動鎖定與解鎖。"
+          }
+        }
+      }
+    },
+    "結束簡報": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End Presentation"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結束簡報"
+          }
+        }
+      }
+    },
+    "結束簡報，恢復自動鎖定與解鎖": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presentation ended; auto-lock and auto-unlock resumed"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結束簡報，恢復自動鎖定與解鎖"
           }
         }
       }
@@ -4509,6 +4605,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "讀取鑰匙圈失敗（%d），這次沒有自動解鎖"
+          }
+        }
+      }
+    },
+    "讓配對的 iPhone 和 Apple Watch 像簡報筆一樣翻頁、開始與結束播放、把投影畫面變黑。Presence 會對最前面的 App 按方向鍵，Keynote、PowerPoint、Google 簡報和 PDF 都適用；只會送這幾個鍵，螢幕鎖著時也不會送。簡報時暫停自動鎖定（最多 3 小時），在手機上結束簡報就恢復。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Let your paired iPhone and Apple Watch work like a presentation clicker: next and previous slide, start and end the slideshow, and black screen. Presence presses arrow keys in the frontmost app, so it works with Keynote, PowerPoint, Google Slides, and PDFs. Only these keys are sent, and nothing is sent while the screen is locked. Auto-lock pauses while you present (up to 3 hours) and resumes when you end the presentation on your phone."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "讓配對的 iPhone 和 Apple Watch 像簡報筆一樣翻頁、開始與結束播放、把投影畫面變黑。Presence 會對最前面的 App 按方向鍵，Keynote、PowerPoint、Google 簡報和 PDF 都適用；只會送這幾個鍵，螢幕鎖著時也不會送。簡報時暫停自動鎖定（最多 3 小時），在手機上結束簡報就恢復。"
           }
         }
       }
@@ -5345,6 +5457,22 @@
         }
       }
     },
+    "開始簡報，暫停自動鎖定與解鎖（最多 3 小時）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presentation started; auto-lock and auto-unlock paused (up to 3 hours)"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開始簡報，暫停自動鎖定與解鎖（最多 3 小時）"
+          }
+        }
+      }
+    },
     "關於": {
       "localizations": {
         "en": {
@@ -5485,6 +5613,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "需要你在系統設定允許"
+          }
+        }
+      }
+    },
+    "需要輔助使用權限才能翻頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accessibility permission is needed to change slides"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要輔助使用權限才能翻頁"
           }
         }
       }

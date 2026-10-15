@@ -16,6 +16,8 @@ final class AppModel {
         case needsDevice
         case bluetoothUnavailable(String)
         case paused(until: Date)
+        /// 從 iPhone 或手錶簡報中：自動鎖定與解鎖暫停到 until。
+        case presenting(until: Date)
         case suspended(ContextRules.Suspension, unlockToo: Bool)
         case lockPending(userActive: Bool)
         case waiting
@@ -28,6 +30,7 @@ final class AppModel {
             case .needsDevice: String(localized: "還沒選擇裝置")
             case .bluetoothUnavailable(let reason): String(localized: "藍牙\(reason)")
             case .paused: String(localized: "已暫停")
+            case .presenting: String(localized: "簡報中")
             case .suspended(let reason, let unlockToo):
                 unlockToo
                     ? String(localized: "\(Self.describe(reason))，暫停自動鎖定與解鎖")
@@ -47,6 +50,7 @@ final class AppModel {
             case .needsDevice: "questionmark.circle"
             case .bluetoothUnavailable: "exclamationmark.triangle"
             case .paused: "pause.circle"
+            case .presenting: "play.rectangle"
             case .suspended(.trustedNetwork, _): "house.circle"
             case .suspended(.onACPower, _): "powerplug"
             case .suspended(.outsideSchedule, _): "calendar.badge.clock"
@@ -118,6 +122,8 @@ final class AppModel {
     private(set) var deskTime = DeskTimeStore.load()
     /// 已判定離開、但還在等（使用者仍在操作，或倒數通知中）的鎖定。
     private(set) var pendingLock: PendingLock?
+    /// 簡報開始時設的暫停到期時間（見 isPresenting）。
+    private var presentingUntil: Date?
     private(set) var currentNetwork: NetworkIdentity.Current?
     private(set) var onACPower = PowerSource.isOnACPower
     let hasBattery = PowerSource.hasBattery
@@ -184,7 +190,7 @@ final class AppModel {
         session.onEvent = { [weak self] event in self?.handleSession(event) }
         session.start()
         link.statusProvider = { [weak self] in self?.linkStatus ?? LinkStatus(macName: "Mac", presence: .waiting, summary: "", locked: false) }
-        link.onCommand = { [weak self] command in self?.handleRemote(command) }
+        link.onCommand = { [weak self] command in self?.handleRemote(command) ?? nil }
         link.onDeviceConnected = { [weak self] _ in self?.companionDidConnect() }
         link.start()
 
@@ -267,7 +273,7 @@ final class AppModel {
         case .unknown: return .waiting
         default: return .bluetoothUnavailable(bluetooth.availability.description)
         }
-        if let until = automation.pausedUntil, now < until { return .paused(until: until) }
+        if let until = automation.pausedUntil, now < until { return isPresenting ? .presenting(until: until) : .paused(until: until) }
         if let reason = suspension {
             return .suspended(reason, unlockToo: preferences.context.alsoSuspendUnlock)
         }
@@ -917,7 +923,7 @@ final class AppModel {
         let presence: MacPresence = switch status {
         case .needsDevice: .noDevice
         case .bluetoothUnavailable: .bluetoothOff
-        case .paused: .paused
+        case .paused, .presenting: .paused
         case .suspended: .suspended
         case .lockPending: .lockPending
         case .waiting: .waiting
@@ -930,11 +936,14 @@ final class AppModel {
             presence: presence,
             summary: statusLine,
             locked: ScreenSession.queryLocked() == true,
-            pausedUntil: isPaused ? automation.pausedUntil : nil
+            pausedUntil: isPaused ? automation.pausedUntil : nil,
+            presenter: preferences.allowPresenter ? (isPresenting ? .presenting : .enabled) : .disabled
         )
     }
 
-    private func handleRemote(_ command: LinkCommand) {
+    /// 做不成時回傳原因，跟著回覆送回 iPhone 或手錶。
+    private func handleRemote(_ command: LinkCommand) -> CommandRefusal? {
+        defer { pushLinkStatusIfChanged() }
         switch command {
         case .lock:
             cancelPendingLock()
@@ -945,16 +954,56 @@ final class AppModel {
             pause(for: TimeInterval(max(1, min(minutes, 24 * 60)) * 60))
         case .resume:
             resume()
+        case .presenter(let action):
+            guard preferences.allowPresenter else { return .presenterNotAllowed }
+            guard Accessibility.isTrusted else {
+                accessibilityGranted = false
+                return .noAccessibility
+            }
+            // 狀態不明也當作鎖著：寧可不翻頁，也不要把按鍵打進登入畫面
+            guard ScreenSession.queryLocked() == false, !ScreenSession.loginWindowIsFrontmost else { return .screenLocked }
+            if !isPresenting { beginPresentation() }
+            PresenterKeys.press(action)
+        case .presentation(let active):
+            guard preferences.allowPresenter else { return .presenterNotAllowed }
+            if active { beginPresentation() } else { endPresentation() }
         case .hello, .status, .confirm:
             break
         }
-        pushLinkStatusIfChanged()
+        return nil
+    }
+
+    // MARK: - 簡報
+
+    /// 簡報模式最長暫停多久：忘了結束也不會一直不鎖。
+    private static let presentationLimit: TimeInterval = 3 * 3600
+
+    /// 正在從 iPhone 或手錶簡報：暫停是簡報開始時設的，而且還沒結束。手動恢復或改暫停時間就不算了。
+    var isPresenting: Bool {
+        guard let until = presentingUntil else { return false }
+        return automation.pausedUntil == until && now < until
+    }
+
+    private func beginPresentation() {
+        let until = Date().addingTimeInterval(Self.presentationLimit)
+        automation.pause(until: until)
+        presentingUntil = until
+        now = Date()
+        log.add(.info, String(localized: "開始簡報，暫停自動鎖定與解鎖（最多 3 小時）"))
+    }
+
+    private func endPresentation() {
+        guard isPresenting else { return }
+        presentingUntil = nil
+        automation.pause(until: nil)
+        now = Date()
+        log.add(.info, String(localized: "結束簡報，恢復自動鎖定與解鎖"))
     }
 
     /// 狀態有實質改變才推送（訊號強度每秒都在變，不算）。
     private func pushLinkStatusIfChanged() {
         let s = linkStatus
-        let signature = "\(s.presence.rawValue)|\(s.locked)|\(s.pausedUntil?.timeIntervalSince1970 ?? 0)|\(nearDeviceNames)"
+        let signature = "\(s.presence.rawValue)|\(s.locked)|\(s.pausedUntil?.timeIntervalSince1970 ?? 0)|\(nearDeviceNames)|\(s.presenter?.rawValue ?? "")"
         guard signature != lastLinkSignature else { return }
         lastLinkSignature = signature
         link.broadcast()

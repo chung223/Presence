@@ -21,6 +21,59 @@ public enum LinkCommand: Codable, Sendable, Equatable {
     /// 回應 Mac 的在場確認：原樣送回 `LinkStatus.challenge`。指令本身用配對金鑰加密，
     /// Mac 收到就知道是配對過的裝置、而且此刻真的連著。
     case confirm(challenge: Data)
+    /// 簡報遙控：翻頁、開始與結束播放、黑畫面。Mac 要先在「手機與手錶」允許。
+    case presenter(PresenterAction)
+    /// 開始或結束簡報：簡報時 Mac 暫停自動鎖定，拿著手機走到台前也不會鎖。
+    case presentation(active: Bool)
+}
+
+/// 簡報遙控能按的鍵。只有這幾個，Mac 不接受任意按鍵。
+public enum PresenterAction: String, Codable, Sendable, CaseIterable {
+    case next, previous
+    /// 開始播放：Mac 依前景的 App 送對應的快捷鍵。
+    case start
+    /// 結束播放（Esc）。
+    case end
+    /// 把投影畫面變黑（B），再按一次回來。
+    case blank
+}
+
+/// Mac 沒有執行指令的原因，iPhone 與手錶依此顯示自己語言的說明。
+public enum CommandRefusal: String, Codable, Sendable {
+    /// Mac 上沒有允許簡報遙控。
+    case presenterNotAllowed
+    /// Mac 沒有輔助使用權限，不能送按鍵。
+    case noAccessibility
+    /// Mac 螢幕鎖著：不送按鍵，免得打進登入畫面。
+    case screenLocked
+
+    public var message: String {
+        switch self {
+        case .presenterNotAllowed:
+            String(localized: "請在 Mac 的 Presence 打開「手機與手錶 › 允許簡報遙控」", bundle: .module)
+        case .noAccessibility:
+            String(localized: "Mac 上的 Presence 沒有輔助使用權限，不能翻頁", bundle: .module)
+        case .screenLocked:
+            String(localized: "Mac 螢幕鎖著，先解鎖才能翻頁", bundle: .module)
+        }
+    }
+}
+
+extension LinkStatus {
+    /// 回覆的指令沒有做成的原因；Mac 用了這版不認得的原因時，給一般的說明。
+    public var refusalMessage: String? {
+        guard let refusal else { return nil }
+        return CommandRefusal(rawValue: refusal)?.message ?? String(localized: "Mac 沒有接受這個指令", bundle: .module)
+    }
+}
+
+/// Mac 對簡報遙控的支援。`LinkStatus.presenter` 是 nil 表示 Mac 上的 Presence 太舊、看不懂簡報指令。
+public enum PresenterSupport: String, Codable, Sendable {
+    /// Mac 上沒有允許簡報遙控。
+    case disabled
+    case enabled
+    /// 正在簡報：已暫停自動鎖定。
+    case presenting
 }
 
 public struct LinkRequest: Codable, Sendable, Equatable {
@@ -62,11 +115,17 @@ public struct LinkStatus: Codable, Sendable, Equatable {
     public var replyTo: UUID?
     /// Mac 要解鎖前的在場確認：收到就馬上用 `LinkCommand.confirm` 送回。
     public var challenge: Data?
+    /// 簡報遙控的狀態；舊版 Mac 不會送，是 nil。
+    public var presenter: PresenterSupport?
+    /// 回覆的指令沒有做成時的原因（`CommandRefusal` 的 rawValue）。存成字串：新版 Mac 多了原因，
+    /// 舊版 iPhone 也還解得開整則狀態。
+    public var refusal: String?
     public var sentAt: Date
 
     public init(macName: String, presence: MacPresence, summary: String, locked: Bool,
                 pausedUntil: Date? = nil, event: LinkEvent? = nil, replyTo: UUID? = nil,
-                challenge: Data? = nil, sentAt: Date = Date()) {
+                challenge: Data? = nil, presenter: PresenterSupport? = nil, refusal: String? = nil,
+                sentAt: Date = Date()) {
         self.macName = macName
         self.presence = presence
         self.summary = summary
@@ -75,6 +134,8 @@ public struct LinkStatus: Codable, Sendable, Equatable {
         self.event = event
         self.replyTo = replyTo
         self.challenge = challenge
+        self.presenter = presenter
+        self.refusal = refusal
         self.sentAt = sentAt
     }
 }

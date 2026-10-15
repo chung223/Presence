@@ -1,6 +1,22 @@
 {
   "sourceLanguage": "zh-Hant",
   "strings": {
+    "Mac 上的 Presence 沒有輔助使用權限，不能翻頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence on your Mac doesn't have Accessibility permission, so it can't change slides."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 上的 Presence 沒有輔助使用權限，不能翻頁"
+          }
+        }
+      }
+    },
     "Mac 沒有接受這個指令": {
       "localizations": {
         "en": {
@@ -13,6 +29,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mac 沒有接受這個指令"
+          }
+        }
+      }
+    },
+    "Mac 螢幕鎖著，先解鎖才能翻頁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Mac is locked. Unlock it to change slides."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 螢幕鎖著，先解鎖才能翻頁"
           }
         }
       }
@@ -109,6 +141,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "藍牙沒有開啟"
+          }
+        }
+      }
+    },
+    "請在 Mac 的 Presence 打開「手機與手錶 › 允許簡報遙控」": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Presence on your Mac, turn on iPhone & Watch › Allow Presenter Remote."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請在 Mac 的 Presence 打開「手機與手錶 › 允許簡報遙控」"
           }
         }
       }

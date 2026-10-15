@@ -5,9 +5,18 @@ import PresenceLink
 @MainActor
 func runMacCommand(_ command: LinkCommand) async throws -> LinkStatus {
     switch await RemoteModel.shared.perform(command) {
-    case .success(let status): return status
+    case .success(let status):
+        if let refusal = status.refusalMessage { throw RemoteIntentError(message: refusal) }
+        return status
     case .failure(let failure): throw RemoteIntentError(message: failure.message)
     }
+}
+
+/// 鎖定畫面的「結束簡報」：同時結束即時動態。
+@MainActor
+func finishPresentation() async throws {
+    await RemoteModel.shared.setPresentation(false)
+    if let error = RemoteModel.shared.lastError { throw RemoteIntentError(message: error) }
 }
 
 struct RemoteShortcuts: AppShortcutsProvider {
