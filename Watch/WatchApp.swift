@@ -58,6 +58,14 @@ final class WatchModel: NSObject {
                                 locked: false)
             lastUpdate = Date()
             lastRoute = String(localized: "經由 iPhone")
+            if UserDefaults.standard.string(forKey: "PresenceDemoState") == "presenter" {
+                // 講了 12 分半、預定 20 分鐘，Keynote 在最前面
+                status?.presenter = .presenting
+                status?.presentationStartedAt = Date().addingTimeInterval(-750)
+                status?.presentationMinutes = 20
+                status?.frontApp = "Keynote"
+                status?.frontAppPresents = true
+            }
             phonePro = UserDefaults.standard.object(forKey: "PresencePro").map { _ in UserDefaults.standard.bool(forKey: "PresencePro") } ?? true
             demo = true
             return
@@ -98,6 +106,9 @@ final class WatchModel: NSObject {
             lastError = String(localized: "請先在 iPhone 的 Presence Remote 配對 Mac")
             return false
         }
+        #if DEBUG
+        if demo { return true }
+        #endif
         if !quiet { busy = true }
         defer { if !quiet { busy = false } }
         let session = WCSession.default
@@ -237,6 +248,7 @@ extension WatchModel: WCSessionDelegate {
 
 struct WatchControlView: View {
     let model: WatchModel
+    @State private var showingPresenter = false
 
     var body: some View {
         if model.pairing == nil {
@@ -274,8 +286,8 @@ struct WatchControlView: View {
                         }
                         .buttonStyle(.plain)
 
-                        NavigationLink {
-                            if model.isPro { WatchPresenterView(model: model) } else { WatchProView() }
+                        Button {
+                            showingPresenter = true
                         } label: {
                             WatchTile(title: "簡報", symbol: "play.rectangle.fill", prominent: false, badge: model.isPro ? nil : "PRO")
                         }
@@ -299,7 +311,15 @@ struct WatchControlView: View {
                 }
             }
             .navigationTitle(model.pairing?.macName ?? "Presence")
+            .navigationDestination(isPresented: $showingPresenter) {
+                if model.isPro { WatchPresenterView(model: model) } else { WatchProView() }
+            }
             .task { await model.refreshIfStale() }
+            #if DEBUG
+            .onAppear {
+                if UserDefaults.standard.string(forKey: "PresenceDemoState") == "presenter" { showingPresenter = true }
+            }
+            #endif
         }
     }
 }
@@ -377,41 +397,54 @@ struct WatchPresenterView: View {
         let status = model.status
         let presenting = status?.presenter == .presenting
         let endsAt = presenting ? status?.presentationEndsAt : nil
-        VStack(spacing: 8) {
+        VStack(spacing: 6) {
+            if let notice = model.lastError ?? wrongApp(status) {
+                Label(notice, systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption2)
+                    .foregroundStyle(.orange)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+            }
+
+            // 跟 iPhone 的簡報畫面一樣：「下一頁」佔大部分畫面，「上一頁」小一點放下面
             Button { send(.next) } label: {
-                ZStack {
-                    Circle()
+                VStack(spacing: 2) {
+                    Image(systemName: "chevron.forward")
+                        .font(.system(size: 40, weight: .bold))
+                        .symbolEffect(.wiggle.forward, value: nextDone)
+                    Text("下一頁").font(.headline)
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background {
+                    RoundedRectangle(cornerRadius: 26, style: .continuous)
                         .fill(LinearGradient(colors: [Color(red: 1.0, green: 0.66, blue: 0.24), Color(red: 0.97, green: 0.42, blue: 0.08)],
                                              startPoint: .top, endPoint: .bottom))
-                    VStack(spacing: 2) {
-                        Image(systemName: "chevron.forward")
-                            .font(.system(size: 34, weight: .bold))
-                            .symbolEffect(.wiggle.forward, value: nextDone)
-                        Text("下一頁").font(.caption.weight(.semibold))
-                    }
-                    .foregroundStyle(.white)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .contentShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(WatchPressStyle())
             .handGestureShortcut(.primaryAction)
 
             Button { send(.previous) } label: {
                 Label("上一頁", systemImage: "chevron.backward")
                     .font(.footnote.weight(.semibold))
-                    .frame(maxWidth: .infinity)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, minHeight: 40)
+                    .background(Capsule().fill(.white.opacity(0.14)))
+                    .contentShape(Capsule())
             }
-            .buttonBorderShape(.capsule)
-
-            if let error = model.lastError {
-                Text(error).font(.caption2).foregroundStyle(.orange).lineLimit(2).multilineTextAlignment(.center)
-            } else if status?.frontAppPresents == false, let app = status?.frontApp {
-                Text("Mac 最前面是「\(app)」").font(.caption2).foregroundStyle(.orange).lineLimit(2).multilineTextAlignment(.center)
-            }
+            .buttonStyle(WatchPressStyle())
         }
+        .padding(.horizontal, 2)
+        .padding(.bottom, 6)
+        // 用到螢幕最下面：下面留白的話「下一頁」會變小
+        .ignoresSafeArea(edges: .bottom)
         .focusable()
         .digitalCrownRotation($crown, from: -10_000, through: 10_000, by: 1, sensitivity: .low,
                               isContinuous: false, isHapticFeedbackEnabled: true)
+        // 錶冠只拿來翻頁，不用顯示捲動的指示條
+        .digitalCrownAccessory(.hidden)
         .onChange(of: crown) { _, value in
             // 轉超過幾格才翻一頁，免得碰到錶冠就翻
             let step = Int((value / 4).rounded(.towardZero))
@@ -425,7 +458,6 @@ struct WatchPresenterView: View {
                            minutes: presenting ? status?.presentationMinutes : nil)
             }
         }
-        .navigationTitle("簡報")
         .task { await model.perform(.presentation(active: true)) }
         // 剩 5 分鐘、時間到時輕敲手腕（手錶 App 開著時；手機鎖著時 iPhone 的通知也會轉到手錶）
         .task(id: endsAt) {
@@ -445,12 +477,28 @@ struct WatchPresenterView: View {
         }
     }
 
+    /// Mac 最前面不是簡報 App 時提醒：翻頁的按鍵會送到那裡。
+    private func wrongApp(_ status: LinkStatus?) -> String? {
+        guard status?.frontAppPresents == false, let app = status?.frontApp else { return nil }
+        return String(localized: "最前面是「\(app)」")
+    }
+
     private func send(_ action: PresenterAction) {
         Task {
             let done = await model.perform(.presenter(action))
             WKInterfaceDevice.current().play(done ? .click : .failure)
             if done, action == .next { nextDone += 1 }
         }
+    }
+}
+
+/// 按下時縮一點、亮一點。
+private struct WatchPressStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.96 : 1)
+            .brightness(configuration.isPressed ? 0.08 : 0)
+            .animation(.spring(duration: 0.2, bounce: 0.4), value: configuration.isPressed)
     }
 }
 
