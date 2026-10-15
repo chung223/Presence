@@ -1,4 +1,5 @@
 import AppKit
+import Carbon
 import PresenceLink
 
 /// 簡報遙控：把 iPhone、手錶送來的翻頁指令變成按鍵，送給目前在最前面的 App。
@@ -48,11 +49,22 @@ enum PresenterKeys {
     }
 
     /// 跳到第幾頁：輸入頁碼再按 Return。Keynote、PowerPoint、Google 簡報播放時都這樣跳頁。
-    static func goTo(slide: Int) {
-        for digit in String(max(1, slide)).compactMap(\.wholeNumberValue) {
+    ///
+    /// 2026-10-15 實測 Keynote：按下第一個數字會打開投影片導覽和頁碼欄，但用中文輸入法（Rime）時，
+    /// Return 被輸入法吃掉，導覽停在那裡不跳頁；換成英文鍵盤就正常。所以跳頁時先換成英文鍵盤，送完再換回來。
+    /// 導覽打開有動畫，也稍等一下再打下一個字和 Return。
+    static func goTo(slide: Int) async {
+        let previous = TISCopyCurrentKeyboardInputSource().takeRetainedValue()
+        TISSelectInputSource(TISCopyCurrentASCIICapableKeyboardInputSource().takeRetainedValue())
+        let digits = String(max(1, slide)).compactMap(\.wholeNumberValue)
+        for (index, digit) in digits.enumerated() {
             press(Key(code: digitCodes[digit]))
+            try? await Task.sleep(for: .milliseconds(index == 0 ? 400 : 80))
         }
+        try? await Task.sleep(for: .milliseconds(150))
         press(Key(code: 36))
+        try? await Task.sleep(for: .milliseconds(250))
+        TISSelectInputSource(previous)
     }
 
     private static func press(_ key: Key) {

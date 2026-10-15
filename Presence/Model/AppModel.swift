@@ -980,7 +980,7 @@ final class AppModel {
             if let refusal = presenterRefusal { return refusal }
             if !isPresenting { beginPresentation() }
             if case .presenter(let action) = command { PresenterKeys.press(action) }
-            if case .goToSlide(let slide) = command { PresenterKeys.goTo(slide: slide) }
+            if case .goToSlide(let slide) = command { Task { await PresenterKeys.goTo(slide: slide) } }
         case .presentation(let active):
             guard preferences.allowPresenter else { return .presenterNotAllowed }
             if active { beginPresentation() } else { endPresentation() }

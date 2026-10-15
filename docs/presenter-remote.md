@@ -15,7 +15,7 @@ Mac 上的 Presence 對**最前面的 App** 按鍵，和自動解鎖輸入密碼
 | 開始播放 | Keynote：⌥⌘P；PowerPoint：⇧⌘↩；其他 App：⌘↩ |
 | 結束播放 | Esc |
 | 黑畫面 | B |
-| 跳頁 | 頁碼的數字鍵（主鍵盤上方那排），再按 ↩ |
+| 跳頁 | 頁碼的數字鍵（主鍵盤上方那排），再按 ↩；送的時候暫時換成英文鍵盤 |
 
 安全限制（`AppModel.handleRemote`、`PresenterKeys`）：
 
@@ -35,10 +35,19 @@ Mac 上的 Presence 對**最前面的 App** 按鍵，和自動解鎖輸入密碼
 偵測的依據是 2026-10-15 在 macOS 26.7 實測：
 
 - Keynote 播放時有 `PreventUserIdleDisplaySleep named: "Displaying Keynote slideshow"`，編輯時沒有。
+- PowerPoint 播放時有 `NoDisplaySleepAssertion named: ""`，結束播放就放掉。
 - 預覽程式的幻燈片秀只有全螢幕視窗，沒有這個要求，和一般全螢幕分不出來，所以不偵測。
 - 瀏覽器也不偵測：Comet（Chromium 系的瀏覽器）播放影片時一直有 `NoDisplaySleepAssertion named: "Video Wake Lock"`，算進來的話，看影片時人離開也不會鎖。
 
 用瀏覽器（Google 簡報）或預覽程式簡報時，請用手機的簡報遙控，或從選單列暫停。
+
+## 實測（2026-10-15，iPhone TestFlight 版＋Mac 0.2.0）
+
+Keynote 與 PowerPoint 都測過開始播放、下一頁、上一頁、跳頁、黑畫面（再按一次回來）、結束播放，演講倒數也正常。
+
+- **跳頁要換成英文鍵盤**：Keynote 按下第一個數字會打開投影片導覽與頁碼欄，但用中文輸入法（Rime）時 Return 被輸入法吃掉，導覽停住不跳頁。現在 `PresenterKeys.goTo` 先換成英文鍵盤（`TISCopyCurrentASCIICapableKeyboardInputSource`），送完再換回原本的輸入法。
+- Keynote 的「播放」從目前選取的那一頁開始，不一定是第一頁（PowerPoint 的 ⇧⌘↩ 也是）。
+- 沒有測：鎖定畫面與動態島的按鈕、手錶（要真人按）。
 
 ## 其他 App 怎麼配合
 
