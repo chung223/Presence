@@ -984,12 +984,16 @@ final class AppModel {
         return automation.pausedUntil == until && now < until
     }
 
+    /// 已經在簡報（例如手機重新打開簡報畫面）就只延長時間，不重複記錄。
     private func beginPresentation() {
+        let alreadyPresenting = isPresenting
         let until = Date().addingTimeInterval(Self.presentationLimit)
         automation.pause(until: until)
         presentingUntil = until
         now = Date()
-        log.add(.info, String(localized: "開始簡報，暫停自動鎖定與解鎖（最多 3 小時）"))
+        if !alreadyPresenting {
+            log.add(.info, String(localized: "開始簡報，暫停自動鎖定與解鎖（最多 3 小時）"))
+        }
     }
 
     private func endPresentation() {

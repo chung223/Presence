@@ -12,6 +12,7 @@ struct PresenterView: View {
     @State private var failures = 0
     @State private var nextDone = 0
     @State private var previousDone = 0
+    @GestureState private var padPressed = false
 
     var body: some View {
         let support = model.presenterSupport
@@ -27,13 +28,26 @@ struct PresenterView: View {
             }
 
             Group {
-                Button { send(.next) } label: { NextPad(done: nextDone) }
-                    .buttonStyle(PadStyle())
-                    // 也可以像翻書一樣滑：向左滑下一頁、向右滑上一頁
-                    .simultaneousGesture(DragGesture(minimumDistance: 30).onEnded { value in
-                        guard abs(value.translation.width) > abs(value.translation.height) else { return }
-                        send(value.translation.width < 0 ? .next : .previous)
-                    })
+                // 點一下下一頁，也可以像翻書一樣滑：向左滑下一頁、向右滑上一頁。
+                // 點和滑用同一個手勢判斷；用 Button 加滑動手勢的話，滑一下會被當成點一下再滑一下，翻兩頁。
+                NextPad(done: nextDone)
+                    .foregroundStyle(.white)
+                    .scaleEffect(padPressed ? 0.97 : 1)
+                    .brightness(padPressed ? 0.06 : 0)
+                    .animation(.spring(duration: 0.25, bounce: 0.4), value: padPressed)
+                    .gesture(DragGesture(minimumDistance: 0)
+                        .updating($padPressed) { _, pressed, _ in pressed = true }
+                        .onEnded { value in
+                            let dx = value.translation.width, dy = value.translation.height
+                            if abs(dx) > 40, abs(dx) > abs(dy) {
+                                send(dx < 0 ? .next : .previous)
+                            } else if hypot(dx, dy) < 20 {
+                                send(.next)
+                            }
+                        })
+                    .accessibilityElement(children: .combine)
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityAction { send(.next) }
 
                 Button { send(.previous) } label: { PreviousBar(done: previousDone) }
                     .buttonStyle(PadStyle())
