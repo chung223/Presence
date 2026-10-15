@@ -20,7 +20,7 @@ enum PresenterKeys {
     static let presentationApps: Set<String> = keynote.union([
         powerPoint, "com.apple.Preview", "com.adobe.Acrobat.Pro", "com.adobe.Reader", "com.chung.folium",
         "com.google.Chrome", "com.apple.Safari", "company.thebrowser.Browser", "com.microsoft.edgemac",
-        "org.mozilla.firefox", "com.brave.Browser", "com.operasoftware.Opera", "com.vivaldi.Vivaldi",
+        "org.mozilla.firefox", "com.brave.Browser", "com.operasoftware.Opera", "com.vivaldi.Vivaldi", "ai.perplexity.comet",
     ])
 
     /// 數字鍵 0～9 的虛擬鍵碼。

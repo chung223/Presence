@@ -14,6 +14,8 @@ public struct ContextRules: Sendable, Equatable, Codable {
     }
 
     public enum Suspension: Sendable, Equatable {
+        /// Keynote、PowerPoint 等正在播放簡報（App 名稱）。
+        case presenting(String)
         case trustedNetwork(String)
         case onACPower
         case outsideSchedule
@@ -25,12 +27,15 @@ public struct ContextRules: Sendable, Equatable, Codable {
         public var onACPower: Bool?
         public var date: Date
         public var calendar: Calendar
+        /// 正在播放簡報的 App；沒有是 nil。
+        public var presentingApp: String?
 
-        public init(networkID: String?, onACPower: Bool?, date: Date, calendar: Calendar = .current) {
+        public init(networkID: String?, onACPower: Bool?, date: Date, calendar: Calendar = .current, presentingApp: String? = nil) {
             self.networkID = networkID
             self.onACPower = onACPower
             self.date = date
             self.calendar = calendar
+            self.presentingApp = presentingApp
         }
     }
 
@@ -44,6 +49,8 @@ public struct ContextRules: Sendable, Equatable, Codable {
     public var weekdays: Set<Int> = [2, 3, 4, 5, 6]
     /// 情境符合時，是否也暫停自動解鎖。
     public var alsoSuspendUnlock = false
+    /// 播放簡報時不自動鎖定：簡報者走到台前、訊號變弱，也不會把投影中的畫面鎖住。
+    public var pauseWhilePresenting = true
 
     public init() {}
 
@@ -52,6 +59,9 @@ public struct ContextRules: Sendable, Equatable, Codable {
     }
 
     public func suspension(in env: Environment) -> Suspension? {
+        if pauseWhilePresenting, let app = env.presentingApp {
+            return .presenting(app)
+        }
         if let id = env.networkID, let network = trustedNetworks.first(where: { $0.id == id }) {
             return .trustedNetwork(network.name)
         }
@@ -87,6 +97,7 @@ public struct ContextRules: Sendable, Equatable, Codable {
 extension ContextRules {
     private enum CodingKeys: String, CodingKey {
         case trustedNetworks, onlyOnBattery, scheduleEnabled, scheduleStart, scheduleEnd, weekdays, alsoSuspendUnlock
+        case pauseWhilePresenting
     }
 
     public init(from decoder: Decoder) throws {
@@ -99,5 +110,6 @@ extension ContextRules {
         scheduleEnd = try c.decodeIfPresent(Int.self, forKey: .scheduleEnd) ?? d.scheduleEnd
         weekdays = try c.decodeIfPresent(Set<Int>.self, forKey: .weekdays) ?? d.weekdays
         alsoSuspendUnlock = try c.decodeIfPresent(Bool.self, forKey: .alsoSuspendUnlock) ?? d.alsoSuspendUnlock
+        pauseWhilePresenting = try c.decodeIfPresent(Bool.self, forKey: .pauseWhilePresenting) ?? d.pauseWhilePresenting
     }
 }

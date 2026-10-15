@@ -51,6 +51,7 @@ final class AppModel {
             case .bluetoothUnavailable: "exclamationmark.triangle"
             case .paused: "pause.circle"
             case .presenting: "play.rectangle"
+            case .suspended(.presenting, _): "play.rectangle"
             case .suspended(.trustedNetwork, _): "house.circle"
             case .suspended(.onACPower, _): "powerplug"
             case .suspended(.outsideSchedule, _): "calendar.badge.clock"
@@ -64,6 +65,7 @@ final class AppModel {
 
         static func describe(_ reason: ContextRules.Suspension) -> String {
             switch reason {
+            case .presenting(let app): String(localized: "「\(app)」正在播放簡報")
             case .trustedNetwork(let name): String(localized: "在「\(name)」")
             case .onACPower: String(localized: "接著電源")
             case .outsideSchedule: String(localized: "不在設定的時段")
@@ -128,6 +130,8 @@ final class AppModel {
     private var presentationStartedAt: Date?
     private var presentationMinutes: Int?
     private(set) var currentNetwork: NetworkIdentity.Current?
+    /// 正在播放簡報的 App（見 PresentationDetector）。
+    private(set) var presentingApp: String?
     private(set) var onACPower = PowerSource.isOnACPower
     let hasBattery = PowerSource.hasBattery
 
@@ -266,7 +270,8 @@ final class AppModel {
 
     /// 依情境暫停自動鎖定的原因；nil 表示照常。
     var suspension: ContextRules.Suspension? {
-        preferences.context.suspension(in: .init(networkID: currentNetwork?.id, onACPower: onACPower, date: now))
+        preferences.context.suspension(in: .init(networkID: currentNetwork?.id, onACPower: onACPower, date: now,
+                                                 presentingApp: presentingApp))
     }
 
     var status: Status {
@@ -463,6 +468,10 @@ final class AppModel {
         let power = PowerSource.isOnACPower
         if power != onACPower { onACPower = power }
         if tickCount.isMultiple(of: 15) { Task { await refreshNetwork() } }
+        if tickCount.isMultiple(of: 2), !Demo.isActive {
+            let app = PresentationDetector.presentingApp()
+            if app != presentingApp { presentingApp = app }
+        }
         noteSuspensionChange()
         handle(group.tick(at: t))
         payOwedLock()
@@ -1075,6 +1084,7 @@ final class AppModel {
             log.add(.info, Status.suspended(current, unlockToo: preferences.context.alsoSuspendUnlock).title)
         } else if let previous = lastSuspension {
             let what = switch previous {
+            case .presenting(let app): String(localized: "「\(app)」結束播放")
             case .trustedNetwork(let name): String(localized: "離開「\(name)」")
             case .onACPower: String(localized: "拔掉電源")
             case .outsideSchedule: String(localized: "進入設定的時段")

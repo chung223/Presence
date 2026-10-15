@@ -24,6 +24,28 @@ struct ContextRulesTests {
         #expect(rules.suspension(in: env(network: "aa:bb", ac: true, at: date(hour: 3))) == nil)
     }
 
+    @Test("播放簡報時暫停，而且比其他情境優先；關掉這個選項就不管")
+    func presentingSuspends() {
+        var rules = ContextRules()
+        rules.trustedNetworks = [.init(id: "aa:bb:cc", name: "家裡")]
+        var presenting = env(network: "aa:bb:cc", at: date(hour: 10))
+        presenting.presentingApp = "Keynote"
+        #expect(rules.suspension(in: presenting) == .presenting("Keynote"))
+        rules.pauseWhilePresenting = false
+        #expect(rules.suspension(in: presenting) == .trustedNetwork("家裡"))
+        #expect(ContextRules().suspension(in: env(at: date(hour: 10))) == nil)
+    }
+
+    @Test("舊的設定沒有這個欄位：預設開啟，其他設定照舊")
+    func oldSettingsDefaultToPauseWhilePresenting() throws {
+        let json = #"{"trustedNetworks":[{"id":"aa:bb","name":"家裡"}],"onlyOnBattery":true}"#
+        let rules = try JSONDecoder().decode(ContextRules.self, from: Data(json.utf8))
+        #expect(rules.pauseWhilePresenting)
+        #expect(rules.trustedNetworks.map(\.name) == ["家裡"] && rules.onlyOnBattery)
+        let saved = try JSONDecoder().decode(ContextRules.self, from: JSONEncoder().encode(rules))
+        #expect(saved == rules)
+    }
+
     @Test func trustedNetworkSuspends() {
         var rules = ContextRules()
         rules.trustedNetworks = [.init(id: "aa:bb:cc", name: "家裡")]

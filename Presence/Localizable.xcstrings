@@ -401,6 +401,22 @@
         }
       }
     },
+    "Keynote、PowerPoint 或 Folium 播放簡報時，就算你走到台前、訊號變弱，也不會把投影中的畫面鎖住；結束播放後如果你不在附近，會馬上鎖定。瀏覽器裡的 Google 簡報和預覽程式的幻燈片秀偵測不到（和全螢幕看影片分不出來），請用 iPhone 的簡報遙控，或從選單列暫停。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "While Keynote, PowerPoint, or Folium plays a slideshow, your Mac won't lock the projected screen even if you walk to the front and the signal gets weaker. When the slideshow ends and you're away, it locks right away. Google Slides in a browser and Preview slideshows can't be detected (they look the same as watching a full-screen video), so use the iPhone presenter remote or pause from the menu bar."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keynote、PowerPoint 或 Folium 播放簡報時，就算你走到台前、訊號變弱，也不會把投影中的畫面鎖住；結束播放後如果你不在附近，會馬上鎖定。瀏覽器裡的 Google 簡報和預覽程式的幻燈片秀偵測不到（和全螢幕看影片分不出來），請用 iPhone 的簡報遙控，或從選單列暫停。"
+          }
+        }
+      }
+    },
     "Presence": {
       "localizations": {
         "en": {
@@ -605,6 +621,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "iPhone 連著但沒有回應，請更新 Presence Remote"
+          }
+        }
+      }
+    },
+    "「%@」正在播放簡報": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” is playing a slideshow"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「%@」正在播放簡報"
+          }
+        }
+      }
+    },
+    "「%@」結束播放": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” finished playing"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「%@」結束播放"
           }
         }
       }
@@ -2561,6 +2609,22 @@
         }
       }
     },
+    "播放簡報時不自動鎖定": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Don't Lock While Presenting"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "播放簡報時不自動鎖定"
+          }
+        }
+      }
+    },
     "收不到 %@ 的訊號，已自動鎖定": {
       "localizations": {
         "en": {
@@ -3789,6 +3853,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "等待訊號"
+          }
+        }
+      }
+    },
+    "簡報": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presentations"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報"
           }
         }
       }

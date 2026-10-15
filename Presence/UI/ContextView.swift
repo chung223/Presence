@@ -1,7 +1,7 @@
 import PresenceCore
 import SwiftUI
 
-/// 依情境暫停自動鎖定：信任的網路、接著電源、指定時段。
+/// 依情境暫停自動鎖定：播放簡報時、信任的網路、接著電源、指定時段。
 struct ContextView: View {
     @Bindable var model: AppModel
     @State private var namingNetwork = false
@@ -19,6 +19,14 @@ struct ContextView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+            }
+
+            Section {
+                Toggle("播放簡報時不自動鎖定", isOn: $model.preferences.context.pauseWhilePresenting)
+            } header: {
+                Text("簡報")
+            } footer: {
+                Text("Keynote、PowerPoint 或 Folium 播放簡報時，就算你走到台前、訊號變弱，也不會把投影中的畫面鎖住；結束播放後如果你不在附近，會馬上鎖定。瀏覽器裡的 Google 簡報和預覽程式的幻燈片秀偵測不到（和全螢幕看影片分不出來），請用 iPhone 的簡報遙控，或從選單列暫停。")
             }
 
             Section {
