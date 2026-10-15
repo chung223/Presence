@@ -168,6 +168,10 @@ struct ControlView: View {
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.top, 6)
+                        #if DEBUG
+                        // 宣傳影片的字幕放在這附近，不要疊在一起
+                        .opacity(model.demoCaption == nil ? 1 : 0)
+                        #endif
                 }
                 .padding()
             }
@@ -208,6 +212,7 @@ struct ControlView: View {
             .sensoryFeedback(.success, trigger: successCount)
             #if DEBUG
             .overlay(alignment: .bottom) { DemoCaption(text: model.demoCaption) }
+            .onChange(of: model.demoPresenter) { _, on in presenting = on }
             #endif
         }
     }
@@ -507,8 +512,10 @@ struct SettingsView: View {
 #if DEBUG
 // MARK: - 宣傳影片（開發版的示範腳本）
 
-private struct DemoCaption: View {
+struct DemoCaption: View {
     let text: String?
+    /// 放在畫面上方（簡報畫面的下半部都是按鈕）。
+    var top = false
 
     var body: some View {
         ZStack {
@@ -525,7 +532,7 @@ private struct DemoCaption: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.bottom, 150)
+        .padding(top ? .top : .bottom, top ? 120 : 150)
         .animation(.default, value: text)
     }
 }
@@ -541,9 +548,13 @@ struct DemoEndCard: View {
                                      startPoint: .topLeading, endPoint: .bottomTrailing))
                 .frame(width: 150, height: 150)
                 .overlay {
-                    Image(systemName: "lock.laptopcomputer")
-                        .font(.system(size: 66, weight: .medium))
-                        .foregroundStyle(.white)
+                    // 跟 App 圖示一樣：[手機] ))) [筆電]（scripts/make-icon.swift 的位置縮成 150 點）
+                    ZStack {
+                        Image(systemName: "iphone.gen3").font(.system(size: 44, weight: .bold)).offset(x: -40)
+                        Image(systemName: "wave.3.right").font(.system(size: 22, weight: .bold)).offset(x: -15, y: 2)
+                        Image(systemName: "laptopcomputer").font(.system(size: 44, weight: .bold)).offset(x: 24)
+                    }
+                    .foregroundStyle(.white)
                 }
             Text("Presence Remote").font(.system(size: 38, weight: .bold))
             Text(chinese ? "搭配 Mac 上的免費 Presence" : "Works with the free Presence for Mac")

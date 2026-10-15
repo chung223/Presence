@@ -102,6 +102,16 @@ struct PresenterView: View {
             UIApplication.shared.isIdleTimerDisabled = false
             Task { await model.setPresentation(false) }
         }
+        #if DEBUG
+        // 宣傳影片：字幕、自動翻頁、結尾畫面（簡報畫面蓋在主畫面上，主畫面的字幕和結尾看不到）
+        .overlay(alignment: .top) { DemoCaption(text: model.demoCaption, top: true) }
+        .overlay { if model.demoEndCard { DemoEndCard().environment(\.colorScheme, .light) } }
+        .animation(.easeInOut(duration: 0.6), value: model.demoEndCard)
+        .onChange(of: model.demoSlideTick) {
+            taps += 1
+            nextDone += 1
+        }
+        #endif
     }
 
     private func header(status: LinkStatus?, connected: Bool) -> some View {
