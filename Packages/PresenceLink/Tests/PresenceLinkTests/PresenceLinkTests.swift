@@ -337,3 +337,38 @@ struct NeedsProTests {
         }
     }
 }
+
+struct StatusDetailTests {
+    @Test("舊版 Mac 沒送 detail：解得開，顯示 Mac 組好的文字")
+    func oldMacFallsBackToSummary() throws {
+        let status = LinkStatus(macName: "Mac", presence: .near, summary: "Apple Watch 在附近 · -52 dBm", locked: false)
+        var json = try JSONSerialization.jsonObject(with: WatchMessage.encode(status)) as! [String: Any]
+        json.removeValue(forKey: "detail")
+        let decoded = try WatchMessage.decode(LinkStatus.self, from: JSONSerialization.data(withJSONObject: json))
+        #expect(decoded.detail == nil)
+        #expect(decoded.displaySummary == "Apple Watch 在附近 · -52 dBm")
+    }
+
+    @Test("認不得的種類（新版 Mac）退回 Mac 組好的文字")
+    func unknownKindFallsBack() {
+        var detail = StatusDetail(kind: .near, devices: ["Apple Watch"])
+        detail.kind = "somethingNew"
+        let status = LinkStatus(macName: "Mac", presence: .near, summary: "原本的文字", detail: detail, locked: false)
+        #expect(status.displaySummary == "原本的文字")
+    }
+
+    @Test func summaryCarriesNamesSignalAndCountdown() throws {
+        let near = try #require(StatusDetail(kind: .near, devices: ["Apple Watch"], rssi: -52).localizedSummary)
+        #expect(near.contains("Apple Watch") && near.contains("-52 dBm"))
+        let leaving = try #require(StatusDetail(kind: .leaving, devices: ["iPhone"], leavingSeconds: 7).localizedSummary)
+        #expect(leaving.contains("iPhone") && leaving.contains("7"))
+        let suspended = try #require(StatusDetail(kind: .suspended, suspension: .trustedNetwork(name: "Home")).localizedSummary)
+        #expect(suspended.contains("Home"))
+    }
+
+    @Test func detailRoundTrips() throws {
+        let detail = StatusDetail(kind: .suspended, suspension: .presenting(app: "Keynote"), suspendsUnlock: true)
+        let status = LinkStatus(macName: "Mac", presence: .suspended, summary: "", detail: detail, locked: false)
+        #expect(try WatchMessage.decode(LinkStatus.self, from: WatchMessage.encode(status)).detail == detail)
+    }
+}

@@ -72,7 +72,7 @@ struct RemoteDevicesView: View {
                 Text("簡報遙控")
             } footer: {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("讓配對的 iPhone 和 Apple Watch 像簡報筆一樣翻頁、開始與結束播放、把投影畫面變黑。Presence 會對最前面的 App 按方向鍵，Keynote、PowerPoint、Google 簡報和 PDF 都適用；只會送這幾個鍵，螢幕鎖著時也不會送。簡報時暫停自動鎖定（最多 3 小時），在手機上結束簡報就恢復。")
+                    Text("讓配對的 iPhone 和 Apple Watch 像簡報筆一樣翻頁、開始與結束播放、讓投影畫面暫時全黑。Presence 會對 Mac 正在使用的 App 按方向鍵，Keynote、PowerPoint、Google 簡報和 PDF 都適用；只會送這幾個鍵，螢幕鎖著時也不會送。簡報時暫停自動鎖定（最多 3 小時），在手機上結束簡報就恢復。")
                     Text("手機與手錶上的簡報遙控是 Presence Remote 的付費功能（Presence Pro）；Mac 上的 Presence 一樣免費。")
                 }
             }

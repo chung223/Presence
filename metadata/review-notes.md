@@ -22,7 +22,7 @@ Presence Pro (in-app purchases):
 - To try Presenter Remote after purchasing: in Presence on the Mac, turn on "Allow Presenter Remote" under iPhone & Watch (and grant Accessibility, which Presence already uses for unlocking). Open a slideshow in Keynote or a PDF, then tap Presenter Remote in the app. Tapping the big orange button sends the Right Arrow key to the frontmost app on the Mac; the Lock Screen Live Activity and the Apple Watch app have the same next/previous buttons.
 - The presenter screen keeps the Mac from auto-locking while you present, and resumes auto-lock when you close it.
 
-Demo video: attached to this review (recorded on a real iPhone paired with a Mac; English captions).
+Demo video: attached to this review. It was recorded on a real iPhone paired with a Mac running Presence 0.2.0 and shows Presenter Remote controlling a Keynote slideshow (go to slide, next and previous slide, black screen, end show), with English captions. The iPhone UI in the video is in Traditional Chinese; the app also supports English, Japanese, Korean, Simplified Chinese, German, French, and Spanish.
 
 Background mode "Uses Bluetooth LE accessories" is used to keep the connection to the Mac, so the app can receive lock notifications and answer the Mac's encrypted presence confirmation while in the background. It also lets the Lock Screen slide buttons reach the Mac while the iPhone is locked during a presentation.
 

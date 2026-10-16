@@ -207,8 +207,8 @@ struct PaywallView: View {
     }
 
     private var finePrint: some View {
-        Text("訂閱會自動續訂，直到你在 App Store 的帳號設定裡取消；免費試用結束前沒有取消，就會開始收費。"
-             + "三種方案都可以和家人共享。鎖定、暫停、小工具，以及 Mac 上的 Presence 都是免費的。")
+        // 要寫成一整個字串：用 + 接起來的話不是 LocalizedStringKey，不會翻譯（2026-10-16 發現各語言都顯示中文）
+        Text("訂閱會自動續訂，直到你在 App Store 的帳號設定裡取消；免費試用結束前沒有取消，就會開始收費。三種方案都可以和家人共享。鎖定、暫停、小工具，以及 Mac 上的 Presence 都是免費的。")
             .font(.footnote)
             .foregroundStyle(.secondary)
     }

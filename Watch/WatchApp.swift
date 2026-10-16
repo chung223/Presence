@@ -266,7 +266,7 @@ struct WatchControlView: View {
                             .foregroundStyle(model.status?.locked == true ? .orange : presence.tint)
                             .frame(width: 22)
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(model.status?.summary ?? String(localized: "尚未取得狀態"))
+                            Text(model.status?.displaySummary ?? String(localized: "尚未取得狀態"))
                                 .font(.footnote)
                                 .lineLimit(2)
                             if let updated = model.lastUpdate {
@@ -479,7 +479,7 @@ struct WatchPresenterView: View {
     /// Mac 最前面不是簡報 App 時提醒：翻頁的按鍵會送到那裡。
     private func wrongApp(_ status: LinkStatus?) -> String? {
         guard status?.frontAppPresents == false, let app = status?.frontApp else { return nil }
-        return String(localized: "最前面是「\(app)」")
+        return String(localized: "Mac 正在使用「\(app)」")
     }
 
     private func send(_ action: PresenterAction) {

@@ -92,7 +92,7 @@ struct MacStatusIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ReturnsValue<String> & ProvidesDialog {
         let status = try await runMacCommand(.status)
-        let text = status.locked ? "\(status.summary)（已鎖定）" : status.summary
+        let text = status.locked ? String(localized: "\(status.displaySummary)（已鎖定）") : status.displaySummary
         return .result(value: text, dialog: "\(text)")
     }
 }

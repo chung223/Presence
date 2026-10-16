@@ -371,7 +371,7 @@ struct StatusCard: View {
                 .frame(width: 76, height: 76)
                 .background(presence.tint.opacity(0.15), in: .circle)
                 .contentTransition(.symbolEffect(.replace))
-            Text(status?.summary ?? String(localized: "還沒有收到 Mac 的狀態"))
+            Text(status?.displaySummary ?? String(localized: "還沒有收到 Mac 的狀態"))
                 .font(.title3.weight(.semibold))
                 .multilineTextAlignment(.center)
             HStack(spacing: 8) {

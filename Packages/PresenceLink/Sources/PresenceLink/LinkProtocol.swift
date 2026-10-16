@@ -129,8 +129,10 @@ public enum LinkEvent: String, Codable, Sendable {
 public struct LinkStatus: Codable, Sendable, Equatable {
     public var macName: String
     public var presence: MacPresence
-    /// Mac 上顯示的一行狀態，例如「Weichung 在附近 · -52 dBm」。
+    /// Mac 上顯示的一行狀態，例如「Weichung 在附近 · -52 dBm」（Mac 的語言）。顯示時用 `displaySummary`。
     public var summary: String
+    /// 同一行狀態的結構化內容，手機與手錶用自己的語言組；舊版 Mac 不會送，是 nil。
+    public var detail: StatusDetail?
     public var locked: Bool
     public var pausedUntil: Date?
     /// 這次通知要提醒的事件；一般狀態更新是 nil。
@@ -152,7 +154,7 @@ public struct LinkStatus: Codable, Sendable, Equatable {
     public var refusal: String?
     public var sentAt: Date
 
-    public init(macName: String, presence: MacPresence, summary: String, locked: Bool,
+    public init(macName: String, presence: MacPresence, summary: String, detail: StatusDetail? = nil, locked: Bool,
                 pausedUntil: Date? = nil, event: LinkEvent? = nil, replyTo: UUID? = nil,
                 challenge: Data? = nil, presenter: PresenterSupport? = nil, refusal: String? = nil,
                 frontApp: String? = nil, frontAppPresents: Bool? = nil,
@@ -161,6 +163,7 @@ public struct LinkStatus: Codable, Sendable, Equatable {
         self.macName = macName
         self.presence = presence
         self.summary = summary
+        self.detail = detail
         self.locked = locked
         self.pausedUntil = pausedUntil
         self.event = event

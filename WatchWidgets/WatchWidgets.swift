@@ -51,7 +51,7 @@ struct WatchStatusView: View {
         guard entry.shared?.isPaired == true else { return String(localized: "尚未配對") }
         guard let status else { return String(localized: "還沒有狀態") }
         if status.locked { return String(localized: "Mac 已鎖定") }
-        return status.summary.isEmpty ? status.macName : status.summary
+        return status.displaySummary.isEmpty ? status.macName : status.displaySummary
     }
 
     var body: some View {

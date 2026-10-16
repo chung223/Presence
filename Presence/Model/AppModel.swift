@@ -947,6 +947,7 @@ final class AppModel {
             macName: Self.macName,
             presence: presence,
             summary: statusLine,
+            detail: statusDetail,
             locked: ScreenSession.queryLocked() == true,
             pausedUntil: isPaused ? automation.pausedUntil : nil,
             presenter: preferences.allowPresenter ? (isPresenting ? .presenting : .enabled) : .disabled,
@@ -955,6 +956,33 @@ final class AppModel {
             presentationStartedAt: isPresenting ? presentationStartedAt : nil,
             presentationMinutes: isPresenting ? presentationMinutes : nil
         )
+    }
+
+    /// `statusLine` 的結構化版本：手機與手錶用自己的語言組出同一句（見 PresenceLink 的 `StatusDetail`）。
+    var statusDetail: StatusDetail {
+        let rssi = strongestRSSI
+        let subject = preferences.devices.count == 1 ? [preferences.devices[0].displayName] : []
+        switch status {
+        case .needsDevice: return StatusDetail(kind: .needsDevice)
+        case .bluetoothUnavailable: return StatusDetail(kind: .bluetoothOff)
+        case .paused: return StatusDetail(kind: .paused, devices: subject, rssi: rssi)
+        case .presenting: return StatusDetail(kind: .presenting, devices: subject, rssi: rssi)
+        case .suspended(let reason, let unlockToo):
+            let suspension: StatusDetail.Suspension = switch reason {
+            case .presenting(let app): .presenting(app: app)
+            case .trustedNetwork(let name): .trustedNetwork(name: name)
+            case .onACPower: .onACPower
+            case .outsideSchedule: .outsideSchedule
+            }
+            return StatusDetail(kind: .suspended, suspension: suspension, suspendsUnlock: unlockToo)
+        case .lockPending(let active): return StatusDetail(kind: active ? .lockPendingActive : .lockPending, devices: subject, rssi: rssi)
+        case .waiting: return StatusDetail(kind: .waiting, devices: subject, rssi: rssi)
+        case .near: return StatusDetail(kind: .near, devices: nearDeviceNames, rssi: rssi)
+        case .leaving(let remaining):
+            return StatusDetail(kind: .leaving, devices: subject, rssi: rssi, leavingSeconds: Int(remaining.rounded(.up)))
+        case .away(.weakSignal): return StatusDetail(kind: .awayWeak, devices: subject, rssi: rssi)
+        case .away(.signalLost): return StatusDetail(kind: .awayLost, devices: subject, rssi: rssi)
+        }
     }
 
     /// 允許簡報遙控時才告訴手機最前面是哪個 App（按鍵會送到那裡）。

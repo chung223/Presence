@@ -134,7 +134,7 @@ struct PresenterView: View {
                     Circle()
                         .fill(connected ? Color.green : Color.orange)
                         .frame(width: 7, height: 7)
-                    Text(status?.frontApp.map { String(localized: "控制「\($0)」") } ?? model.pairing?.macName ?? "Mac")
+                    Text(status?.frontApp.map { String(localized: "正在控制「\($0)」") } ?? model.pairing?.macName ?? "Mac")
                         .lineLimit(1)
                 }
                 .font(.caption)
@@ -193,7 +193,7 @@ struct PresenterView: View {
     /// Mac 最前面不是簡報 App 時提醒：按鍵會送到那個 App。
     private func wrongApp(_ status: LinkStatus?) -> String? {
         guard status?.frontAppPresents == false, let app = status?.frontApp else { return nil }
-        return String(localized: "Mac 最前面是「\(app)」，翻頁的按鍵會送到那裡。請先切回簡報。")
+        return String(localized: "Mac 正在使用「\(app)」，翻頁會送到這個 App。請先切回簡報。")
     }
 
     private func send(_ action: PresenterAction) {

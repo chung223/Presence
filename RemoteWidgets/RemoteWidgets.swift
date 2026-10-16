@@ -83,7 +83,7 @@ struct MacStatusView: View {
 
     private var summary: String {
         guard let status else { return String(localized: "還沒有狀態") }
-        return status.summary.isEmpty ? status.macName : status.summary
+        return status.displaySummary.isEmpty ? status.macName : status.displaySummary
     }
 
     private var symbol: String { status?.locked == true ? "lock.fill" : presence.symbol }
@@ -182,7 +182,8 @@ struct MacStatusView: View {
 extension SharedStatus {
     static let preview = SharedStatus(
         macName: "MacBook Pro",
-        status: LinkStatus(macName: "MacBook Pro", presence: .near, summary: "iPhone 在附近 · -52 dBm", locked: false),
+        status: LinkStatus(macName: "MacBook Pro", presence: .near, summary: "iPhone 在附近 · -52 dBm",
+                                       detail: StatusDetail(kind: .near, devices: ["iPhone"], rssi: -52), locked: false),
         connected: true
     )
 }

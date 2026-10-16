@@ -365,6 +365,58 @@
         }
       }
     },
+    "%@（已鎖定）": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (gesperrt)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (locked)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (bloqueado)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (verrouillé)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@（ロック中）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (잠김)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@（已锁定）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@（已鎖定）"
+          }
+        }
+      }
+    },
     "%lld 分鐘": {
       "localizations": {
         "de": {
@@ -1145,54 +1197,54 @@
         }
       }
     },
-    "Mac 最前面是「%@」，翻頁的按鍵會送到那裡。請先切回簡報。": {
+    "Mac 正在使用「%@」，翻頁會送到這個 App。請先切回簡報。": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Auf dem Mac ist „%@“ im Vordergrund, dorthin gehen die Folientasten. Wechsle zuerst zurück zur Präsentation."
+            "value": "Auf dem Mac ist gerade „%@“ aktiv – die Folientasten gehen dorthin. Wechsle zuerst zurück zur Präsentation."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%@” is in front on your Mac, so slide keys will go there. Switch back to your presentation first."
+            "value": "Your Mac is using “%@”, so slide keys will go there. Switch back to your presentation first."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%@” está en primer plano en el Mac, así que las teclas de las diapositivas irán ahí. Vuelve primero a la presentación."
+            "value": "El Mac está usando “%@”, así que las teclas de las diapositivas irán ahí. Vuelve primero a la presentación."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "« %@ » est au premier plan sur le Mac : les touches de navigation y seront envoyées. Revenez d’abord à votre présentation."
+            "value": "Le Mac utilise « %@ » : les touches de navigation y seront envoyées. Revenez d’abord à votre présentation."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Macの最前面は「%@」のため、スライド操作のキーはそちらに送られます。先にプレゼンに切り替えてください。"
+            "value": "Macで使用中のAppは「%@」です。スライド操作はそちらに送られるので、先にプレゼンに切り替えてください。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mac에서 ‘%@’ 앱이 맨 앞에 있어 슬라이드 넘김 키가 그 앱으로 전송됩니다. 먼저 프레젠테이션으로 돌아가세요."
+            "value": "Mac에서 지금 ‘%@’ 앱을 사용 중이라 슬라이드 키가 그 앱으로 전송됩니다. 먼저 프레젠테이션으로 돌아가세요."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mac 前台是“%@”，翻页按键会发送到那里。请先切回演示文稿。"
+            "value": "Mac 正在使用“%@”，翻页会发送到这个 App。请先切回演示文稿。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mac 最前面是「%@」，翻頁的按鍵會送到那裡。請先切回簡報。"
+            "value": "Mac 正在使用「%@」，翻頁會送到這個 App。請先切回簡報。"
           }
         }
       }
@@ -1722,19 +1774,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zurück, zu Folie springen, Schwarzbild, Diashow starten und beenden"
+            "value": "Zurück, zu Folie springen, Bild schwarz, Diashow starten und beenden"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Go back, jump to a slide, black out the screen, start and end the show"
+            "value": "Go back, jump to a slide, blank the screen, start and end the show"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Anterior, ir a diapositiva, pantalla negra, reproducir y detener"
+            "value": "Anterior, ir a diapositiva, pantalla en negro, reproducir y detener"
           }
         },
         "fr": {
@@ -1746,13 +1798,13 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "前のスライド、スライドへ移動、画面を黒く、再生の開始と終了"
+            "value": "前のスライド、スライドへ移動、暗転、再生の開始と終了"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "이전 슬라이드, 슬라이드로 이동, 검은 화면, 슬라이드쇼 시작 및 종료"
+            "value": "이전 슬라이드, 슬라이드로 이동, 검정 화면, 슬라이드쇼 시작 및 종료"
           }
         },
         "zh-Hans": {
@@ -4473,58 +4525,6 @@
         }
       }
     },
-    "控制「%@」": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Steuert „%@“"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Controlling “%@”"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Controlando “%@”"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Contrôle de « %@ »"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "「%@」を操作中"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "‘%@’ 제어 중"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在控制“%@”"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "控制「%@」"
-          }
-        }
-      }
-    },
     "搭配 Mac 上的免費 Presence": {
       "localizations": {
         "de": {
@@ -5301,6 +5301,58 @@
           "stringUnit": {
             "state": "translated",
             "value": "正在恢復購買…"
+          }
+        }
+      }
+    },
+    "正在控制「%@」": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steuert „%@“"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Controlling “%@”"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Controlando “%@”"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contrôle de « %@ »"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「%@」を操作中"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "‘%@’ 제어 중"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在控制“%@”"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在控制「%@」"
           }
         }
       }
@@ -7073,6 +7125,58 @@
         }
       }
     },
+    "訂閱會自動續訂，直到你在 App Store 的帳號設定裡取消；免費試用結束前沒有取消，就會開始收費。三種方案都可以和家人共享。鎖定、暫停、小工具，以及 Mac 上的 Presence 都是免費的。": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abos verlängern sich automatisch, bis du sie in deinen App Store-Accounteinstellungen kündigst. Kündigst du nicht vor Ende des kostenlosen Testzeitraums, wird dir der Preis berechnet. Alle drei Optionen lassen sich mit deiner Familie teilen. Sperren, Pausieren, Widgets und Presence für den Mac sind kostenlos."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscriptions renew automatically until you cancel in your App Store account settings. If you don't cancel before the free trial ends, you'll be charged. All three plans can be shared with your family. Locking, pausing, widgets, and Presence for Mac are free."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Las suscripciones se renuevan automáticamente hasta que las canceles en los ajustes de tu cuenta del App Store. Si no cancelas antes de que termine la prueba gratuita, se te cobrará. Los tres planes se pueden compartir con tu familia. El bloqueo, la pausa, los widgets y Presence para Mac son gratuitos."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les abonnements se renouvellent automatiquement jusqu’à ce que vous les résiliiez dans les réglages de votre compte App Store. Si vous ne résiliez pas avant la fin de l’essai gratuit, vous serez facturé. Les trois formules peuvent être partagées avec votre famille. Le verrouillage, la suspension, les widgets et Presence pour Mac sont gratuits."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サブスクリプションは、App Storeのアカウント設定で解約するまで自動的に更新されます。無料トライアル終了前に解約しない場合は課金が始まります。3つのプランはすべてファミリー共有に対応しています。ロック、一時停止、ウィジェット、Mac版のPresenceは無料です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구독은 App Store 계정 설정에서 취소할 때까지 자동으로 갱신됩니다. 무료 체험이 끝나기 전에 취소하지 않으면 요금이 청구됩니다. 세 가지 요금제 모두 가족 공유가 가능합니다. 잠금, 일시 정지, 위젯과 Mac용 Presence는 무료입니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "订阅会自动续订，直到你在 App Store 的账户设置中取消；免费试用结束前未取消，就会开始收费。三种方案都可以与家人共享。锁定、暂停、小组件以及 Mac 上的 Presence 都是免费的。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "訂閱會自動續訂，直到你在 App Store 的帳號設定裡取消；免費試用結束前沒有取消，就會開始收費。三種方案都可以和家人共享。鎖定、暫停、小工具，以及 Mac 上的 Presence 都是免費的。"
+          }
+        }
+      }
+    },
     "設定": {
       "localizations": {
         "de": {
@@ -8586,19 +8690,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Schwarzbild"
+            "value": "Bild schwarz"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Black Screen"
+            "value": "Blank Screen"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pantalla negra"
+            "value": "Pantalla en negro"
           }
         },
         "fr": {
@@ -8610,13 +8714,13 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "画面を黒く"
+            "value": "暗転"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "검은 화면"
+            "value": "검정 화면"
           }
         },
         "zh-Hans": {

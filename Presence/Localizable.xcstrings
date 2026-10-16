@@ -15289,54 +15289,54 @@
         }
       }
     },
-    "讓配對的 iPhone 和 Apple Watch 像簡報筆一樣翻頁、開始與結束播放、把投影畫面變黑。Presence 會對最前面的 App 按方向鍵，Keynote、PowerPoint、Google 簡報和 PDF 都適用；只會送這幾個鍵，螢幕鎖著時也不會送。簡報時暫停自動鎖定（最多 3 小時），在手機上結束簡報就恢復。": {
+    "讓配對的 iPhone 和 Apple Watch 像簡報筆一樣翻頁、開始與結束播放、讓投影畫面暫時全黑。Presence 會對 Mac 正在使用的 App 按方向鍵，Keynote、PowerPoint、Google 簡報和 PDF 都適用；只會送這幾個鍵，螢幕鎖著時也不會送。簡報時暫停自動鎖定（最多 3 小時），在手機上結束簡報就恢復。": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dein gekoppeltes iPhone und deine Apple Watch werden zum Presenter: Folien vor und zurück, Diashow starten und beenden, Bildschirm schwarz schalten. Presence drückt die Pfeiltasten in der vordersten App und funktioniert so mit Keynote, PowerPoint, Google Präsentationen und PDFs. Es werden nur diese Tasten gesendet – und gar nichts, solange der Bildschirm gesperrt ist. Während der Präsentation ist das automatische Sperren pausiert (höchstens 3 Stunden); es wird fortgesetzt, sobald du die Präsentation auf dem iPhone beendest."
+            "value": "Dein gekoppeltes iPhone und deine Apple Watch werden zum Presenter: Folien vor und zurück, Diashow starten und beenden, Bild vorübergehend schwarz schalten. Presence drückt die Pfeiltasten in der App, die du auf dem Mac gerade verwendest, und funktioniert so mit Keynote, PowerPoint, Google Präsentationen und PDFs. Es werden nur diese Tasten gesendet – und gar nichts, solange der Bildschirm gesperrt ist. Während der Präsentation ist das automatische Sperren pausiert (höchstens 3 Stunden); es wird fortgesetzt, sobald du die Präsentation auf dem iPhone beendest."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Let your paired iPhone and Apple Watch work like a presentation clicker: next and previous slide, start and end the slideshow, and black screen. Presence presses arrow keys in the frontmost app, so it works with Keynote, PowerPoint, Google Slides, and PDFs. Only these keys are sent, and nothing is sent while the screen is locked. Auto-lock pauses while you present (up to 3 hours) and resumes when you end the presentation on your phone."
+            "value": "Let your paired iPhone and Apple Watch work like a presentation clicker: next and previous slide, start and end the slideshow, and temporarily blank the screen. Presence presses arrow keys in the app you're using on your Mac, so it works with Keynote, PowerPoint, Google Slides, and PDFs. Only these keys are sent, and nothing is sent while the screen is locked. Auto-lock pauses while you present (up to 3 hours) and resumes when you end the presentation on your phone."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Usa el iPhone y el Apple Watch enlazados como pasador de diapositivas: diapositiva siguiente y anterior, iniciar y terminar la presentación, y pantalla negra. Presence pulsa las teclas de flecha en la app que esté en primer plano, así que funciona con Keynote, PowerPoint, Presentaciones de Google y PDF. Solo se envían esas teclas, y nunca mientras la pantalla está bloqueada. El bloqueo automático se pausa mientras presentas (hasta 3 horas) y se reanuda al terminar la presentación en el iPhone."
+            "value": "Usa el iPhone y el Apple Watch enlazados como pasador de diapositivas: diapositiva siguiente y anterior, iniciar y terminar la presentación, y pantalla en negro temporal. Presence pulsa las teclas de flecha en la app que estés usando en el Mac, así que funciona con Keynote, PowerPoint, Presentaciones de Google y PDF. Solo se envían esas teclas, y nunca mientras la pantalla está bloqueada. El bloqueo automático se pausa mientras presentas (hasta 3 horas) y se reanuda al terminar la presentación en el iPhone."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Utilisez l’iPhone et l’Apple Watch jumelés comme une télécommande de présentation : diapositive suivante et précédente, début et fin du diaporama, écran noir. Presence envoie des touches fléchées à l’app au premier plan : cela fonctionne avec Keynote, PowerPoint, Google Slides et les PDF. Seules ces touches sont envoyées, et rien n’est envoyé quand l’écran est verrouillé. Le verrouillage auto est suspendu pendant la présentation (3 heures max.) et reprend quand vous terminez la présentation sur votre téléphone."
+            "value": "Utilisez l’iPhone et l’Apple Watch jumelés comme une télécommande de présentation : diapositive suivante et précédente, début et fin du diaporama, écran noir temporaire. Presence envoie des touches fléchées à l’app active sur le Mac : cela fonctionne avec Keynote, PowerPoint, Google Slides et les PDF. Seules ces touches sont envoyées, et rien n’est envoyé quand l’écran est verrouillé. Le verrouillage auto est suspendu pendant la présentation (3 heures max.) et reprend quand vous terminez la présentation sur votre téléphone."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ペアリングしたiPhoneとApple Watchを、プレゼンリモコンのように使えます。スライドをめくる、スライドショーの開始と終了、投影画面を黒くする操作ができます。Presenceは最前面のAppに矢印キーを送るため、Keynote、PowerPoint、Google スライド、PDFで使えます。送るのはこれらのキーだけで、画面がロックされているときは何も送りません。プレゼン中は自動ロックを一時停止し（最長3時間）、iPhoneでプレゼンを終了すると再開します。"
+            "value": "ペアリングしたiPhoneとApple Watchを、プレゼンリモコンのように使えます。スライドをめくる、スライドショーの開始と終了、投影画面の一時的な暗転ができます。PresenceはMacで使用中のAppに矢印キーを送るため、Keynote、PowerPoint、Google スライド、PDFで使えます。送るのはこれらのキーだけで、画面がロックされているときは何も送りません。プレゼン中は自動ロックを一時停止し（最長3時間）、iPhoneでプレゼンを終了すると再開します。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "페어링된 iPhone과 Apple Watch를 프레젠터처럼 사용해 슬라이드를 넘기고, 슬라이드쇼를 시작 및 종료하고, 프로젝터 화면을 검게 만들 수 있습니다. Presence가 맨 앞에 있는 앱에 화살표 키를 보내므로 Keynote, PowerPoint, Google 프레젠테이션, PDF 모두 사용할 수 있습니다. 이 키들만 보내며 화면이 잠겨 있을 때는 보내지 않습니다. 발표 중에는 자동 잠금이 일시 정지되며(최대 3시간) iPhone에서 발표를 종료하면 재개됩니다."
+            "value": "페어링된 iPhone과 Apple Watch를 프레젠터처럼 사용해 슬라이드를 넘기고, 슬라이드쇼를 시작 및 종료하고, 프로젝터 화면을 잠시 검정 화면으로 바꿀 수 있습니다. Presence가 Mac에서 사용 중인 앱에 화살표 키를 보내므로 Keynote, PowerPoint, Google 프레젠테이션, PDF 모두 사용할 수 있습니다. 이 키들만 보내며 화면이 잠겨 있을 때는 보내지 않습니다. 발표 중에는 자동 잠금이 일시 정지되며(최대 3시간) iPhone에서 발표를 종료하면 재개됩니다."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "让已配对的 iPhone 和 Apple Watch 像翻页笔一样翻页、开始与结束播放、让投影画面黑屏。Presence 会向前台 App 发送方向键，适用于 Keynote、PowerPoint、Google 幻灯片和 PDF；只会发送这几个按键，屏幕锁定时也不会发送。演示期间暂停自动锁定（最多 3 小时），在手机上结束演示后即恢复。"
+            "value": "让已配对的 iPhone 和 Apple Watch 像翻页笔一样翻页、开始与结束播放、让投影画面暂时黑屏。Presence 会向 Mac 正在使用的 App 发送方向键，适用于 Keynote、PowerPoint、Google 幻灯片和 PDF；只会发送这几个按键，屏幕锁定时也不会发送。演示期间暂停自动锁定（最多 3 小时），在手机上结束演示后即恢复。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "讓配對的 iPhone 和 Apple Watch 像簡報筆一樣翻頁、開始與結束播放、把投影畫面變黑。Presence 會對最前面的 App 按方向鍵，Keynote、PowerPoint、Google 簡報和 PDF 都適用；只會送這幾個鍵，螢幕鎖著時也不會送。簡報時暫停自動鎖定（最多 3 小時），在手機上結束簡報就恢復。"
+            "value": "讓配對的 iPhone 和 Apple Watch 像簡報筆一樣翻頁、開始與結束播放、讓投影畫面暫時全黑。Presence 會對 Mac 正在使用的 App 按方向鍵，Keynote、PowerPoint、Google 簡報和 PDF 都適用；只會送這幾個鍵，螢幕鎖著時也不會送。簡報時暫停自動鎖定（最多 3 小時），在手機上結束簡報就恢復。"
           }
         }
       }

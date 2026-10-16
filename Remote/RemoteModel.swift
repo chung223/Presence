@@ -252,17 +252,21 @@ final class RemoteModel {
         let state = UserDefaults.standard.string(forKey: "PresenceDemoState") ?? "near"
         guard state != "onboarding" else { return }
         let demoPairing = PairingInfo(id: UUID(), macName: "MacBook Pro", key: Data(repeating: 7, count: 32))
+        // 和真的 Mac 一樣送結構化狀態，畫面上的那一行由手機用自己的語言組
         var status = LinkStatus(macName: "MacBook Pro", presence: .near,
                                 summary: String(localized: "Apple Watch 在附近 · -52 dBm"),
+                                detail: StatusDetail(kind: .near, devices: ["Apple Watch"], rssi: -52),
                                 locked: false, presenter: .enabled)
         switch state {
         case "locked":
             status.presence = .away
             status.summary = String(localized: "Apple Watch 離開了")
+            status.detail = StatusDetail(kind: .awayLost, devices: ["Apple Watch"])
             status.locked = true
         case "paused":
             status.presence = .paused
             status.summary = String(localized: "已暫停")
+            status.detail = StatusDetail(kind: .paused, devices: ["Apple Watch"])
             status.pausedUntil = Date().addingTimeInterval(3600)
         case "presenter":
             // 講了 12 分半、預定 20 分鐘，Keynote 在最前面
