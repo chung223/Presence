@@ -985,9 +985,11 @@ final class AppModel {
         }
     }
 
-    /// 允許簡報遙控時才告訴手機最前面是哪個 App（按鍵會送到那裡）。
+    /// 允許簡報遙控時才告訴手機 Mac 正在使用哪個 App（按鍵會送到那裡）。
+    /// 只算一般的 App：關掉 Keynote 文件後，系統的背景程式（storeuid）曾短暫被當成最前面的 App（2026-10-16 實測）。
     private var front: (name: String?, presents: Bool?) {
-        guard preferences.allowPresenter, let app = NSWorkspace.shared.frontmostApplication else { return (nil, nil) }
+        guard preferences.allowPresenter, let app = NSWorkspace.shared.frontmostApplication,
+              app.activationPolicy == .regular else { return (nil, nil) }
         return (app.localizedName, app.bundleIdentifier.map(PresenterKeys.presentationApps.contains) ?? false)
     }
 
