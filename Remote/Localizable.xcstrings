@@ -1486,7 +1486,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Presenceは\nあなたが席にいるかを判断します"
+            "value": "Presenceが\n在席を見分けます"
           }
         },
         "ko": {
@@ -3826,7 +3826,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "iPhoneからワンタップでロック"
+            "value": "iPhoneから\nワンタップでロック"
           }
         },
         "ko": {
@@ -8506,7 +8506,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "席を離れるとMacを自動でロック"
+            "value": "席を離れると\nMacを自動ロック"
           }
         },
         "ko": {
