@@ -539,8 +539,6 @@ struct DemoCaption: View {
 
 /// 結尾：跟 App 圖示同一組漸層與符號。
 struct DemoEndCard: View {
-    private var chinese: Bool { Locale.preferredLanguages.first?.hasPrefix("zh") == true }
-
     var body: some View {
         VStack(spacing: 22) {
             RoundedRectangle(cornerRadius: 34, style: .continuous)
@@ -557,7 +555,7 @@ struct DemoEndCard: View {
                     .foregroundStyle(.white)
                 }
             Text("Presence Remote").font(.system(size: 38, weight: .bold))
-            Text(chinese ? "搭配 Mac 上的免費 Presence" : "Works with the free Presence for Mac")
+            Text("搭配 Mac 上的免費 Presence")
                 .font(.title3)
                 .foregroundStyle(.secondary)
         }

@@ -4,10 +4,46 @@
     "NSBluetoothAlwaysUsageDescription": {
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remote verbindet sich per Bluetooth mit Presence auf deinem Mac, damit du ihn vom iPhone aus sperren oder seinen Status sehen kannst."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Presence Remote uses Bluetooth to connect to Presence on your Mac, so you can lock it or check its status from your iPhone."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remote usa Bluetooth para conectarse a Presence en el Mac y así poder bloquearlo o consultar su estado desde el iPhone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remote utilise le Bluetooth pour se connecter à Presence sur votre Mac, afin de le verrouiller ou de consulter son état depuis votre iPhone."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remoteは、BluetoothでMacのPresenceに接続し、iPhoneからロックしたり状態を確認したりします。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remote는 Bluetooth로 Mac의 Presence에 연결하여 iPhone에서 Mac을 잠그거나 상태를 확인합니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remote 使用蓝牙连接你 Mac 上的 Presence，以便从手机锁定 Mac 或查看状态。"
           }
         },
         "zh-Hant": {
@@ -21,10 +57,46 @@
     "NSCameraUsageDescription": {
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit der Kamera scannst du den Kopplungs-QR-Code, den Presence auf deinem Mac anzeigt."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "The camera is used to scan the pairing QR code shown by Presence on your Mac."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La cámara se usa para escanear el código QR de enlace que muestra Presence en el Mac."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’appareil photo sert à scanner le code QR de jumelage affiché par Presence sur votre Mac."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MacのPresenceに表示されるペアリング用のQRコードをスキャンするためにカメラを使用します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac의 Presence에 표시된 페어링 QR 코드를 스캔하는 데 카메라를 사용합니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用相机扫描 Mac 上 Presence 显示的配对二维码。"
           }
         },
         "zh-Hant": {

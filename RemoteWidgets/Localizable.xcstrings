@@ -3,7 +3,43 @@
   "strings": {
     "%@": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        },
         "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        },
+        "zh-Hans": {
           "stringUnit": {
             "state": "translated",
             "value": "%@"
@@ -19,10 +55,46 @@
     },
     "%@ 已恢復自動鎖定與解鎖": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ hat automatisches Sperren und Entsperren fortgesetzt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "%@ resumed automatic lock and unlock"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ha reanudado el bloqueo y desbloqueo automáticos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ : reprise du verrouillage et déverrouillage auto"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@の自動ロックとロック解除を再開しました"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@에서 자동 잠금 및 잠금 해제 재개됨"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 已恢复自动锁定与解锁"
           }
         },
         "zh-Hant": {
@@ -35,10 +107,46 @@
     },
     "%@ 已暫停自動鎖定與解鎖": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ hat automatisches Sperren und Entsperren pausiert"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "%@ paused automatic lock and unlock"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ha pausado el bloqueo y desbloqueo automáticos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ : verrouillage et déverrouillage auto suspendus"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@の自動ロックとロック解除を一時停止しました"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@에서 자동 잠금 및 잠금 해제 일시 정지됨"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 已暂停自动锁定与解锁"
           }
         },
         "zh-Hant": {
@@ -51,10 +159,46 @@
     },
     "%@ 已鎖定": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ist gesperrt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "%@ is locked"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ está bloqueado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ est verrouillé"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@をロックしました"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 잠김"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 已锁定"
           }
         },
         "zh-Hant": {
@@ -67,10 +211,46 @@
     },
     "%@前更新": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vor %@ aktualisiert"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Updated %@ ago"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualizado hace %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mis à jour il y a %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@前に更新"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 전 업데이트됨"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@前更新"
           }
         },
         "zh-Hant": {
@@ -83,10 +263,46 @@
     },
     "Mac 已鎖定": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac gesperrt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Mac Locked"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac bloqueado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac verrouillé"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macはロック中"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 잠김"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 已锁定"
           }
         },
         "zh-Hant": {
@@ -99,10 +315,46 @@
     },
     "Mac 狀態": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac-Status"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Mac Status"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estado del Mac"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "État du Mac"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macの状態"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 상태"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 状态"
           }
         },
         "zh-Hant": {
@@ -115,10 +367,46 @@
     },
     "上一頁": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorherige Folie"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Previous Slide"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anterior"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diapositive précédente"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "前のスライド"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이전 슬라이드"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上一页"
           }
         },
         "zh-Hant": {
@@ -131,10 +419,46 @@
     },
     "下一頁": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächste Folie"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Next Slide"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siguiente"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diapositive suivante"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "次のスライド"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다음 슬라이드"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下一页"
           }
         },
         "zh-Hant": {
@@ -147,10 +471,46 @@
     },
     "先在 App 配對 Mac": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zuerst Mac in der App koppeln"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Pair a Mac in the app first"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enlaza un Mac en la app"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jumelez d’abord un Mac dans l’app"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AppでMacをペアリングしてください"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "먼저 앱에서 Mac을 페어링하세요"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "先在 App 中配对 Mac"
           }
         },
         "zh-Hant": {
@@ -163,10 +523,46 @@
     },
     "分鐘": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minuten"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Minutes"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minutos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minutes"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "분"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分钟"
           }
         },
         "zh-Hant": {
@@ -179,10 +575,46 @@
     },
     "取得 Mac 狀態": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac-Status abrufen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Get Mac Status"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obtener estado del Mac"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obtenir l’état du Mac"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macの状態を取得"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 상태 가져오기"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "获取 Mac 状态"
           }
         },
         "zh-Hant": {
@@ -195,10 +627,46 @@
     },
     "回傳 Presence 目前的狀態，例如「Weichung 在附近」。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gibt den aktuellen Status von Presence zurück, z. B. „iPhone in der Nähe“."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Returns the current status of Presence, such as “iPhone nearby”."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devuelve el estado actual de Presence, como “iPhone cerca”."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renvoie l’état actuel de Presence, par exemple « iPhone à proximité »."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenceの現在の状態を返します。例：「iPhoneが近くにあります」。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence의 현재 상태를 반환합니다(예: ‘iPhone 근처에 있음’)."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "返回 Presence 当前的状态，例如“iPhone 在附近”。"
           }
         },
         "zh-Hant": {
@@ -211,10 +679,46 @@
     },
     "在指定的時間內，電腦不會自動鎖定也不會自動解鎖。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für die angegebene Zeit wird der Computer weder automatisch gesperrt noch entsperrt."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "For the given time, your computer won't lock or unlock automatically."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Durante el tiempo indicado, el ordenador no se bloqueará ni se desbloqueará automáticamente."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pendant la durée indiquée, l’ordinateur ne se verrouille ni ne se déverrouille automatiquement."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "指定した時間、コンピュータは自動ロックも自動ロック解除もしません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지정한 시간 동안 컴퓨터가 자동으로 잠기거나 잠금 해제되지 않습니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在指定时间内，电脑不会自动锁定，也不会自动解锁。"
           }
         },
         "zh-Hant": {
@@ -227,10 +731,46 @@
     },
     "已鎖定": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gesperrt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Locked"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloqueado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verrouillé"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ロック中"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잠김"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已锁定"
           }
         },
         "zh-Hant": {
@@ -243,10 +783,46 @@
     },
     "恢復": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fortsetzen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Resume"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reanudar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reprendre"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再開"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "재개"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢复"
           }
         },
         "zh-Hant": {
@@ -259,10 +835,46 @@
     },
     "恢復 Presence": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence fortsetzen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Resume Presence"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reanudar Presence"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reprendre Presence"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenceを再開"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence 재개"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢复 Presence"
           }
         },
         "zh-Hant": {
@@ -275,10 +887,46 @@
     },
     "打開後一小時內，Mac 不會自動鎖定也不會自動解鎖。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wenn aktiv, wird der Mac eine Stunde lang weder automatisch gesperrt noch entsperrt."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "When on, your Mac won't lock or unlock automatically for one hour."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Al activarlo, el Mac no se bloqueará ni se desbloqueará automáticamente durante una hora."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une fois activé, le Mac ne se verrouille ni ne se déverrouille automatiquement pendant une heure."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オンにすると、1時間はMacが自動ロックも自動ロック解除もしません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "켜면 1시간 동안 Mac이 자동으로 잠기거나 잠금 해제되지 않습니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打开后一小时内，Mac 不会自动锁定，也不会自动解锁。"
           }
         },
         "zh-Hant": {
@@ -291,10 +939,46 @@
     },
     "暫停": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausieren"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Pause"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suspendre"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一時停止"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "일시 정지"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂停"
           }
         },
         "zh-Hant": {
@@ -307,10 +991,46 @@
     },
     "暫停 1 小時": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 Stunde pausieren"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Pause 1 Hour"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausar 1 hora"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suspendre 1 h"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1時間一時停止"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1시간 일시 정지"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂停 1 小时"
           }
         },
         "zh-Hant": {
@@ -323,10 +1043,46 @@
     },
     "暫停 Presence": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence pausieren"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Pause Presence"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausar Presence"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suspendre Presence"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenceを一時停止"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence 일시 정지"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂停 Presence"
           }
         },
         "zh-Hant": {
@@ -339,10 +1095,46 @@
     },
     "暫停 Presence ${minutes} 分鐘": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence für ${minutes} Minuten pausieren"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Pause Presence for ${minutes} minutes"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausar Presence durante ${minutes} minutos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suspendre Presence pendant ${minutes} minutes"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenceを${minutes}分間一時停止"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence ${minutes}분 일시 정지"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂停 Presence ${minutes} 分钟"
           }
         },
         "zh-Hant": {
@@ -355,10 +1147,46 @@
     },
     "暫停到 %@": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausiert bis %@"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Paused until %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En pausa hasta %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suspendu jusqu’à %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@まで一時停止中"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@까지 일시 정지됨"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂停至 %@"
           }
         },
         "zh-Hant": {
@@ -371,10 +1199,46 @@
     },
     "暫停或恢復 Presence": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence pausieren oder fortsetzen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Pause or Resume Presence"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausar o reanudar Presence"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suspendre ou reprendre Presence"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenceを一時停止または再開"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence 일시 정지 또는 재개"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂停或恢复 Presence"
           }
         },
         "zh-Hant": {
@@ -387,10 +1251,46 @@
     },
     "未連線 · %@前": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht verbunden · vor %@"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Not connected · %@ ago"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin conexión · hace %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non connecté · il y a %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未接続 · %@前"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "연결 안 됨 · %@ 전"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未连接 · %@前"
           }
         },
         "zh-Hant": {
@@ -403,10 +1303,46 @@
     },
     "用 Presence 立即鎖定配對的 Mac。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gekoppelten Mac jetzt mit Presence sperren."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Lock your paired Mac now with Presence."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloquea ahora el Mac enlazado con Presence."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verrouille immédiatement le Mac jumelé avec Presence."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ペアリングしたMacをPresenceで今すぐロックします。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence로 페어링된 Mac을 지금 잠급니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用 Presence 立即锁定已配对的 Mac。"
           }
         },
         "zh-Hant": {
@@ -419,10 +1355,46 @@
     },
     "用 Presence 立即鎖定配對的電腦。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gekoppelten Computer jetzt mit Presence sperren."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Lock your paired computer now with Presence."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloquea ahora el ordenador enlazado con Presence."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verrouille immédiatement l’ordinateur jumelé avec Presence."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ペアリングしたコンピュータをPresenceで今すぐロックします。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence로 페어링된 컴퓨터를 지금 잠급니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用 Presence 立即锁定已配对的电脑。"
           }
         },
         "zh-Hant": {
@@ -435,10 +1407,46 @@
     },
     "看 Presence 目前的狀態，一鍵鎖定 Mac。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status von Presence sehen und den Mac per Tipp sperren."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "See the current status of Presence and lock your Mac with one tap."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Consulta el estado de Presence y bloquea el Mac con un toque."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Consultez l’état de Presence et verrouillez le Mac d’un simple toucher."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenceの現在の状態を確認し、ワンタップでMacをロックできます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence의 현재 상태를 확인하고 탭 한 번으로 Mac을 잠급니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "查看 Presence 的当前状态，一键锁定 Mac。"
           }
         },
         "zh-Hant": {
@@ -451,10 +1459,46 @@
     },
     "簡報中": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Präsentation läuft"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Presenting"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presentando"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Présentation en cours"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレゼン中"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "발표 중"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "演示中"
           }
         },
         "zh-Hant": {
@@ -467,10 +1511,46 @@
     },
     "結束暫停，恢復自動鎖定與解鎖。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause beenden und automatisches Sperren und Entsperren fortsetzen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "End the pause and resume automatic lock and unlock."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Termina la pausa y reanuda el bloqueo y desbloqueo automáticos."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Met fin à la suspension et reprend le verrouillage et le déverrouillage automatiques."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一時停止を終了し、自動ロックとロック解除を再開します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "일시 정지를 끝내고 자동 잠금 및 잠금 해제를 재개합니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "结束暂停，恢复自动锁定与解锁。"
           }
         },
         "zh-Hant": {
@@ -483,10 +1563,46 @@
     },
     "結束簡報": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Präsentation beenden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "End Presentation"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレゼンを終了"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "발표 종료"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "结束演示"
           }
         },
         "zh-Hant": {
@@ -499,10 +1615,46 @@
     },
     "結束簡報遙控，電腦恢復自動鎖定與解鎖。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beendet die Präsentationssteuerung, damit der Computer wieder automatisch sperrt und entsperrt."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Ends the presenter remote so your computer locks and unlocks automatically again."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Termina el mando de presentaciones para que el ordenador vuelva a bloquearse y desbloquearse automáticamente."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrête la télécommande de présentation : l’ordinateur se verrouille et se déverrouille de nouveau automatiquement."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレゼンリモコンを終了し、コンピュータの自動ロックとロック解除を再開します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "프레젠테이션 리모컨을 종료하고 컴퓨터의 자동 잠금 및 잠금 해제를 재개합니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "结束演示遥控，电脑恢复自动锁定与解锁。"
           }
         },
         "zh-Hant": {
@@ -515,10 +1667,46 @@
     },
     "自動鎖定中": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-Sperre aktiv"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Auto Lock On"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloqueo automático"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verrouillage auto"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動ロックオン"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자동 잠금 켜짐"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动锁定已开启"
           }
         },
         "zh-Hant": {
@@ -531,10 +1719,46 @@
     },
     "請打開 Presence Remote 再試一次": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne Presence Remote und versuche es erneut"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Open Presence Remote and try again"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abre Presence Remote y vuelve a intentarlo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrez Presence Remote et réessayez"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remoteを開いてもう一度お試しください"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Remote를 열고 다시 시도하세요"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请打开 Presence Remote 后重试"
           }
         },
         "zh-Hant": {
@@ -547,10 +1771,46 @@
     },
     "讓電腦上的簡報回到上一頁。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geht in der Präsentation auf dem Computer eine Folie zurück."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Goes back one slide in the presentation on your computer."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vuelve a la diapositiva anterior de la presentación en el ordenador."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revient à la diapositive précédente de la présentation sur l’ordinateur."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コンピュータのプレゼンを前のスライドに戻します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "컴퓨터의 프레젠테이션을 이전 슬라이드로 되돌립니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "让电脑上的演示文稿回到上一页。"
           }
         },
         "zh-Hant": {
@@ -563,10 +1823,46 @@
     },
     "讓電腦上的簡報翻到下一頁。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geht in der Präsentation auf dem Computer zur nächsten Folie."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Advances the presentation on your computer to the next slide."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pasa a la siguiente diapositiva de la presentación en el ordenador."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passe à la diapositive suivante de la présentation sur l’ordinateur."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コンピュータのプレゼンを次のスライドに進めます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "컴퓨터의 프레젠테이션을 다음 슬라이드로 넘깁니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "让电脑上的演示文稿翻到下一页。"
           }
         },
         "zh-Hant": {
@@ -579,10 +1875,46 @@
     },
     "還沒有狀態": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch kein Status"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "No status yet"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aún sin estado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun état"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "まだ状態がありません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "아직 상태 없음"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂无状态"
           }
         },
         "zh-Hant": {
@@ -595,10 +1927,46 @@
     },
     "鎖定": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sperren"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Lock"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloquear"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verrouiller"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ロック"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잠금"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "锁定"
           }
         },
         "zh-Hant": {
@@ -611,10 +1979,46 @@
     },
     "鎖定 Mac": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac sperren"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Lock Mac"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloquear Mac"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verrouiller le Mac"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macをロック"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 잠그기"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "锁定 Mac"
           }
         },
         "zh-Hant": {

@@ -159,8 +159,9 @@ struct ProPlan: Identifiable {
     }
 
     static var demo: [ProPlan] {
-        let chinese = Locale.preferredLanguages.first?.hasPrefix("zh") == true
-        return chinese
+        // 台灣的價格；其他語言用美元（只有審核用的付費畫面截圖會用到）
+        let taiwan = Locale.preferredLanguages.first?.hasPrefix("zh-Hant") == true
+        return taiwan
             ? [ProPlan(kind: .monthly, price: "NT$30", trial: 7), ProPlan(kind: .yearly, price: "NT$150", monthly: "NT$12.5", trial: 7),
                ProPlan(kind: .lifetime, price: "NT$390")]
             : [ProPlan(kind: .monthly, price: "$0.99", trial: 7), ProPlan(kind: .yearly, price: "$4.99", monthly: "$0.42", trial: 7),

@@ -1,0 +1,86 @@
+{
+  "ja": {
+    "monthly": {
+      "name": "Presence Pro 月額プラン",
+      "description": "iPhoneとApple Watchでプレゼンを遠隔操作"
+    },
+    "yearly": {
+      "name": "Presence Pro 年額プラン",
+      "description": "iPhoneとApple Watchでプレゼンを遠隔操作"
+    },
+    "lifetime": {
+      "name": "Presence Pro 買い切り",
+      "description": "iPhoneとApple Watchでプレゼンを遠隔操作"
+    }
+  },
+  "ko": {
+    "monthly": {
+      "name": "Presence Pro 월간 구독",
+      "description": "iPhone과 Apple Watch를 프레젠테이션 리모컨으로"
+    },
+    "yearly": {
+      "name": "Presence Pro 연간 구독",
+      "description": "iPhone과 Apple Watch를 프레젠테이션 리모컨으로"
+    },
+    "lifetime": {
+      "name": "Presence Pro 평생 이용권",
+      "description": "iPhone과 Apple Watch를 프레젠테이션 리모컨으로"
+    }
+  },
+  "zh-Hans": {
+    "monthly": {
+      "name": "Presence Pro 月度订阅",
+      "description": "用 iPhone 和 Apple Watch 遥控演示"
+    },
+    "yearly": {
+      "name": "Presence Pro 年度订阅",
+      "description": "用 iPhone 和 Apple Watch 遥控演示"
+    },
+    "lifetime": {
+      "name": "Presence Pro 永久版",
+      "description": "用 iPhone 和 Apple Watch 遥控演示"
+    }
+  },
+  "de-DE": {
+    "monthly": {
+      "name": "Presence Pro Monatsabo",
+      "description": "Folien per iPhone und Apple Watch steuern"
+    },
+    "yearly": {
+      "name": "Presence Pro Jahresabo",
+      "description": "Folien per iPhone und Apple Watch steuern"
+    },
+    "lifetime": {
+      "name": "Presence Pro Einmalkauf",
+      "description": "Folien per iPhone und Apple Watch steuern"
+    }
+  },
+  "fr-FR": {
+    "monthly": {
+      "name": "Presence Pro mensuel",
+      "description": "Pilotez vos diapos avec iPhone et Apple Watch"
+    },
+    "yearly": {
+      "name": "Presence Pro annuel",
+      "description": "Pilotez vos diapos avec iPhone et Apple Watch"
+    },
+    "lifetime": {
+      "name": "Presence Pro à vie",
+      "description": "Pilotez vos diapos avec iPhone et Apple Watch"
+    }
+  },
+  "es-ES": {
+    "monthly": {
+      "name": "Presence Pro mensual",
+      "description": "Pasa diapositivas con iPhone y Apple Watch"
+    },
+    "yearly": {
+      "name": "Presence Pro anual",
+      "description": "Pasa diapositivas con iPhone y Apple Watch"
+    },
+    "lifetime": {
+      "name": "Presence Pro (compra única)",
+      "description": "Pasa diapositivas con iPhone y Apple Watch"
+    }
+  }
+}

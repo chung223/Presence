@@ -12,7 +12,9 @@
 1. 用建置產生的 .stringsdata 同步各目標的 String Catalog（見 TARGETS）。
 2. 每個字串都補上繁體中文（原文）。原文是中文、但找不到時退回英文，
    所以一定要明確產生中文字串表，否則中文環境會顯示英文。
-3. 刪掉已經不用的字串，列出還沒有英文翻譯的字串。
+3. 刪掉已經不用的字串，列出各語言還沒有翻譯的字串。
+
+新增字串後要補齊 LANGUAGES 的每一種語言（2026-10-16 起：英、日、韓、簡中、德、法、西）。
 """
 import json
 import subprocess
@@ -21,6 +23,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = "zh-Hant"
+# 要翻譯的語言（原文是繁體中文）
+LANGUAGES = ["en", "ja", "ko", "zh-Hans", "de", "fr", "es"]
 
 # 每個建置目標：從哪裡找 .stringsdata、同步到哪些 String Catalog。
 # Mac 先建置到 build/，iPhone 與手錶建置到 build-ios/（見 README 的「開發」）。
@@ -47,9 +51,9 @@ def sync():
                         "--stringsdata", *stringsdata], check=True)
 
 
-def tidy(path: Path) -> list[str]:
+def tidy(path: Path) -> dict[str, list[str]]:
     data = json.loads(path.read_text())
-    untranslated = []
+    untranslated = {language: [] for language in LANGUAGES}
     for key, entry in list(data["strings"].items()):
         if entry.get("extractionState") == "stale":
             del data["strings"][key]
@@ -62,8 +66,9 @@ def tidy(path: Path) -> list[str]:
             source["stringUnit"]["state"] = "translated"
         elif not entry.get("variations"):
             localizations[SOURCE] = {"stringUnit": {"state": "translated", "value": key}}
-        if "en" not in localizations:
-            untranslated.append(key)
+        for language in LANGUAGES:
+            if language not in localizations:
+                untranslated[language].append(key)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
     return untranslated
 
@@ -72,6 +77,8 @@ if __name__ == "__main__":
     sync()
     for catalog in CATALOGS:
         missing = tidy(catalog)
-        print(f"{catalog.name}: 沒有英文翻譯的字串 {len(missing)} 個")
-        for key in missing:
-            print("  ", json.dumps(key, ensure_ascii=False))
+        counts = "、".join(f"{language} {len(keys)}" for language, keys in missing.items())
+        print(f"{catalog.relative_to(ROOT)}: 沒有翻譯的字串 {counts}")
+        for language, keys in missing.items():
+            for key in keys:
+                print(f"   [{language}]", json.dumps(key, ensure_ascii=False))

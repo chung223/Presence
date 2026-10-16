@@ -1,7 +1,7 @@
 #!/bin/zsh
 # App Store 的 App 預覽影片（iPhone 6.9 吋）：用開發版示範模式的腳本（-PresenceDemoState script）
 # 在模擬器上錄影，轉成 App Store 規格：886×1920、30 fps、H.264，加上無聲的立體聲音軌。
-# 輸出到 metadata/previews/iphone-6.9/，中英文各一支，約 26 秒。
+# 輸出到 metadata/previews/iphone-6.9/，每種語言一支，約 26 秒。
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -24,10 +24,19 @@ mkdir -p "$out"
 tmp=build-sim/preview-raw  # 原始錄影留著方便除錯（build-sim 不進版控）
 mkdir -p "$tmp"
 
-for lang in zh-Hant en-US; do
+# 用法：scripts/app-preview.sh [語言…]（App Store 的語言代碼，不指定就全部重錄）
+langs=($@)
+(( $#langs )) || langs=(zh-Hant en-US ja ko zh-Hans de-DE fr-FR es-ES)
+for lang in $langs; do
     case $lang in
         zh-Hant) apple=zh-Hant; locale=zh_TW ;;
         en-US) apple=en; locale=en_US ;;
+        ja) apple=ja; locale=ja_JP ;;
+        ko) apple=ko; locale=ko_KR ;;
+        zh-Hans) apple=zh-Hans; locale=zh_CN ;;
+        de-DE) apple=de; locale=de_DE ;;
+        fr-FR) apple=fr; locale=fr_FR ;;
+        es-ES) apple=es; locale=es_ES ;;
     esac
     xcrun simctl terminate "$sim" com.chung.presence.remote 2>/dev/null || true
     xcrun simctl io "$sim" recordVideo --codec=h264 --force "$tmp/raw-$lang.mov" >/dev/null 2>&1 &

@@ -51,10 +51,9 @@ final class WatchModel: NSObject {
         #if DEBUG
         // App Store 截圖用：-PresenceDemo YES，不連 iPhone 也不連藍牙
         if UserDefaults.standard.bool(forKey: "PresenceDemo") {
-            let chinese = Locale.preferredLanguages.first?.hasPrefix("zh") == true
             pairing = PairingInfo(id: UUID(), macName: "MacBook Pro", key: Data(repeating: 7, count: 32))
             status = LinkStatus(macName: "MacBook Pro", presence: .near,
-                                summary: chinese ? "Apple Watch 在附近 · -52 dBm" : "Apple Watch nearby · -52 dBm",
+                                summary: String(localized: "Apple Watch 在附近 · -52 dBm"),
                                 locked: false)
             lastUpdate = Date()
             lastRoute = String(localized: "經由 iPhone")

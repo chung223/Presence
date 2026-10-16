@@ -3,10 +3,46 @@
   "strings": {
     "Mac 上的 Presence 沒有輔助使用權限，不能翻頁": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence auf dem Mac hat keinen Zugriff auf die Bedienungshilfen und kann keine Folien wechseln"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Presence on your Mac doesn't have Accessibility permission, so it can't change slides."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence en el Mac no tiene permiso de Accesibilidad y no puede pasar diapositivas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence sur le Mac n’a pas l’autorisation Accessibilité et ne peut pas changer de diapositive"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MacのPresenceにアクセシビリティの許可がないため、スライドをめくれません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac의 Presence에 손쉬운 사용 권한이 없어 슬라이드를 넘길 수 없습니다"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 上的 Presence 没有辅助功能权限，无法翻页"
           }
         },
         "zh-Hant": {
@@ -19,10 +55,46 @@
     },
     "Mac 沒有接受這個指令": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Mac hat den Befehl nicht angenommen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "The Mac didn't accept this command"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El Mac no ha aceptado este comando"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Mac a refusé cette commande"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macがこのコマンドを受け付けませんでした"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac이 이 명령을 수락하지 않았습니다"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 未接受这条指令"
           }
         },
         "zh-Hant": {
@@ -35,10 +107,46 @@
     },
     "Mac 螢幕鎖著，先解鎖才能翻頁": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Mac ist gesperrt. Entsperre ihn, um Folien zu wechseln."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Your Mac is locked. Unlock it to change slides."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El Mac está bloqueado. Desbloquéalo para pasar diapositivas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Mac est verrouillé. Déverrouillez-le pour changer de diapositive."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macがロックされています。ロックを解除するとスライドをめくれます"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 화면이 잠겨 있습니다. 잠금을 해제해야 슬라이드를 넘길 수 있습니다"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 屏幕已锁定，请先解锁再翻页"
           }
         },
         "zh-Hant": {
@@ -51,10 +159,46 @@
     },
     "尚未配對": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht gekoppelt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Not paired"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin enlazar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non jumelé"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未ペアリング"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "페어링 안 됨"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尚未配对"
           }
         },
         "zh-Hant": {
@@ -67,10 +211,46 @@
     },
     "已連線": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbunden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Connected"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conectado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecté"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "接続済み"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "연결됨"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已连接"
           }
         },
         "zh-Hant": {
@@ -83,10 +263,46 @@
     },
     "未連線": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht verbunden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Not connected"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin conexión"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non connecté"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未接続"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "연결 안 됨"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未连接"
           }
         },
         "zh-Hant": {
@@ -99,10 +315,46 @@
     },
     "正在尋找 Mac": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac wird gesucht"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Looking for Mac"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscando el Mac"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recherche du Mac"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macを探しています"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 찾는 중"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在查找 Mac"
           }
         },
         "zh-Hant": {
@@ -115,10 +367,46 @@
     },
     "沒有藍牙權限": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Bluetooth-Zugriff"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "No Bluetooth permission"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin permiso de Bluetooth"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas d’accès au Bluetooth"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetoothの許可がありません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetooth 권한 없음"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有蓝牙权限"
           }
         },
         "zh-Hant": {
@@ -131,10 +419,46 @@
     },
     "簡報遙控是 Presence Pro 的功能，請在 iPhone 的 Presence Remote 升級": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Präsentationssteuerung ist Teil von Presence Pro. Das Upgrade gibt es in Presence Remote auf dem iPhone."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Presenter Remote is part of Presence Pro. Upgrade in Presence Remote on your iPhone."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El mando de presentaciones es una función de Presence Pro. Pásate a Pro en Presence Remote en el iPhone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La télécommande de présentation fait partie de Presence Pro. Passez à Presence Pro dans Presence Remote sur l’iPhone."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレゼンリモコンはPresence Proの機能です。iPhoneのPresence Remoteでアップグレードしてください"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "프레젠테이션 리모컨은 Presence Pro 기능입니다. iPhone의 Presence Remote에서 업그레이드하세요"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "演示遥控是 Presence Pro 的功能，请在 iPhone 上的 Presence Remote 中升级"
           }
         },
         "zh-Hant": {
@@ -147,10 +471,46 @@
     },
     "藍牙沒有開啟": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetooth ist aus"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Bluetooth is off"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El Bluetooth está desactivado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Bluetooth est désactivé"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetoothがオフです"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetooth가 꺼져 있음"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "蓝牙未打开"
           }
         },
         "zh-Hant": {
@@ -163,10 +523,46 @@
     },
     "請在 Mac 的 Presence 打開「手機與手錶 › 允許簡報遙控」": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktiviere in Presence auf dem Mac „iPhone & Watch › Präsentationssteuerung erlauben“"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "In Presence on your Mac, turn on iPhone & Watch › Allow Presenter Remote."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En Presence en el Mac, activa “iPhone y Watch › Permitir mando de presentaciones”"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans Presence sur le Mac, activez « iPhone et montre › Autoriser la télécommande de présentation »"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MacのPresenceで「iPhoneとWatch › プレゼンリモコンを許可」をオンにしてください"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac의 Presence에서 ‘iPhone 및 Watch › 프레젠테이션 리모컨 허용’을 켜세요"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在 Mac 上的 Presence 中打开“手机与手表 › 允许演示遥控”"
           }
         },
         "zh-Hant": {
@@ -179,10 +575,46 @@
     },
     "連不上 Mac，請確認 Mac 在附近、Presence 正在執行": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac nicht erreichbar. Stelle sicher, dass er in der Nähe ist und Presence läuft"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Can't reach your Mac. Make sure it's nearby and Presence is running"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se puede conectar con el Mac. Comprueba que esté cerca y que Presence esté abierto"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de joindre le Mac. Vérifiez qu’il est à proximité et que Presence est ouvert"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macに接続できません。Macが近くにあり、Presenceが実行中か確認してください"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac에 연결할 수 없습니다. Mac이 근처에 있고 Presence가 실행 중인지 확인하세요"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法连接 Mac，请确认 Mac 在附近且 Presence 正在运行"
           }
         },
         "zh-Hant": {
@@ -195,10 +627,46 @@
     },
     "連線中": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird verbunden …"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Connecting"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conectando"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connexion…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "接続中"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "연결 중"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在连接"
           }
         },
         "zh-Hant": {
@@ -211,10 +679,46 @@
     },
     "還沒有配對 Mac": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch kein Mac gekoppelt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "No Mac paired yet"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aún no hay ningún Mac enlazado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun Mac jumelé"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "まだMacをペアリングしていません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "페어링된 Mac 없음"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尚未配对 Mac"
           }
         },
         "zh-Hant": {

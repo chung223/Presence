@@ -1,0 +1,8 @@
+{
+  "description": "Presence Remote 是 Mac 上 Presence 的配套 App。Presence 通过你的 iPhone 或 Apple Watch 的蓝牙信号判断你是否在座位上：离开时自动锁定 Mac，回来时自动解锁。\n\n免费功能\n• 从 iPhone、Apple Watch、控制中心、锁定屏幕或操作按钮立即锁定 Mac\n• 暂停或恢复自动锁定（暂停与恢复需要先解锁 iPhone）\n• 随时查看 Mac 的状态：你是否在附近、Mac 是否已锁定\n• Mac 因你离开而自动锁定，或在你不在时被他人手动解锁，都会立即通知你\n• 解锁前的加密确认：Mac 会先请 iPhone 用配对时生成的密钥回应，仅伪造蓝牙信号无法让 Mac 解锁\n• 主屏幕与锁定屏幕小组件、Apple Watch 表盘复杂功能、Siri 与“快捷指令”操作\n\nPresence Pro：演示遥控\n把 iPhone 和 Apple Watch 变成翻页笔，无需另购遥控器，也不用插接收器。\n• 轻点或轻扫即可翻页，还能跳页、黑屏、开始与结束播放\n• 手机锁定时也能在锁定屏幕和灵动岛上翻页\n• 在 Apple Watch 上轻点、转动数码表冠或互点两下即可翻页\n• 演讲倒计时：剩余 5 分钟和时间到时振动提醒\n• 走上讲台、离电脑远了，Mac 也不会自动锁定投影画面\n• 适用于常见的演示软件、浏览器中的在线幻灯片和 PDF\n\nPresence Pro 提供月度订阅、年度订阅（均可免费试用 7 天）和一次性买断，三种方式都支持家人共享。订阅会自动续期，可随时在 App Store 的账户设置中取消。\n\n使用要求\n• 在 Mac 上安装免费的 Presence（macOS 26 或更高版本），可从 github.com/chung223/Presence 下载\n• 在 Mac 上的 Presence 中点按“配对新 iPhone”，然后用本 App 扫描二维码\n• 要使用演示遥控，需在 Mac 上的 Presence 中打开“允许演示遥控”\n\n隐私\nPresence Remote 不收集任何数据，也不需要账户或网络连接。iPhone 与 Mac 之间仅通过蓝牙直接通信，每条指令都经过加密和验证。购买由 App Store 处理。\n\n使用条款：https://www.apple.com/legal/internet-services/itunes/dev/stdeula/\n隐私政策：https://github.com/chung223/Presence/blob/main/docs/privacy.md\n\nPresence 是开源软件，灵感来自 BLEUnlock。",
+  "keywords": "锁屏,自动锁屏,解锁,靠近解锁,蓝牙,翻页笔,翻页器,幻灯片,演示,遥控器,演讲,倒计时,计时器,离座,电脑锁,课件,讲课,近距离,防偷看,BLEUnlock",
+  "promotionalText": "新功能：把 iPhone 和 Apple Watch 变成翻页笔，手机锁定时也能翻页。离开座位，Mac 自动锁定；回来时，自动解锁。",
+  "supportUrl": "https://github.com/chung223/Presence/issues",
+  "marketingUrl": "https://github.com/chung223/Presence",
+  "whatsNew": "新功能：演示遥控（Presence Pro）\n• 用 iPhone 和 Apple Watch 翻页、跳页、让投影画面黑屏\n• 手机锁定时也能在锁定屏幕和灵动岛上翻页\n• 演讲倒计时，剩余 5 分钟和时间到时振动提醒\n• 演示期间，你走上台 Mac 也不会自动锁定\n\n其他改进\n• 主界面重新设计：“立即锁定”和“演示遥控”两张大卡片\n• 全新 App 图标\n• 演示遥控需要 Mac 上的 Presence 0.2.0 或更高版本"
+}

@@ -3,10 +3,46 @@
   "strings": {
     "%@前更新": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vor %@ aktualisiert"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Updated %@ ago"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualizado hace %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mis à jour il y a %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@前に更新"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 전 업데이트됨"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@前更新"
           }
         },
         "zh-Hant": {
@@ -17,25 +53,97 @@
         }
       }
     },
-    "Mac 最前面是「%@」": {
+    "Apple Watch 在附近 · -52 dBm": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch in der Nähe · -52 dBm"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%@” is in front on your Mac"
+            "value": "Apple Watch nearby · -52 dBm"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch cerca · -52 dBm"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch à proximité · -52 dBm"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watchが近くにあります · -52 dBm"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch 근처에 있음 · -52 dBm"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch 在附近 · -52 dBm"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mac 最前面是「%@」"
+            "value": "Apple Watch 在附近 · -52 dBm"
           }
         }
       }
     },
     "Presence Pro": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Pro"
+          }
+        },
         "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Pro"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Pro"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Pro"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Pro"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence Pro"
+          }
+        },
+        "zh-Hans": {
           "stringUnit": {
             "state": "translated",
             "value": "Presence Pro"
@@ -51,10 +159,46 @@
     },
     "上一頁": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zurück"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Previous"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anterior"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Précédente"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "前へ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이전"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上一页"
           }
         },
         "zh-Hant": {
@@ -67,10 +211,46 @@
     },
     "下一頁": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weiter"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Next"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siguiente"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suivante"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "次へ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다음"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下一页"
           }
         },
         "zh-Hant": {
@@ -83,10 +263,46 @@
     },
     "尚未取得狀態": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch kein Status"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "No status yet"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aún sin estado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun état pour l’instant"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "まだ状態がありません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "아직 상태 없음"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尚未获取状态"
           }
         },
         "zh-Hant": {
@@ -99,10 +315,46 @@
     },
     "恢復": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fortsetzen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Resume"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reanudar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reprendre"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再開"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "재개"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢复"
           }
         },
         "zh-Hant": {
@@ -115,10 +367,46 @@
     },
     "暫停 1 小時": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 Std. pausieren"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Pause 1 Hour"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausar 1 hora"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suspendre 1 h"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1時間一時停止"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1시간 일시 정지"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂停 1 小时"
           }
         },
         "zh-Hant": {
@@ -131,10 +419,46 @@
     },
     "暫停 15 分鐘": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15 Min. pausieren"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Pause 15 Minutes"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausar 15 min"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suspendre 15 min"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15分一時停止"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15분 일시 정지"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂停 15 分钟"
           }
         },
         "zh-Hant": {
@@ -145,12 +469,100 @@
         }
       }
     },
+    "最前面是「%@」": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Im Vordergrund: „%@“"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is in front"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” en primer plano"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "« %@ » au premier plan"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最前面は「%@」"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "맨 앞 앱: ‘%@’"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "前台是“%@”"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最前面是「%@」"
+          }
+        }
+      }
+    },
     "用手錶翻頁、轉錶冠或兩指互點，是 Presence Pro 的功能。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folien auf der Uhr wechseln – per Tippen, Digital Crown oder Doppeltippen – ist Teil von Presence Pro."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Changing slides from your watch—by tapping, turning the Digital Crown, or double tapping—is part of Presence Pro."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pasar diapositivas desde el reloj (tocando, girando la Digital Crown o con doble toque) es una función de Presence Pro."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changer de diapositive depuis la montre (toucher, Digital Crown ou Toucher deux fois) fait partie de Presence Pro."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watchでのスライド操作（タップ、Digital Crown、ダブルタップ）はPresence Proの機能です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch로 슬라이드 넘기기(탭, Digital Crown 돌리기, 이중 탭)는 Presence Pro 기능입니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用手表翻页、转动数码表冠或互点两下，是 Presence Pro 的功能。"
           }
         },
         "zh-Hant": {
@@ -163,10 +575,46 @@
     },
     "直接連線": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Direkt verbunden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Direct connection"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conexión directa"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connexion directe"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接接続"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "직접 연결"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接连接"
           }
         },
         "zh-Hant": {
@@ -179,10 +627,46 @@
     },
     "簡報": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folien"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Slides"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presentar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diapos"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プレゼン"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "슬라이드"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "演示"
           }
         },
         "zh-Hant": {
@@ -195,10 +679,46 @@
     },
     "經由 iPhone": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Über iPhone"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Via iPhone"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vía iPhone"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Via l’iPhone"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone経由"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone 경유"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通过 iPhone"
           }
         },
         "zh-Hant": {
@@ -211,10 +731,46 @@
     },
     "請先在 iPhone 的 Presence Remote 配對 Mac": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopple zuerst einen Mac in Presence Remote auf dem iPhone"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Pair a Mac in Presence Remote on your iPhone first"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enlaza un Mac en Presence Remote en el iPhone"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jumelez d’abord un Mac dans Presence Remote sur l’iPhone"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "先にiPhoneのPresence RemoteでMacをペアリングしてください"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "먼저 iPhone의 Presence Remote에서 Mac을 페어링하세요"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先在 iPhone 上的 Presence Remote 中配对 Mac"
           }
         },
         "zh-Hant": {
@@ -227,10 +783,46 @@
     },
     "請先在 iPhone 的 Presence Remote 配對 Mac。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopple zuerst einen Mac in Presence Remote auf dem iPhone."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Pair a Mac in Presence Remote on your iPhone first."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enlaza un Mac en Presence Remote en el iPhone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jumelez d’abord un Mac dans Presence Remote sur l’iPhone."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "先にiPhoneのPresence RemoteでMacをペアリングしてください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "먼저 iPhone의 Presence Remote에서 Mac을 페어링하세요."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先在 iPhone 上的 Presence Remote 中配对 Mac。"
           }
         },
         "zh-Hant": {
@@ -243,10 +835,46 @@
     },
     "請在 iPhone 的 Presence Remote 點「簡報遙控」升級，手錶會自動開通。": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe in Presence Remote auf dem iPhone auf „Präsentationssteuerung“, um das Upgrade zu kaufen. Die Uhr wird automatisch freigeschaltet."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Upgrade by tapping Presenter Remote in Presence Remote on your iPhone. Your watch will be unlocked automatically."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pásate a Pro tocando “Mando de presentaciones” en Presence Remote en el iPhone. El reloj se activará automáticamente."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour passer à Presence Pro, touchez « Présentation » dans Presence Remote sur l’iPhone. La montre sera activée automatiquement."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhoneのPresence Remoteで「プレゼンリモコン」をタップしてアップグレードすると、Apple Watchでも自動的に使えるようになります。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone의 Presence Remote에서 ‘프레젠테이션 리모컨’을 탭하여 업그레이드하세요. Apple Watch에서도 자동으로 사용할 수 있게 됩니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在 iPhone 上的 Presence Remote 中轻点“演示遥控”升级，手表会自动开通。"
           }
         },
         "zh-Hant": {
@@ -259,10 +887,46 @@
     },
     "鎖定": {
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sperren"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Lock"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloquear"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verrou"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ロック"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잠금"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "锁定"
           }
         },
         "zh-Hant": {

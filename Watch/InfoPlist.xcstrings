@@ -4,10 +4,46 @@
     "NSBluetoothAlwaysUsageDescription": {
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence verbindet sich per Bluetooth mit Presence auf deinem Mac, damit du ihn von der Uhr aus sperren oder seinen Status sehen kannst."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Presence uses Bluetooth to connect to Presence on your Mac, so you can lock it or check its status from your watch."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence usa Bluetooth para conectarse a Presence en el Mac y así poder bloquearlo o consultar su estado desde el reloj."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence utilise le Bluetooth pour se connecter à Presence sur votre Mac, afin de le verrouiller ou de consulter son état depuis votre montre."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenceは、BluetoothでMacのPresenceに接続し、Apple Watchからロックしたり状態を確認したりします。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence는 Bluetooth로 Mac의 Presence에 연결하여 Apple Watch에서 Mac을 잠그거나 상태를 확인합니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence 使用蓝牙连接你 Mac 上的 Presence，以便从手表锁定 Mac 或查看状态。"
           }
         },
         "zh-Hant": {

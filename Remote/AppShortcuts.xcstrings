@@ -3,10 +3,60 @@
   "strings": {
     "${applicationName} 狀態": {
       "localizations": {
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Status von ${applicationName}"
+            ]
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "${applicationName} status"
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Estado de ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "État de ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}の状態"
+            ]
+          }
+        },
+        "ko": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName} 상태",
+              "${applicationName} 상태 확인"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName} 状态",
+              "查看 ${applicationName} 状态"
+            ]
           }
         },
         "zh-Hant": {
@@ -21,10 +71,58 @@
     },
     "用 ${applicationName} 恢復": {
       "localizations": {
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Mit ${applicationName} fortsetzen"
+            ]
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Resume with ${applicationName}"
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Reanudar con ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Reprendre avec ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}で再開"
+            ]
+          }
+        },
+        "ko": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}로 재개"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "用 ${applicationName} 恢复"
+            ]
           }
         },
         "zh-Hant": {
@@ -39,10 +137,58 @@
     },
     "用 ${applicationName} 暫停": {
       "localizations": {
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Mit ${applicationName} pausieren"
+            ]
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Pause with ${applicationName}"
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Pausar con ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Suspendre avec ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}で一時停止"
+            ]
+          }
+        },
+        "ko": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}로 일시 정지"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "用 ${applicationName} 暂停"
+            ]
           }
         },
         "zh-Hant": {
@@ -57,10 +203,64 @@
     },
     "用 ${applicationName} 鎖定電腦": {
       "localizations": {
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Computer mit ${applicationName} sperren",
+              "Mit ${applicationName} sperren"
+            ]
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Lock computer with ${applicationName}"
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Bloquear el ordenador con ${applicationName}",
+              "Bloquear con ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Verrouiller l’ordinateur avec ${applicationName}",
+              "Verrouiller avec ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}でコンピュータをロック",
+              "${applicationName}でロック"
+            ]
+          }
+        },
+        "ko": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}로 컴퓨터 잠그기",
+              "${applicationName} 잠그기"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "用 ${applicationName} 锁定电脑",
+              "${applicationName} 锁定电脑"
+            ]
           }
         },
         "zh-Hant": {

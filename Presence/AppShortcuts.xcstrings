@@ -3,12 +3,66 @@
   "strings": {
     "${applicationName} 狀態": {
       "localizations": {
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Status von ${applicationName}",
+              "${applicationName} prüfen"
+            ]
+          }
+        },
         "en": {
           "stringSet": {
             "state": "translated",
             "values": [
               "${applicationName} status",
               "Check ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Estado de ${applicationName}",
+              "Comprobar ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "État de ${applicationName}",
+              "Vérifier ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}の状態",
+              "${applicationName}の状態を確認"
+            ]
+          }
+        },
+        "ko": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName} 상태",
+              "${applicationName} 상태 확인"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName} 状态",
+              "查看 ${applicationName} 状态"
             ]
           }
         },
@@ -24,11 +78,60 @@
     },
     "恢復 ${applicationName}": {
       "localizations": {
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName} fortsetzen"
+            ]
+          }
+        },
         "en": {
           "stringSet": {
             "state": "translated",
             "values": [
               "Resume ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Reanudar ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Reprendre ${applicationName}",
+              "Réactiver ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}を再開"
+            ]
+          }
+        },
+        "ko": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName} 재개"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "恢复 ${applicationName}"
             ]
           }
         },
@@ -44,11 +147,60 @@
     },
     "暫停 ${applicationName}": {
       "localizations": {
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName} pausieren"
+            ]
+          }
+        },
         "en": {
           "stringSet": {
             "state": "translated",
             "values": [
               "Pause ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Pausar ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Suspendre ${applicationName}",
+              "Mettre ${applicationName} en pause"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}を一時停止"
+            ]
+          }
+        },
+        "ko": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName} 일시 정지"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "暂停 ${applicationName}"
             ]
           }
         },
@@ -64,12 +216,68 @@
     },
     "用 ${applicationName} 鎖定": {
       "localizations": {
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Mit ${applicationName} sperren",
+              "Mac mit ${applicationName} sperren",
+              "${applicationName} jetzt sperren"
+            ]
+          }
+        },
         "en": {
           "stringSet": {
             "state": "translated",
             "values": [
               "Lock with ${applicationName}",
               "Lock my Mac with ${applicationName}"
+            ]
+          }
+        },
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Bloquear con ${applicationName}",
+              "Bloquear ahora con ${applicationName}",
+              "Bloquear el Mac con ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Verrouiller avec ${applicationName}",
+              "Verrouiller maintenant avec ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}でロック",
+              "${applicationName}で今すぐロック"
+            ]
+          }
+        },
+        "ko": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}로 잠그기",
+              "${applicationName}로 지금 잠그기"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "用 ${applicationName} 锁定",
+              "${applicationName} 立即锁定"
             ]
           }
         },

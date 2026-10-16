@@ -4,10 +4,46 @@
     "NSBluetoothAlwaysUsageDescription": {
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence erkennt per Bluetooth, ob dein Telefon oder deine Uhr in der Nähe ist, und sperrt oder entsperrt danach diesen Mac."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Presence uses Bluetooth to detect whether your phone or watch is nearby, so it can lock or unlock this Mac."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence usa Bluetooth para detectar si tu teléfono o tu reloj están cerca y así bloquear o desbloquear este Mac."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence utilise le Bluetooth pour détecter si votre téléphone ou votre montre est à proximité, afin de verrouiller ou de déverrouiller ce Mac."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presenceは、iPhoneやApple Watchが近くにあるかをBluetoothで検出し、このMacをロックするかロック解除するかを判断します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence는 Bluetooth를 사용해 iPhone 또는 Apple Watch가 근처에 있는지 감지하여 이 Mac을 잠글지 잠금 해제할지 결정합니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presence 使用蓝牙检测你的手机或手表是否在附近，以决定锁定还是解锁这台 Mac。"
           }
         },
         "zh-Hant": {

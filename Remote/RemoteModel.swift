@@ -251,19 +251,18 @@ final class RemoteModel {
     private func startDemo() {
         let state = UserDefaults.standard.string(forKey: "PresenceDemoState") ?? "near"
         guard state != "onboarding" else { return }
-        let chinese = Locale.preferredLanguages.first?.hasPrefix("zh") == true
         let demoPairing = PairingInfo(id: UUID(), macName: "MacBook Pro", key: Data(repeating: 7, count: 32))
         var status = LinkStatus(macName: "MacBook Pro", presence: .near,
-                                summary: chinese ? "Apple Watch 在附近 · -52 dBm" : "Apple Watch nearby · -52 dBm",
+                                summary: String(localized: "Apple Watch 在附近 · -52 dBm"),
                                 locked: false, presenter: .enabled)
         switch state {
         case "locked":
             status.presence = .away
-            status.summary = chinese ? "Apple Watch 離開了" : "Apple Watch is away"
+            status.summary = String(localized: "Apple Watch 離開了")
             status.locked = true
         case "paused":
             status.presence = .paused
-            status.summary = chinese ? "已暫停" : "Paused"
+            status.summary = String(localized: "已暫停")
             status.pausedUntil = Date().addingTimeInterval(3600)
         case "presenter":
             // 講了 12 分半、預定 20 分鐘，Keynote 在最前面
@@ -277,12 +276,11 @@ final class RemoteModel {
         }
         pairing = demoPairing
         link.startDemo(pairing: demoPairing, status: status)
-        if state == "script" { Task { await runDemoScript(chinese: chinese, start: status) } }
+        if state == "script" { Task { await runDemoScript(start: status) } }
     }
 
     /// 宣傳影片：在座位 → 離開自動鎖定 → 回來自動解鎖 → 從 iPhone 鎖定 → 簡報遙控翻頁 → 結尾，約 26 秒。
-    private func runDemoScript(chinese: Bool, start: LinkStatus) async {
-        func t(_ zh: String, _ en: String) -> String { chinese ? zh : en }
+    private func runDemoScript(start: LinkStatus) async {
         var status = start
         func step(_ caption: String, seconds: Double, _ change: (inout LinkStatus) -> Void = { _ in }) async {
             change(&status)
@@ -293,30 +291,30 @@ final class RemoteModel {
         }
         // 第一句字幕到結尾畫面固定 21 秒（scripts/app-preview.sh 依這個長度剪片）
         try? await Task.sleep(for: .seconds(1))
-        await step(t("Presence 會知道\n你在不在座位上", "Presence knows when\nyou're at your desk"), seconds: 3.5)
-        await step(t("離開座位，Mac 自動鎖定", "Walk away and your Mac locks"), seconds: 1.5) {
+        await step(String(localized: "Presence 會知道\n你在不在座位上"), seconds: 3.5)
+        await step(String(localized: "離開座位，Mac 自動鎖定"), seconds: 1.5) {
             $0.presence = .leaving
-            $0.summary = t("Apple Watch 離開中…", "Apple Watch is leaving…")
+            $0.summary = String(localized: "Apple Watch 離開中…")
         }
-        await step(t("離開座位，Mac 自動鎖定", "Walk away and your Mac locks"), seconds: 2.5) {
+        await step(String(localized: "離開座位，Mac 自動鎖定"), seconds: 2.5) {
             $0.presence = .away
-            $0.summary = t("Apple Watch 離開了", "Apple Watch is away")
+            $0.summary = String(localized: "Apple Watch 離開了")
             $0.locked = true
         }
-        await step(t("回來時，自動解鎖", "Come back and it unlocks"), seconds: 3.5) {
+        await step(String(localized: "回來時，自動解鎖"), seconds: 3.5) {
             $0.presence = .near
-            $0.summary = t("Apple Watch 在附近 · -55 dBm", "Apple Watch nearby · -55 dBm")
+            $0.summary = String(localized: "Apple Watch 在附近 · -55 dBm")
             $0.locked = false
         }
-        await step(t("從 iPhone 一鍵鎖定", "Lock it from your iPhone"), seconds: 3.5) {
-            $0.summary = t("已從 iPhone 鎖定", "Locked from iPhone")
+        await step(String(localized: "從 iPhone 一鍵鎖定"), seconds: 3.5) {
+            $0.summary = String(localized: "已從 iPhone 鎖定")
             $0.locked = true
         }
         // Presence Pro：打開簡報畫面翻三頁
-        await step(t("Presence Pro\n手機就是簡報筆", "Presence Pro turns\nyour iPhone into a clicker"), seconds: 0) {
+        await step(String(localized: "Presence Pro\n手機就是簡報筆"), seconds: 0) {
             $0.locked = false
             $0.presence = .paused
-            $0.summary = t("簡報中", "Presenting")
+            $0.summary = String(localized: "簡報中")
             $0.presenter = .presenting
             $0.presentationStartedAt = Date().addingTimeInterval(-750)
             $0.presentationMinutes = 20
