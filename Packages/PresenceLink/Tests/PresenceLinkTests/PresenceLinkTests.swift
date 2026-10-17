@@ -403,6 +403,29 @@ struct PointerTests {
         #expect(PointerFrame.open(request.encoded, key: pairing.symmetricKey) == nil)
     }
 
+    @Test("螢光筆帶筆畫號碼；雷射筆、聚光燈照舊是第 1 版，舊版 Mac 看得懂")
+    func highlighterCarriesStroke() throws {
+        let pairing = PairingInfo.generate(macName: "Mac")
+        let ink = PointerUpdate(mode: .highlighter, x: 0.1, y: 0.2, stroke: 7)
+        #expect(ink.plain.count == 15 && ink.plain.first == 2)
+        let opened = try #require(PointerFrame.open(try PointerFrame.make(ink, pairing: pairing), key: pairing.symmetricKey))
+        #expect(opened.mode == .highlighter && opened.stroke == 7)
+
+        let laser = PointerUpdate(mode: .laser, x: 0.1, y: 0.2, stroke: 7)
+        #expect(laser.plain.count == 14 && laser.plain.first == 1)
+        #expect(PointerUpdate(plain: laser.plain)?.stroke == 0)
+    }
+
+    @Test("版本和長度對不上就不收")
+    func rejectsMismatchedVersion() {
+        var plain = PointerUpdate(mode: .laser, x: 0, y: 0).plain
+        plain[0] = 2
+        #expect(PointerUpdate(plain: plain) == nil)
+        plain[0] = 3
+        plain.append(0)
+        #expect(PointerUpdate(plain: plain) == nil)
+    }
+
     @Test func clampsToScreen() {
         let update = PointerUpdate(mode: .laser, x: -0.2, y: 1.4)
         #expect(update.x == 0 && update.y == 1)

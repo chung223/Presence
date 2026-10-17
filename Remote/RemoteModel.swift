@@ -206,19 +206,27 @@ final class RemoteModel {
     var pointerAvailable: Bool { link.status?.pointer == true && link.canStreamPointer }
     /// 手機上觸控區的寬高比：跟 Mac 上要畫的那個螢幕一樣。
     var pointerAspect: Double { link.status?.screenAspect ?? 16.0 / 9 }
+    /// Mac 也會畫螢光筆（比雷射筆再新一版）。
+    var highlighterAvailable: Bool { pointerAvailable && link.status?.highlighter == true }
 
     @ObservationIgnored private var pointerLatest: PointerUpdate?
+    /// 螢光筆的筆畫號碼：手指每按下一次換一個。
+    @ObservationIgnored private var pointerStroke: UInt8 = 0
     @ObservationIgnored private var pointerSent: (update: PointerUpdate, at: Date)?
     @ObservationIgnored private var pointerLoop: Task<Void, Never>?
 
     /// 手指在觸控區上移動：記下最新位置，每 33 毫秒送一次最新的（手指停著不動也每秒送一次，Mac 才不會收起）。
-    func movePointer(_ mode: PointerUpdate.Mode, x: Double, y: Double) {
-        pointerLatest = PointerUpdate(mode: mode, x: x, y: y)
+    /// 螢光筆每 16 毫秒送一次：線是照收到的點連起來的，點太疏，快速畫圈會變成多邊形。
+    /// `began` 是手指剛按下：螢光筆換一個筆畫號碼。
+    func movePointer(_ mode: PointerUpdate.Mode, x: Double, y: Double, began: Bool = false) {
+        if began, mode == .highlighter { pointerStroke &+= 1 }
+        pointerLatest = PointerUpdate(mode: mode, x: x, y: y, stroke: pointerStroke)
         guard pointerLoop == nil else { return }
         pointerLoop = Task { [weak self] in
             while !Task.isCancelled {
                 self?.sendLatestPointer()
-                try? await Task.sleep(for: .milliseconds(33))
+                let interval = self?.pointerLatest?.mode == .highlighter ? 16 : 33
+                try? await Task.sleep(for: .milliseconds(interval))
             }
         }
     }
@@ -227,8 +235,8 @@ final class RemoteModel {
         guard let latest = pointerLatest else { return }
         let now = Date()
         if let sent = pointerSent, sent.update.mode == latest.mode, sent.update.x == latest.x, sent.update.y == latest.y,
-           now.timeIntervalSince(sent.at) < 1 { return }
-        let update = PointerUpdate(mode: latest.mode, x: latest.x, y: latest.y, sentAt: now)
+           sent.update.stroke == latest.stroke, now.timeIntervalSince(sent.at) < 1 { return }
+        let update = PointerUpdate(mode: latest.mode, x: latest.x, y: latest.y, stroke: latest.stroke, sentAt: now)
         link.streamPointer(update)
         pointerSent = (update, now)
     }
@@ -356,6 +364,9 @@ final class RemoteModel {
             status.frontApp = "Keynote"
             status.frontAppPresents = true
             status.volume = MacVolume(level: 0.5, muted: false, adjustable: true)
+            status.pointer = true
+            status.highlighter = true
+            status.screenAspect = 16.0 / 10
         default:
             break
         }

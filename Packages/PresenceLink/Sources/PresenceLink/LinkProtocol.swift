@@ -186,6 +186,8 @@ public struct LinkStatus: Codable, Sendable, Equatable {
     public var pointer: Bool?
     /// 要畫雷射筆的那個螢幕的寬高比，手機上的觸控區照這個比例。
     public var screenAspect: Double?
+    /// Mac 會畫螢光筆（`PointerUpdate.Mode.highlighter`）；舊版 Mac 是 nil，手機就不顯示螢光筆。
+    public var highlighter: Bool?
     /// Mac 目前的音量（允許簡報遙控、而且版本夠新）；舊版 Mac 是 nil。
     public var volume: MacVolume?
     /// 回覆的指令沒有做成時的原因（`CommandRefusal` 的 rawValue）。存成字串：新版 Mac 多了原因，
@@ -198,7 +200,8 @@ public struct LinkStatus: Codable, Sendable, Equatable {
                 challenge: Data? = nil, presenter: PresenterSupport? = nil, refusal: String? = nil,
                 frontApp: String? = nil, frontAppPresents: Bool? = nil,
                 presentationStartedAt: Date? = nil, presentationMinutes: Int? = nil,
-                pointer: Bool? = nil, screenAspect: Double? = nil, volume: MacVolume? = nil, sentAt: Date = Date()) {
+                pointer: Bool? = nil, screenAspect: Double? = nil, highlighter: Bool? = nil, volume: MacVolume? = nil,
+                sentAt: Date = Date()) {
         self.macName = macName
         self.presence = presence
         self.summary = summary
@@ -216,6 +219,7 @@ public struct LinkStatus: Codable, Sendable, Equatable {
         self.presentationMinutes = presentationMinutes
         self.pointer = pointer
         self.screenAspect = screenAspect
+        self.highlighter = highlighter
         self.volume = volume
         self.sentAt = sentAt
     }

@@ -6241,6 +6241,58 @@
         }
       }
     },
+    "用手指畫線，投影畫面上會出現同樣的螢光筆線，幾秒後自動消失": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeichne mit dem Finger – dieselbe Markierung erscheint im Projektionsbild und verschwindet nach ein paar Sekunden."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Draw with your finger. The same highlighter line appears on the projected screen and fades after a few seconds."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dibuja con el dedo: la misma línea de subrayador aparece en la pantalla proyectada y desaparece a los pocos segundos."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dessinez avec le doigt : le même trait de surligneur apparaît sur l’écran projeté et s’efface après quelques secondes."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "指でなぞると、投影画面にも同じ蛍光ペンの線が表示され、数秒後に自動で消えます"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "손가락으로 그리면 프로젝터 화면에도 같은 형광펜 선이 나타나고 몇 초 후 자동으로 사라집니다"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用手指画线，投影画面上会出现同样的荧光笔线，几秒后自动消失"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用手指畫線，投影畫面上會出現同樣的螢光筆線，幾秒後自動消失"
+          }
+        }
+      }
+    },
     "看看 Presence Pro": {
       "localizations": {
         "de": {
@@ -7433,6 +7485,110 @@
           "stringUnit": {
             "state": "translated",
             "value": "聚光燈觸控區"
+          }
+        }
+      }
+    },
+    "螢光筆": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marker"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Highlighter"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subrayador"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Surligneur"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "蛍光ペン"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "형광펜"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "荧光笔"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "螢光筆"
+          }
+        }
+      }
+    },
+    "螢光筆觸控區": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marker-Bereich"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Highlighter area"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zona del subrayador"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zone du surligneur"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "蛍光ペンの操作エリア"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "형광펜 터치 영역"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "荧光笔触控区"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "螢光筆觸控區"
           }
         }
       }

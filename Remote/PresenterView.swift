@@ -14,8 +14,21 @@ struct PresenterView: View {
     @State private var nextDone = 0
     @State private var previousDone = 0
     @State private var jumping = false
-    @State private var tool: Tool = .slides
+    @State private var tool: Tool = {
+        #if DEBUG
+        // 截圖用：-PresenceDemoTool laser|spotlight|highlighter
+        switch UserDefaults.standard.string(forKey: "PresenceDemoTool") {
+        case "laser": return .laser
+        case "spotlight": return .spotlight
+        case "highlighter": return .highlighter
+        default: break
+        }
+        #endif
+        return .slides
+    }()
     @State private var pointerTouches = 0
+    /// 翻頁時加一：手機上畫的螢光筆線跟 Mac 一樣馬上清掉。
+    @State private var inkReset = 0
     @GestureState private var padPressed = false
 
     private static let lengths = [10, 15, 20, 30, 45, 60]
@@ -36,11 +49,13 @@ struct PresenterView: View {
             }
 
             Group {
-                // 雷射筆、聚光燈要 Mac 0.3 以後；舊版 Mac 只有翻頁
-                if model.pointerAvailable {
-                    ToolPicker(tool: $tool)
+                // 雷射筆、聚光燈、螢光筆要 Mac 0.3 以後；舊版 Mac 只有翻頁
+                let tools: [Tool] = model.highlighterAvailable ? Tool.allCases
+                    : model.pointerAvailable ? [.slides, .laser, .spotlight] : [.slides]
+                if tools.count > 1 {
+                    ToolPicker(tools: tools, tool: $tool)
                 }
-                let tool = model.pointerAvailable ? tool : .slides
+                let tool = tools.contains(tool) ? tool : .slides
                 if tool == .slides {
                     // 點一下下一頁，也可以像翻書一樣滑：向左滑下一頁、向右滑上一頁。
                     // 點和滑用同一個手勢判斷；用 Button 加滑動手勢的話，滑一下會被當成點一下再滑一下，翻兩頁。
@@ -66,10 +81,14 @@ struct PresenterView: View {
                     Button { send(.previous) } label: { PreviousBar(done: previousDone) }
                         .buttonStyle(PadStyle())
                 } else {
-                    let mode: PointerUpdate.Mode = tool == .laser ? .laser : .spotlight
-                    PointerPad(mode: mode, aspect: model.pointerAspect) { x, y, began in
+                    let mode: PointerUpdate.Mode = switch tool {
+                    case .laser: .laser
+                    case .highlighter: .highlighter
+                    default: .spotlight
+                    }
+                    PointerPad(mode: mode, aspect: model.pointerAspect, inkReset: inkReset) { x, y, began in
                         if began { pointerTouches += 1 }
-                        model.movePointer(mode, x: x, y: y)
+                        model.movePointer(mode, x: x, y: y, began: began)
                     } end: {
                         model.endPointer()
                     }
@@ -113,6 +132,7 @@ struct PresenterView: View {
         .sheet(isPresented: $jumping) {
             JumpSheet { slide in
                 taps += 1
+                inkReset += 1
                 Task { if await !model.goToSlide(slide) { failures += 1 } }
             }
         }
@@ -233,6 +253,7 @@ struct PresenterView: View {
 
     private func send(_ action: PresenterAction) {
         taps += 1
+        inkReset += 1
         Task {
             guard await model.present(action) else {
                 failures += 1
@@ -446,13 +467,14 @@ struct StageBackground: View {
 // MARK: - 雷射筆與聚光燈
 
 private enum Tool: Hashable, CaseIterable {
-    case slides, laser, spotlight
+    case slides, laser, spotlight, highlighter
 
     var title: LocalizedStringKey {
         switch self {
         case .slides: "翻頁"
         case .laser: "雷射筆"
         case .spotlight: "聚光燈"
+        case .highlighter: "螢光筆"
         }
     }
 
@@ -461,60 +483,82 @@ private enum Tool: Hashable, CaseIterable {
         case .slides: "hand.tap.fill"
         case .laser: "dot.circle.and.hand.point.up.left.fill"
         case .spotlight: "flashlight.on.fill"
+        case .highlighter: "highlighter"
         }
     }
 }
 
-/// 翻頁、雷射筆、聚光燈三選一；選到的是橘色。
+/// 翻頁、雷射筆、聚光燈、螢光筆選一個；選到的是橘色。
+/// 四個並排時圖示放上面、字放下面：日文的「スポットライト」跟圖示擺一行放不下。
 private struct ToolPicker: View {
+    let tools: [Tool]
     @Binding var tool: Tool
 
     var body: some View {
-        HStack(spacing: 6) {
-            ForEach(Tool.allCases, id: \.self) { item in
+        HStack(spacing: 4) {
+            ForEach(tools, id: \.self) { item in
                 let selected = item == tool
                 Button { tool = item } label: {
-                    Label(item.title, systemImage: item.symbol)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(selected ? Color.black : Color.white.opacity(0.75))
-                        .frame(maxWidth: .infinity, minHeight: 38)
-                        .background {
-                            if selected { Capsule().fill(LinearGradient.stageOrange) }
-                        }
-                        .contentShape(Capsule())
+                    VStack(spacing: 3) {
+                        Image(systemName: item.symbol).font(.system(size: 16, weight: .semibold))
+                        Text(item.title).font(.caption.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.7)
+                    }
+                    .foregroundStyle(selected ? Color.black : Color.white.opacity(0.75))
+                    .padding(.horizontal, 4)
+                    .frame(maxWidth: .infinity, minHeight: 50)
+                    .background {
+                        if selected { RoundedRectangle(cornerRadius: 16, style: .continuous).fill(LinearGradient.stageOrange) }
+                    }
+                    .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
                 .buttonStyle(.plain)
+                .accessibilityElement(children: .combine)
                 .accessibilityAddTraits(selected ? .isSelected : [])
             }
         }
         .padding(4)
-        .background(Capsule().fill(.white.opacity(0.08)))
+        .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(.white.opacity(0.08)))
     }
 }
 
-/// 雷射筆的觸控區：形狀跟 Mac 上播放簡報的螢幕一樣，手指按在哪裡，紅點（或聚光燈）就出現在投影畫面上的同一個位置。
+/// 雷射筆的觸控區：形狀跟 Mac 上播放簡報的螢幕一樣，手指按在哪裡，紅點（或聚光燈、螢光筆）就出現在投影畫面上的同一個位置。
 private struct PointerPad: View {
     let mode: PointerUpdate.Mode
     let aspect: Double
+    /// 翻頁時加一，清掉手機上畫的螢光筆線。
+    let inkReset: Int
     /// x、y 是 0～1；began 是剛按下。
     let move: (Double, Double, Bool) -> Void
     let end: () -> Void
     @State private var touch: CGPoint?
+    /// 螢光筆：手機上也畫出自己畫的線（0～1 的位置），跟 Mac 一樣最後一筆畫完 4 秒後淡掉。
+    @State private var ink: [[CGPoint]] = []
+    @State private var inkOpacity = 1.0
+    @State private var inkFade: Task<Void, Never>?
 
     var body: some View {
         GeometryReader { geo in
             let size = fitted(in: geo.size)
             ZStack {
                 Card(radius: 22)
+                if mode == .highlighter {
+                    Path { path in
+                        for stroke in ink {
+                            path.addLines(stroke.map { CGPoint(x: $0.x * size.width, y: $0.y * size.height) })
+                        }
+                    }
+                    .stroke(Color(red: 1, green: 0.8, blue: 0),
+                            style: StrokeStyle(lineWidth: max(4, size.height * 0.02), lineCap: .round, lineJoin: .round))
+                    .opacity(0.68 * inkOpacity)
+                }
                 if let touch {
                     indicator.position(x: touch.x * size.width, y: touch.y * size.height)
-                } else {
+                } else if ink.isEmpty {
                     VStack(spacing: 10) {
-                        Image(systemName: mode == .laser ? "dot.circle.and.hand.point.up.left.fill" : "flashlight.on.fill")
+                        Image(systemName: symbol)
                             .font(.system(size: 34))
                             .foregroundStyle(.orange)
-                        Text(mode == .laser ? "按住並移動手指，紅點會出現在投影畫面上的同一個位置"
-                                            : "按住並移動手指，聚光燈會照亮投影畫面上的同一個位置")
+                        Text(hint)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -531,16 +575,72 @@ private struct PointerPad: View {
                                         y: min(max(value.location.y / size.height, 0), 1))
                     let began = touch == nil
                     touch = point
+                    if mode == .highlighter { addInk(point, began: began) }
                     move(point.x, point.y, began)
                 }
                 .onEnded { _ in
                     touch = nil
+                    if mode == .highlighter { fadeInkLater() }
                     end()
                 })
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .onChange(of: inkReset) { clearInk() }
+        .onChange(of: mode) { clearInk() }
         .accessibilityElement()
-        .accessibilityLabel(mode == .laser ? Text("雷射筆觸控區") : Text("聚光燈觸控區"))
+        .accessibilityLabel(label)
+    }
+
+    private var symbol: String {
+        switch mode {
+        case .laser: "dot.circle.and.hand.point.up.left.fill"
+        case .highlighter: "highlighter"
+        default: "flashlight.on.fill"
+        }
+    }
+
+    private var hint: LocalizedStringKey {
+        switch mode {
+        case .laser: "按住並移動手指，紅點會出現在投影畫面上的同一個位置"
+        case .highlighter: "用手指畫線，投影畫面上會出現同樣的螢光筆線，幾秒後自動消失"
+        default: "按住並移動手指，聚光燈會照亮投影畫面上的同一個位置"
+        }
+    }
+
+    private var label: Text {
+        switch mode {
+        case .laser: Text("雷射筆觸控區")
+        case .highlighter: Text("螢光筆觸控區")
+        default: Text("聚光燈觸控區")
+        }
+    }
+
+    private func addInk(_ point: CGPoint, began: Bool) {
+        inkFade?.cancel()
+        inkOpacity = 1
+        if began || ink.isEmpty {
+            ink.append([point])
+        } else {
+            ink[ink.count - 1].append(point)
+        }
+    }
+
+    private func fadeInkLater() {
+        inkFade?.cancel()
+        inkFade = Task {
+            try? await Task.sleep(for: .seconds(4))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: 0.8)) { inkOpacity = 0 }
+            try? await Task.sleep(for: .seconds(0.8))
+            guard !Task.isCancelled else { return }
+            clearInk()
+        }
+    }
+
+    private func clearInk() {
+        inkFade?.cancel()
+        ink = []
+        inkOpacity = 1
     }
 
     /// 在可用的空間裡放下跟螢幕一樣比例、最大的長方形。
@@ -551,12 +651,17 @@ private struct PointerPad: View {
     }
 
     @ViewBuilder private var indicator: some View {
-        if mode == .laser {
+        switch mode {
+        case .laser:
             Circle()
                 .fill(Color(red: 1, green: 0.16, blue: 0.1))
                 .frame(width: 22, height: 22)
                 .shadow(color: .red, radius: 10)
-        } else {
+        case .highlighter:
+            Circle()
+                .fill(Color(red: 1, green: 0.8, blue: 0))
+                .frame(width: 14, height: 14)
+        default:
             Circle()
                 .strokeBorder(.white.opacity(0.8), lineWidth: 2)
                 .frame(width: 76, height: 76)

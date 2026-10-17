@@ -960,6 +960,7 @@ final class AppModel {
             presentationMinutes: isPresenting ? presentationMinutes : nil,
             pointer: preferences.allowPresenter ? true : nil,
             screenAspect: preferences.allowPresenter ? pointerScreenAspect : nil,
+            highlighter: preferences.allowPresenter ? true : nil,
             volume: preferences.allowPresenter ? SystemVolume.current : nil
         )
     }
@@ -1015,6 +1016,8 @@ final class AppModel {
         case .presenter, .goToSlide:
             if let refusal = presenterRefusal { return refusal }
             if !isPresenting { beginPresentation() }
+            // 換頁了，螢光筆畫的線不該留在新的那一頁上
+            PointerOverlay.shared.clearInk()
             if case .presenter(let action) = command { PresenterKeys.press(action) }
             if case .goToSlide(let slide) = command { Task { await PresenterKeys.goTo(slide: slide) } }
         case .presentation(let active):
@@ -1071,10 +1074,10 @@ final class AppModel {
         }
     }
 
-    /// 雷射筆與聚光燈：要允許簡報遙控，螢幕鎖著時不畫。
+    /// 雷射筆、聚光燈與螢光筆：要允許簡報遙控，螢幕鎖著時不畫。
     private func showPointer(_ update: PointerUpdate) {
         guard preferences.allowPresenter, ScreenSession.queryLocked() != true else {
-            PointerOverlay.shared.hide()
+            PointerOverlay.shared.dismiss()
             return
         }
         if update.mode != .hidden, !isPresenting { beginPresentation() }
@@ -1095,7 +1098,7 @@ final class AppModel {
         presentingUntil = nil
         presentationStartedAt = nil
         presentationMinutes = nil
-        PointerOverlay.shared.hide()
+        PointerOverlay.shared.dismiss()
         automation.pause(until: nil)
         now = Date()
         log.add(.info, String(localized: "結束簡報，恢復自動鎖定與解鎖"))
@@ -1255,11 +1258,16 @@ extension AppModel {
             }
         }
 
-        // -PresencePointerDemo spotlight|laser：雷射筆或聚光燈照固定路線走一遍，錄影檢查效果（見 PointerOverlay.runDemo）
+        // -PresencePointerDemo spotlight|laser|highlighter：照固定路線走一遍，錄影檢查效果（見 PointerOverlay.runDemo）
         if let name = UserDefaults.standard.string(forKey: "PresencePointerDemo") {
+            let mode: PointerUpdate.Mode = switch name {
+            case "laser": .laser
+            case "highlighter": .highlighter
+            default: .spotlight
+            }
             Task {
                 try? await Task.sleep(for: .seconds(1))
-                await PointerOverlay.shared.runDemo(name == "laser" ? .laser : .spotlight)
+                await PointerOverlay.shared.runDemo(mode)
             }
         }
 
