@@ -1,4 +1,5 @@
 import AppKit
+import PresenceCore
 import PresenceLink
 import QuartzCore
 
@@ -191,22 +192,23 @@ final class PointerOverlay {
         window?.orderOut(nil)
     }
 
-    /// 要畫在哪個螢幕：Mac 正在使用的 App 最大的那個視窗所在的螢幕（接投影機時就是播放簡報的那個）。
+    /// 要畫在哪個螢幕：Mac 正在使用的 App 蓋滿整個螢幕的視窗（播放中的簡報）所在的螢幕。
+    /// 接投影機時怎麼挑見 `PresentationScreen`（有各種螢幕配置的測試）。
     static func targetScreen() -> NSScreen {
         let screens = NSScreen.screens
-        guard let primary = screens.first, let app = NSWorkspace.shared.frontmostApplication else { return NSScreen.main ?? screens[0] }
-        let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
-        let biggest = windows
+        guard !screens.isEmpty, let app = NSWorkspace.shared.frontmostApplication else { return NSScreen.main ?? screens[0] }
+        let windows = (CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? [])
             .filter { ($0[kCGWindowOwnerPID as String] as? pid_t) == app.processIdentifier }
             .compactMap { info -> CGRect? in
                 guard let bounds = info[kCGWindowBounds as String] as? [String: CGFloat] else { return nil }
                 return CGRect(x: bounds["X"] ?? 0, y: bounds["Y"] ?? 0, width: bounds["Width"] ?? 0, height: bounds["Height"] ?? 0)
             }
-            .max { $0.width * $0.height < $1.width * $1.height }
-        guard let biggest else { return NSScreen.main ?? primary }
-        // 視窗清單的座標原點在主螢幕左上角，NSScreen 的在左下角
-        let center = CGPoint(x: biggest.midX, y: primary.frame.height - biggest.midY)
-        return screens.first { $0.frame.contains(center) } ?? NSScreen.main ?? primary
+        let described = screens.map { screen in
+            let id = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID ?? 0
+            return PresentationScreen.Screen(frame: screen.frame, isBuiltin: CGDisplayIsBuiltin(id) != 0)
+        }
+        guard let index = PresentationScreen.choose(screens: described, windows: windows) else { return NSScreen.main ?? screens[0] }
+        return screens[index]
     }
 
     // MARK: - 畫面
@@ -311,18 +313,21 @@ extension PointerOverlay {
     /// 假投影片畫在同一個視窗裡，只錄這個視窗就看得到結果，不會錄到螢幕上其他東西。
     func runDemo(_ mode: PointerUpdate.Mode) async {
         guard let screen = NSScreen.main else { return }
-        let size = CGSize(width: 1280, height: 720)
-        demoFrame = CGRect(x: screen.frame.midX - size.width / 2, y: screen.frame.midY - size.height / 2,
-                           width: size.width, height: size.height)
-        let backdrop = CALayer()
-        backdrop.frame = CGRect(origin: .zero, size: size)
-        backdrop.contents = Self.demoSlide(size: size, scale: screen.backingScaleFactor)
-        root.insertSublayer(backdrop, at: 0)
+        // -PresencePointerDemoReal YES：照真正的規則挑螢幕、畫在整個螢幕上，不畫假投影片（接投影機或虛擬螢幕時測）
+        if !UserDefaults.standard.bool(forKey: "PresencePointerDemoReal") {
+            let size = CGSize(width: 1280, height: 720)
+            demoFrame = CGRect(x: screen.frame.midX - size.width / 2, y: screen.frame.midY - size.height / 2,
+                               width: size.width, height: size.height)
+            let backdrop = CALayer()
+            backdrop.frame = CGRect(origin: .zero, size: size)
+            backdrop.contents = Self.demoSlide(size: size, scale: screen.backingScaleFactor)
+            root.insertSublayer(backdrop, at: 0)
+        }
         // 錄影要知道視窗編號：視窗第一次出現時印出來
         var announced = false
         func announce() {
             guard !announced, let window else { return }
-            print("pointer-demo-window \(window.windowNumber)")
+            print("pointer-demo-window \(window.windowNumber) frame \(window.frame) screen \(window.screen?.localizedName ?? "?")")
             announced = true
         }
 
