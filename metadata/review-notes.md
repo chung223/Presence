@@ -9,7 +9,7 @@ Presence Remote is the companion app for Presence, a free, open-source Mac app d
 The app has no account or server. It talks to Presence on a paired Mac directly over Bluetooth LE, so it needs a Mac to do anything beyond showing the pairing screen.
 
 How to test:
-1. On a Mac with macOS 26 or later, download the latest Presence zip (0.2.0 or later) from the link above, move Presence to Applications, and open it. Allow Bluetooth when asked.
+1. On a Mac with macOS 26 or later, download the latest Presence zip (0.3.0 or later) from the link above, move Presence to Applications, and open it. Allow Bluetooth when asked.
 2. In Presence, open "iPhone & Watch" (手機與手錶) and click "Pair New iPhone…". A QR code appears.
 3. In Presence Remote on the iPhone, tap "Scan QR Code" and scan it. The Mac shows "Paired".
 4. Tap "Lock Mac Now" to lock the Mac, or pause and resume automatic locking (pause and resume require the iPhone to be unlocked).
@@ -20,6 +20,7 @@ Presence Pro (in-app purchases):
 - Products: monthly subscription, yearly subscription (both in the "Presence Pro" group, each with a 7-day free trial), and a one-time lifetime purchase. All three have Family Sharing turned on.
 - Tap the "Presenter Remote" (簡報遙控) card on the home screen, or Settings > Upgrade to Presence Pro, to open the purchase screen. It shows the price, period, and auto-renewal terms above the purchase button, with Restore Purchases, Terms of Use (Apple's standard EULA), and Privacy Policy links. Settings also has Restore Purchases and Manage Subscription.
 - To try Presenter Remote after purchasing: in Presence on the Mac, turn on "Allow Presenter Remote" under iPhone & Watch (and grant Accessibility, which Presence already uses for unlocking). Open a slideshow in Keynote or a PDF, then tap Presenter Remote in the app. Tapping the big orange button sends the Right Arrow key to the frontmost app on the Mac; the Lock Screen Live Activity and the Apple Watch app have the same next/previous buttons.
+- New in 0.3.0: the tabs at the top of the presenter screen switch between Slides, Laser, Spotlight, and Highlighter. In Laser, Spotlight, or Highlighter, touch and drag in the pad: Presence on the Mac draws a red dot, a spotlight, or a fading yellow line at the same spot on the presentation screen, in a transparent, click-through overlay (it never clicks or changes the presentation). The volume bar below the slide buttons changes the Mac's system volume (useful for videos in slides). These need Presence 0.3.0 on the Mac; with an older Mac app the tabs and volume bar are hidden.
 - The presenter screen keeps the Mac from auto-locking while you present, and resumes auto-lock when you close it.
 
 Demo video: attached to this review. It was recorded on a real iPhone paired with a Mac running Presence 0.2.0 and shows Presenter Remote controlling a Keynote slideshow (go to slide, next and previous slide, black screen, end show), with English captions. The iPhone UI in the video is in Traditional Chinese; the app also supports English, Japanese, Korean, Simplified Chinese, German, French, and Spanish.

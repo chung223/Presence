@@ -4421,6 +4421,58 @@
         }
       }
     },
+    "手指移到哪裡，投影畫面上就出現在哪裡": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wo dein Finger hinzeigt, erscheint es im Projektionsbild"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wherever your finger goes, it appears on the projected screen"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Donde mueves el dedo, aparece en la pantalla proyectada"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Là où va votre doigt, cela apparaît sur l’écran projeté"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "指を動かした場所が、そのまま投影画面に表示されます"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "손가락을 움직인 곳이 프로젝터 화면에 그대로 나타납니다"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手指移到哪里，投影画面上就出现在哪里"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手指移到哪裡，投影畫面上就出現在哪裡"
+          }
+        }
+      }
+    },
     "手機鎖著也能在鎖定畫面翻頁": {
       "localizations": {
         "de": {
@@ -6813,6 +6865,58 @@
         }
       }
     },
+    "簡報裡的影片太大聲或太小聲，不用走回電腦": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video zu laut oder zu leise? Kein Weg zurück zum Computer nötig"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video in your slides too loud or too quiet? No need to walk back to your computer"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿El vídeo suena demasiado alto o bajo? No hace falta volver al ordenador"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidéo trop forte ou trop faible ? Inutile de retourner à l’ordinateur"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スライド内の動画の音量も、パソコンに戻らずに調整できます"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "슬라이드 속 영상 소리가 크거나 작아도 컴퓨터로 돌아갈 필요가 없습니다"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "演示中的视频太大声或太小声，不用走回电脑"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簡報裡的影片太大聲或太小聲，不用走回電腦"
+          }
+        }
+      }
+    },
     "簡報遙控": {
       "localizations": {
         "de": {
@@ -7797,6 +7901,58 @@
           "stringUnit": {
             "state": "translated",
             "value": "設定"
+          }
+        }
+      }
+    },
+    "調 Mac 的音量": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac-Lautstärke regeln"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjust your Mac’s volume"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustar el volumen del Mac"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Régler le volume du Mac"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macの音量を調整"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 음량 조절"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "调节 Mac 的音量"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "調 Mac 的音量"
           }
         }
       }
@@ -9253,6 +9409,58 @@
           "stringUnit": {
             "state": "translated",
             "value": "雷射筆"
+          }
+        }
+      }
+    },
+    "雷射筆、聚光燈、螢光筆": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Laser, Spotlight und Marker"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Laser, spotlight, and highlighter"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Láser, foco y subrayador"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Laser, projecteur et surligneur"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "レーザー、スポットライト、蛍光ペン"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "레이저, 스포트라이트, 형광펜"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "激光笔、聚光灯、荧光笔"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雷射筆、聚光燈、螢光筆"
           }
         }
       }

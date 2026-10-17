@@ -77,9 +77,11 @@ struct PaywallView: View {
 
     private static let featureRows: [(symbol: String, title: LocalizedStringKey, detail: LocalizedStringKey)] = [
         ("hand.tap.fill", "點一下或滑一下就翻頁", "上一頁、跳頁、黑畫面、開始與結束播放"),
+        ("dot.circle.and.hand.point.up.left.fill", "雷射筆、聚光燈、螢光筆", "手指移到哪裡，投影畫面上就出現在哪裡"),
         ("lock.iphone", "手機鎖著也能翻頁", "鎖定畫面和動態島上有翻頁按鈕"),
         ("applewatch", "Apple Watch 也是簡報筆", "點按、轉錶冠，或兩指互點"),
         ("timer", "演講倒數提醒", "剩 5 分鐘、時間到時震動提醒你"),
+        ("speaker.wave.2.fill", "調 Mac 的音量", "簡報裡的影片太大聲或太小聲，不用走回電腦"),
         ("lock.open.laptopcomputer", "走上台，Mac 也不會鎖住", "簡報中暫停自動鎖定，結束後恢復"),
     ]
 

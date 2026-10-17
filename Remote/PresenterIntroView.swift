@@ -23,6 +23,7 @@ struct PresenterIntroView: View {
 
                     VStack(alignment: .leading, spacing: 16) {
                         point("hand.tap.fill", "點一下或滑一下就翻頁", "手機鎖著也能在鎖定畫面翻頁")
+                        point("dot.circle.and.hand.point.up.left.fill", "雷射筆、聚光燈、螢光筆", "手指移到哪裡，投影畫面上就出現在哪裡")
                         point("applewatch", "Apple Watch 也能翻頁", "點按、轉錶冠，或兩指互點")
                         point("timer", "演講倒數", "剩 5 分鐘、時間到時震動提醒")
                     }

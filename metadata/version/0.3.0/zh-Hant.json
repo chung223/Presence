@@ -1,0 +1,8 @@
+{
+  "description": "Presence Remote 是 Mac 上 Presence 的配套 App。Presence 會用你的 iPhone 或 Apple Watch 的藍牙訊號判斷你在不在座位上：離開時自動鎖定 Mac，回來時自動解鎖。\n\n免費功能\n• 從 iPhone、Apple Watch、控制中心、鎖定畫面或動作按鈕立即鎖定 Mac\n• 暫停或恢復自動鎖定（暫停與恢復需要先解鎖 iPhone）\n• 隨時查看 Mac 的狀態：你在不在附近、Mac 有沒有鎖著\n• Mac 因為你離開而自動鎖定、或你不在時被人手動解鎖，馬上收到通知\n• 解鎖前的加密確認：Mac 會先請 iPhone 用配對時產生的金鑰回應，只偽造藍牙訊號無法讓 Mac 解鎖\n• 主畫面與鎖定畫面小工具、Apple Watch 錶面複雜功能、Siri 與「捷徑」動作\n\nPresence Pro：簡報遙控\n把 iPhone 和 Apple Watch 變成簡報筆，不用另外買遙控器，也不用裝接收器。\n• 點一下或滑一下翻頁，也能跳頁、黑畫面、開始與結束播放\n• 雷射筆、聚光燈、螢光筆：手指在手機上移到哪裡，投影畫面上就出現在哪裡\n• 簡報裡的影片太大聲或太小聲，直接從手機調 Mac 的音量\n• 手機鎖著也能在鎖定畫面與動態島翻頁\n• Apple Watch 點按、轉數位錶冠或兩指互點就翻頁\n• 演講倒數：剩 5 分鐘、時間到時震動提醒\n• 走上台、離電腦遠了，Mac 也不會自動鎖住投影畫面\n• 常見的簡報軟體、瀏覽器裡的線上簡報與 PDF 都適用\n\nPresence Pro 有月訂閱、年訂閱（都可以免費試用 7 天）與一次買斷，三種都可以和家人共享。訂閱會自動續訂，可以隨時在 App Store 的帳號設定裡取消。\n\n需要什麼\n• Mac 上安裝免費的 Presence（macOS 26 以上），從 github.com/chung223/Presence 下載\n• 在 Mac 的 Presence 按「配對新的 iPhone」，用這個 App 掃描 QR code\n• 簡報遙控要在 Mac 的 Presence 打開「允許簡報遙控」\n\n隱私\nPresence Remote 不收集任何資料，也不需要帳號或網路。iPhone 與 Mac 之間只用藍牙直接溝通，每個指令都經過加密與驗證。購買由 App Store 處理。\n\n使用條款：https://www.apple.com/legal/internet-services/itunes/dev/stdeula/\n隱私權政策：https://github.com/chung223/Presence/blob/main/docs/privacy.md\n\nPresence 是開放原始碼軟體，想法來自 BLEUnlock。",
+  "keywords": "解鎖,藍牙,遙控,簡報筆,翻頁,簡報,演講,倒數,自動上鎖,電腦,安全,座位,螢幕鎖,BLEUnlock,雷射筆",
+  "promotionalText": "新功能：雷射筆、聚光燈、螢光筆，還能從手機調 Mac 的音量。iPhone 和 Apple Watch 就是你的簡報筆。",
+  "supportUrl": "https://github.com/chung223/Presence/issues",
+  "marketingUrl": "https://github.com/chung223/Presence",
+  "whatsNew": "新功能（Presence Pro）\n• 雷射筆、聚光燈、螢光筆：手指在手機上移到哪裡，投影畫面上就出現在哪裡；螢光筆畫的線幾秒後自動消失，翻頁時馬上清掉\n• 用 iPhone 和 Apple Watch 調 Mac 的音量\n\n其他改進\n• Apple Watch 的簡報畫面分成兩頁：第一頁翻頁，往左滑調音量\n• 修正 Apple Watch 偶爾誤顯示付費畫面\n• 新功能需要 Mac 上的 Presence 0.3.0 以上"
+}
