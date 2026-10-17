@@ -16,8 +16,8 @@ xcrun simctl boot "$sim" 2>/dev/null || true
 xcrun simctl bootstatus "$sim" -b >/dev/null
 
 xcodebuild -project Presence.xcodeproj -scheme PresenceRemote -destination "platform=iOS Simulator,id=$sim" \
-    -derivedDataPath build-sim build -quiet
-xcrun simctl install "$sim" build-sim/Build/Products/Debug-iphonesimulator/PresenceRemote.app
+    -derivedDataPath build.noindex/sim build -quiet
+xcrun simctl install "$sim" build.noindex/sim/Build/Products/Debug-iphonesimulator/PresenceRemote.app
 xcrun simctl status_bar "$sim" override --time "9:41" --dataNetwork wifi --wifiMode active --wifiBars 3 \
     --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
 

@@ -14,6 +14,8 @@ struct PresenterView: View {
     @State private var nextDone = 0
     @State private var previousDone = 0
     @State private var jumping = false
+    @State private var tool: Tool = .slides
+    @State private var pointerTouches = 0
     @GestureState private var padPressed = false
 
     private static let lengths = [10, 15, 20, 30, 45, 60]
@@ -34,29 +36,49 @@ struct PresenterView: View {
             }
 
             Group {
-                // 點一下下一頁，也可以像翻書一樣滑：向左滑下一頁、向右滑上一頁。
-                // 點和滑用同一個手勢判斷；用 Button 加滑動手勢的話，滑一下會被當成點一下再滑一下，翻兩頁。
-                NextPad(done: nextDone)
-                    .foregroundStyle(.white)
-                    .scaleEffect(padPressed ? 0.97 : 1)
-                    .brightness(padPressed ? 0.06 : 0)
-                    .animation(.spring(duration: 0.25, bounce: 0.4), value: padPressed)
-                    .gesture(DragGesture(minimumDistance: 0)
-                        .updating($padPressed) { _, pressed, _ in pressed = true }
-                        .onEnded { value in
-                            let dx = value.translation.width, dy = value.translation.height
-                            if abs(dx) > 40, abs(dx) > abs(dy) {
-                                send(dx < 0 ? .next : .previous)
-                            } else if hypot(dx, dy) < 20 {
-                                send(.next)
-                            }
-                        })
-                    .accessibilityElement(children: .combine)
-                    .accessibilityAddTraits(.isButton)
-                    .accessibilityAction { send(.next) }
+                // 雷射筆、聚光燈要 Mac 0.3 以後；舊版 Mac 只有翻頁
+                if model.pointerAvailable {
+                    ToolPicker(tool: $tool)
+                }
+                let tool = model.pointerAvailable ? tool : .slides
+                if tool == .slides {
+                    // 點一下下一頁，也可以像翻書一樣滑：向左滑下一頁、向右滑上一頁。
+                    // 點和滑用同一個手勢判斷；用 Button 加滑動手勢的話，滑一下會被當成點一下再滑一下，翻兩頁。
+                    NextPad(done: nextDone)
+                        .foregroundStyle(.white)
+                        .scaleEffect(padPressed ? 0.97 : 1)
+                        .brightness(padPressed ? 0.06 : 0)
+                        .animation(.spring(duration: 0.25, bounce: 0.4), value: padPressed)
+                        .gesture(DragGesture(minimumDistance: 0)
+                            .updating($padPressed) { _, pressed, _ in pressed = true }
+                            .onEnded { value in
+                                let dx = value.translation.width, dy = value.translation.height
+                                if abs(dx) > 40, abs(dx) > abs(dy) {
+                                    send(dx < 0 ? .next : .previous)
+                                } else if hypot(dx, dy) < 20 {
+                                    send(.next)
+                                }
+                            })
+                        .accessibilityElement(children: .combine)
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityAction { send(.next) }
 
-                Button { send(.previous) } label: { PreviousBar(done: previousDone) }
+                    Button { send(.previous) } label: { PreviousBar(done: previousDone) }
+                        .buttonStyle(PadStyle())
+                } else {
+                    let mode: PointerUpdate.Mode = tool == .laser ? .laser : .spotlight
+                    PointerPad(mode: mode, aspect: model.pointerAspect) { x, y, began in
+                        if began { pointerTouches += 1 }
+                        model.movePointer(mode, x: x, y: y)
+                    } end: {
+                        model.endPointer()
+                    }
+                    HStack(spacing: 10) {
+                        Button { send(.previous) } label: { TurnButton(title: "上一頁", symbol: "chevron.backward") }
+                        Button { send(.next) } label: { TurnButton(title: "下一頁", symbol: "chevron.forward", prominent: true) }
+                    }
                     .buttonStyle(PadStyle())
+                }
 
                 HStack(spacing: 10) {
                     tile(title: "開始播放", symbol: "play.fill") { send(.start) }
@@ -75,6 +97,8 @@ struct PresenterView: View {
         .animation(.snappy, value: model.lastError)
         .sensoryFeedback(.impact(flexibility: .solid, intensity: 0.8), trigger: taps)
         .sensoryFeedback(.error, trigger: failures)
+        .sensoryFeedback(.impact(weight: .light), trigger: pointerTouches)
+        .animation(.snappy, value: tool)
         .sensoryFeedback(.warning, trigger: alerts)
         .sheet(isPresented: $jumping) {
             JumpSheet { slide in
@@ -99,6 +123,7 @@ struct PresenterView: View {
             Task { await model.setPresentation(true) }
         }
         .onDisappear {
+            model.endPointer()
             UIApplication.shared.isIdleTimerDisabled = false
             Task { await model.setPresentation(false) }
         }
@@ -405,6 +430,148 @@ struct StageBackground: View {
             RadialGradient(colors: [Color.orange.opacity(0.16), .clear], center: .bottom, startRadius: 0, endRadius: 520)
         }
         .ignoresSafeArea()
+    }
+}
+
+// MARK: - 雷射筆與聚光燈
+
+private enum Tool: Hashable, CaseIterable {
+    case slides, laser, spotlight
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .slides: "翻頁"
+        case .laser: "雷射筆"
+        case .spotlight: "聚光燈"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .slides: "hand.tap.fill"
+        case .laser: "dot.circle.and.hand.point.up.left.fill"
+        case .spotlight: "flashlight.on.fill"
+        }
+    }
+}
+
+/// 翻頁、雷射筆、聚光燈三選一；選到的是橘色。
+private struct ToolPicker: View {
+    @Binding var tool: Tool
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(Tool.allCases, id: \.self) { item in
+                let selected = item == tool
+                Button { tool = item } label: {
+                    Label(item.title, systemImage: item.symbol)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(selected ? Color.black : Color.white.opacity(0.75))
+                        .frame(maxWidth: .infinity, minHeight: 38)
+                        .background {
+                            if selected { Capsule().fill(LinearGradient.stageOrange) }
+                        }
+                        .contentShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(selected ? .isSelected : [])
+            }
+        }
+        .padding(4)
+        .background(Capsule().fill(.white.opacity(0.08)))
+    }
+}
+
+/// 雷射筆的觸控區：形狀跟 Mac 上播放簡報的螢幕一樣，手指按在哪裡，紅點（或聚光燈）就出現在投影畫面上的同一個位置。
+private struct PointerPad: View {
+    let mode: PointerUpdate.Mode
+    let aspect: Double
+    /// x、y 是 0～1；began 是剛按下。
+    let move: (Double, Double, Bool) -> Void
+    let end: () -> Void
+    @State private var touch: CGPoint?
+
+    var body: some View {
+        GeometryReader { geo in
+            let size = fitted(in: geo.size)
+            ZStack {
+                Card(radius: 22)
+                if let touch {
+                    indicator.position(x: touch.x * size.width, y: touch.y * size.height)
+                } else {
+                    VStack(spacing: 10) {
+                        Image(systemName: mode == .laser ? "dot.circle.and.hand.point.up.left.fill" : "flashlight.on.fill")
+                            .font(.system(size: 34))
+                            .foregroundStyle(.orange)
+                        Text(mode == .laser ? "按住並移動手指，紅點會出現在投影畫面上的同一個位置"
+                                            : "按住並移動手指，聚光燈會照亮投影畫面上的同一個位置")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 24)
+                    }
+                }
+            }
+            .frame(width: size.width, height: size.height)
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .contentShape(Rectangle())
+            .gesture(DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                    let point = CGPoint(x: min(max(value.location.x / size.width, 0), 1),
+                                        y: min(max(value.location.y / size.height, 0), 1))
+                    let began = touch == nil
+                    touch = point
+                    move(point.x, point.y, began)
+                }
+                .onEnded { _ in
+                    touch = nil
+                    end()
+                })
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .accessibilityElement()
+        .accessibilityLabel(mode == .laser ? Text("雷射筆觸控區") : Text("聚光燈觸控區"))
+    }
+
+    /// 在可用的空間裡放下跟螢幕一樣比例、最大的長方形。
+    private func fitted(in space: CGSize) -> CGSize {
+        let ratio = max(0.5, min(aspect, 3))
+        let width = min(space.width, space.height * ratio)
+        return CGSize(width: width, height: width / ratio)
+    }
+
+    @ViewBuilder private var indicator: some View {
+        if mode == .laser {
+            Circle()
+                .fill(Color(red: 1, green: 0.16, blue: 0.1))
+                .frame(width: 22, height: 22)
+                .shadow(color: .red, radius: 10)
+        } else {
+            Circle()
+                .strokeBorder(.white.opacity(0.8), lineWidth: 2)
+                .frame(width: 76, height: 76)
+        }
+    }
+}
+
+/// 雷射筆模式下的上一頁、下一頁。
+private struct TurnButton: View {
+    let title: LocalizedStringKey
+    let symbol: String
+    var prominent = false
+
+    var body: some View {
+        Label(title, systemImage: symbol)
+            .font(.headline)
+            .foregroundStyle(prominent ? Color.black : Color.white)
+            .frame(maxWidth: .infinity, minHeight: 56)
+            .background {
+                if prominent {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous).fill(LinearGradient.stageOrange)
+                } else {
+                    Card(radius: 18)
+                }
+            }
     }
 }
 

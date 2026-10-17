@@ -372,3 +372,50 @@ struct StatusDetailTests {
         #expect(try WatchMessage.decode(LinkStatus.self, from: WatchMessage.encode(status)).detail == detail)
     }
 }
+
+struct PointerTests {
+    @Test func roundTripsAndStaysSmall() throws {
+        let pairing = PairingInfo.generate(macName: "Mac")
+        let update = PointerUpdate(mode: .spotlight, x: 0.25, y: 0.75, sentAt: Date(timeIntervalSince1970: 1_800_000_000.125))
+        let frame = try PointerFrame.make(update, pairing: pairing)
+        #expect(frame.count < 100)  // 一筆就送得完，不用分段
+        #expect(PointerFrame.pairingID(of: frame) == pairing.id)
+        let opened = try #require(PointerFrame.open(frame, key: pairing.symmetricKey))
+        #expect(opened.mode == .spotlight)
+        #expect(abs(opened.x - 0.25) < 0.0001 && abs(opened.y - 0.75) < 0.0001)
+        #expect(opened.sentAt == update.sentAt)
+    }
+
+    @Test("別的配對的金鑰、被改過的資料都解不開")
+    func rejectsWrongKeyAndTampering() throws {
+        let pairing = PairingInfo.generate(macName: "Mac")
+        var frame = try PointerFrame.make(PointerUpdate(mode: .laser, x: 0.5, y: 0.5), pairing: pairing)
+        #expect(PointerFrame.open(frame, key: PairingInfo.generate(macName: "Other").symmetricKey) == nil)
+        frame[frame.count - 1] ^= 0xFF
+        #expect(PointerFrame.open(frame, key: pairing.symmetricKey) == nil)
+    }
+
+    @Test("指令的密文不能拿來當位置用")
+    func commandFramesAreNotPointers() throws {
+        let pairing = PairingInfo.generate(macName: "Mac")
+        let request = try RequestFrame.make(LinkRequest(.lock), pairing: pairing)
+        #expect(PointerFrame.open(request.encoded, key: pairing.symmetricKey) == nil)
+    }
+
+    @Test func clampsToScreen() {
+        let update = PointerUpdate(mode: .laser, x: -0.2, y: 1.4)
+        #expect(update.x == 0 && update.y == 1)
+    }
+
+    @Test("只收比上一筆新、時間差在 30 秒內的位置")
+    func guardRejectsReplays() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        var guardian = PointerGuard()
+        func accept(_ sentAt: Date) -> Bool { guardian.accept(PointerUpdate(mode: .laser, x: 0, y: 0, sentAt: sentAt), now: now) }
+        #expect(accept(now))
+        #expect(!accept(now))
+        #expect(accept(now + 0.03))
+        #expect(!accept(now - 1))
+        #expect(!accept(now + 60))
+    }
+}

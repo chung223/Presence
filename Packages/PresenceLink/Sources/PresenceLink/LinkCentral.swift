@@ -63,6 +63,8 @@ public final class LinkCentral: NSObject {
     @ObservationIgnored private let restoreIdentifier: String?
     @ObservationIgnored private var peripheral: CBPeripheral?
     @ObservationIgnored private var command: CBCharacteristic?
+    /// 雷射筆的位置走這個特徵；舊版 Mac 沒有。
+    private var pointerCharacteristic: CBCharacteristic?
     @ObservationIgnored private var verified = false
     @ObservationIgnored private var helloID: UUID?
     @ObservationIgnored private var rejectedPeripherals: Set<UUID> = []
@@ -210,12 +212,14 @@ public final class LinkCentral: NSObject {
     private func prepare(_ p: CBPeripheral) {
         p.delegate = self
         command = nil
+        pointerCharacteristic = nil
         p.discoverServices([CBUUID(string: LinkIdentifiers.service)])
     }
 
     private func didDiscoverCharacteristics(of service: CBService, on p: CBPeripheral) {
         for characteristic in service.characteristics ?? [] {
             if characteristic.uuid == CBUUID(string: LinkIdentifiers.command) { command = characteristic }
+            if characteristic.uuid == CBUUID(string: LinkIdentifiers.pointer) { pointerCharacteristic = characteristic }
             if characteristic.uuid == CBUUID(string: LinkIdentifiers.status) {
                 if characteristic.isNotifying {
                     sendHello()
@@ -290,6 +294,25 @@ public final class LinkCentral: NSObject {
         }
     }
 
+    /// 能送雷射筆的位置：連著、驗證過，而且 Mac 版本夠新。
+    public var canStreamPointer: Bool {
+        #if DEBUG
+        if demo { return true }
+        #endif
+        return state == .connected && verified && pointerCharacteristic != nil
+    }
+
+    /// 送一筆雷射筆位置，不等回覆。藍牙送不過來時直接丟掉這筆：下一筆就是更新的位置。
+    public func streamPointer(_ update: PointerUpdate) {
+        #if DEBUG
+        if demo { return }
+        #endif
+        guard verified, let peripheral, let pointerCharacteristic, let pairing,
+              peripheral.canSendWriteWithoutResponse,
+              let frame = try? PointerFrame.make(update, pairing: pairing) else { return }
+        peripheral.writeValue(frame, for: pointerCharacteristic, type: .withoutResponse)
+    }
+
     private func received(_ chunk: Data) {
         guard let pairing, let whole = reassembler.add(chunk),
               let status = try? LinkCrypto.open(LinkStatus.self, from: whole, key: pairing.symmetricKey,
@@ -343,6 +366,7 @@ public final class LinkCentral: NSObject {
 
     private func handleDisconnect(_ p: CBPeripheral) {
         command = nil
+        pointerCharacteristic = nil
         verified = false
         reassembler = LinkReassembler()
         failWaiters()
@@ -409,7 +433,8 @@ extension LinkCentral: CBCentralManagerDelegate, CBPeripheralDelegate {
                 central?.cancelPeripheralConnection(peripheral)
                 return
             }
-            peripheral.discoverCharacteristics([CBUUID(string: LinkIdentifiers.command), CBUUID(string: LinkIdentifiers.status)], for: service)
+            peripheral.discoverCharacteristics([CBUUID(string: LinkIdentifiers.command), CBUUID(string: LinkIdentifiers.status),
+                                                CBUUID(string: LinkIdentifiers.pointer)], for: service)
         }
     }
 

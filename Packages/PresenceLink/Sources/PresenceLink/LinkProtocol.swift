@@ -9,6 +9,8 @@ public enum LinkIdentifiers {
     public static let service = "5B1D1001-6A1F-4C7E-9E43-2F0B7C1A8D10"
     public static let command = "5B1D1002-6A1F-4C7E-9E43-2F0B7C1A8D10"
     public static let status = "5B1D1003-6A1F-4C7E-9E43-2F0B7C1A8D10"
+    /// 雷射筆、聚光燈的連續位置（`PointerFrame`，寫入不等回覆）。舊版 Mac 沒有這個特徵。
+    public static let pointer = "5B1D1004-6A1F-4C7E-9E43-2F0B7C1A8D10"
 }
 
 public enum LinkCommand: Codable, Sendable, Equatable {
@@ -149,6 +151,10 @@ public struct LinkStatus: Codable, Sendable, Equatable {
     /// 簡報計時（見 `LinkCommand.presentationTimer`）。
     public var presentationStartedAt: Date?
     public var presentationMinutes: Int?
+    /// Mac 會畫雷射筆與聚光燈（允許簡報遙控、而且版本夠新）；舊版 Mac 是 nil。
+    public var pointer: Bool?
+    /// 要畫雷射筆的那個螢幕的寬高比，手機上的觸控區照這個比例。
+    public var screenAspect: Double?
     /// 回覆的指令沒有做成時的原因（`CommandRefusal` 的 rawValue）。存成字串：新版 Mac 多了原因，
     /// 舊版 iPhone 也還解得開整則狀態。
     public var refusal: String?
@@ -159,7 +165,7 @@ public struct LinkStatus: Codable, Sendable, Equatable {
                 challenge: Data? = nil, presenter: PresenterSupport? = nil, refusal: String? = nil,
                 frontApp: String? = nil, frontAppPresents: Bool? = nil,
                 presentationStartedAt: Date? = nil, presentationMinutes: Int? = nil,
-                sentAt: Date = Date()) {
+                pointer: Bool? = nil, screenAspect: Double? = nil, sentAt: Date = Date()) {
         self.macName = macName
         self.presence = presence
         self.summary = summary
@@ -175,6 +181,8 @@ public struct LinkStatus: Codable, Sendable, Equatable {
         self.frontAppPresents = frontAppPresents
         self.presentationStartedAt = presentationStartedAt
         self.presentationMinutes = presentationMinutes
+        self.pointer = pointer
+        self.screenAspect = screenAspect
         self.sentAt = sentAt
     }
 }

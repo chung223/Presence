@@ -13,8 +13,8 @@ cd "$(dirname "$0")/.."
 version=$(sed -nE 's/^ *MARKETING_VERSION: "(.*)"/\1/p' project.yml | head -1)
 build=$(sed -nE 's/^ *CURRENT_PROJECT_VERSION: "(.*)"/\1/p' project.yml | head -1)
 tag="v$version"
-out="build/release/$version"
-sparkle="build/SourcePackages/artifacts/sparkle/Sparkle/bin"
+out="build.noindex/release/$version"
+sparkle="build.noindex/mac/SourcePackages/artifacts/sparkle/Sparkle/bin"
 
 if gh release view "$tag" >/dev/null 2>&1; then
     echo "GitHub 已經有 $tag，請先改版本號" >&2
@@ -35,7 +35,7 @@ xcodegen generate >/dev/null
 
 echo "== 封存（Release，Developer ID）"
 xcodebuild archive -project Presence.xcodeproj -scheme Presence -configuration Release \
-    -destination 'generic/platform=macOS' -derivedDataPath build \
+    -destination 'generic/platform=macOS' -derivedDataPath build.noindex/mac \
     -archivePath "$out/Presence.xcarchive" -quiet
 
 cat > "$out/ExportOptions.plist" <<'PLIST'

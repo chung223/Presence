@@ -6,6 +6,10 @@ struct PresenceApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     private var model: AppModel { appDelegate.model }
+    /// 選單列圖示有沒有顯示。macOS 26 可以在「系統設定 › 選單列」關掉某個 App 的圖示：
+    /// 沒有綁定這個值的話，圖示被關掉時 SwiftUI 會直接結束整個 App，自動鎖定也跟著停了（2026-10-17 發現）。
+    /// 綁定之後圖示被關掉時 App 照常在背景執行；再打開 Presence 就會跳出主視窗。
+    @State private var menuBarIconShown = true
 
     init() {
         // 已經有 Presence 在跑：讓它打開主視窗，這個直接結束（示範模式和它並存，不接手）
@@ -28,7 +32,7 @@ struct PresenceApp: App {
         // 還沒設定好就在啟動時打開主視窗，否則只待在選單列
         .defaultLaunchBehavior(opensWindowAtLaunch ? .presented : .suppressed)
 
-        MenuBarExtra {
+        MenuBarExtra(isInserted: $menuBarIconShown) {
             MenuBarMenu(model: model)
         } label: {
             MenuBarLabel(model: model)

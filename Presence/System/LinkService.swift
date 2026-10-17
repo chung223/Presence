@@ -82,6 +82,8 @@ final class LinkService: NSObject {
 
     /// 收到鎖定、暫停、簡報等指令；做不成時回傳原因，跟著回覆送回 iPhone 或手錶。
     @ObservationIgnored var onCommand: ((LinkCommand) -> CommandRefusal?)?
+    /// 雷射筆與聚光燈的位置（連續送來，不回覆）。
+    @ObservationIgnored var onPointer: ((PointerUpdate) -> Void)?
     /// 已配對的裝置連上並打過招呼。
     @ObservationIgnored var onDeviceConnected: ((String) -> Void)?
     /// 提供目前狀態給通知用；event 由呼叫端帶入。
@@ -98,6 +100,7 @@ final class LinkService: NSObject {
     @ObservationIgnored private var statusCharacteristic: CBMutableCharacteristic?
     @ObservationIgnored private var sessions: [UUID: Session] = [:]
     @ObservationIgnored private var guards: [UUID: ReplayGuard] = [:]
+    @ObservationIgnored private var pointerGuards: [UUID: PointerGuard] = [:]
     @ObservationIgnored private var keys: [UUID: Data] = [:]
     @ObservationIgnored private var challenge: PendingChallenge?
 
@@ -177,6 +180,7 @@ final class LinkService: NSObject {
         PairedDeviceStore.removeKey(for: id)
         keys[id] = nil
         guards[id] = nil
+        pointerGuards[id] = nil
         connected[id] = nil
         for (centralID, session) in sessions where session.pairingID == id {
             sessions[centralID]?.pairingID = nil
@@ -302,6 +306,16 @@ final class LinkService: NSObject {
         return true
     }
 
+    /// 雷射筆的一筆位置：要是已配對的裝置、解得開、而且比上一筆新。
+    private func handlePointer(_ data: Data) {
+        guard let pairingID = PointerFrame.pairingID(of: data), devices.contains(where: { $0.id == pairingID }),
+              let key = key(for: pairingID), let update = PointerFrame.open(data, key: .init(data: key)) else { return }
+        var guardian = pointerGuards[pairingID] ?? PointerGuard()
+        guard guardian.accept(update, now: Date()) else { return }
+        pointerGuards[pairingID] = guardian
+        onPointer?(update)
+    }
+
     private func register(_ id: UUID, name: String) {
         connected[id] = name
         if let index = devices.firstIndex(where: { $0.id == id }) {
@@ -335,9 +349,12 @@ final class LinkService: NSObject {
                                                   properties: [.write], value: nil, permissions: [.writeable])
             let status = CBMutableCharacteristic(type: CBUUID(string: LinkIdentifiers.status),
                                                  properties: [.notify], value: nil, permissions: [.readable])
+            // 雷射筆的位置：寫入不等回覆，一秒約 30 筆
+            let pointer = CBMutableCharacteristic(type: CBUUID(string: LinkIdentifiers.pointer),
+                                                  properties: [.writeWithoutResponse], value: nil, permissions: [.writeable])
             statusCharacteristic = status
             let service = CBMutableService(type: CBUUID(string: LinkIdentifiers.service), primary: true)
-            service.characteristics = [command, status]
+            service.characteristics = [command, status, pointer]
             manager.add(service)
         } else if !manager.isAdvertising {
             manager.startAdvertising([CBAdvertisementDataServiceUUIDsKey: [CBUUID(string: LinkIdentifiers.service)]])
@@ -369,6 +386,12 @@ extension LinkService: CBPeripheralManagerDelegate {
     nonisolated func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveWrite requests: [CBATTRequest]) {
         nonisolated(unsafe) let requests = requests // 回呼本來就在主執行緒
         MainActor.assumeIsolated {
+            // 雷射筆的位置不等回覆，也不能回覆
+            let pointerUUID = CBUUID(string: LinkIdentifiers.pointer)
+            for request in requests where request.characteristic.uuid == pointerUUID {
+                if let value = request.value { handlePointer(value) }
+            }
+            let requests = requests.filter { $0.characteristic.uuid != pointerUUID }
             var ok = true
             for request in requests {
                 guard let value = request.value, handle(value, from: request.central) else {

@@ -152,7 +152,7 @@ swift scripts/make-icon.swift Presence/Assets.xcassets/AppIcon.appiconset
 
 # iPhone 與手錶 App（含小工具），用 Xcode 自動簽章
 xcodebuild -project Presence.xcodeproj -scheme PresenceRemote -destination 'generic/platform=iOS' \
-    -derivedDataPath build-ios -allowProvisioningUpdates build
+    -derivedDataPath build.noindex/ios -allowProvisioningUpdates build
 
 # 發佈 Mac 新版：先改 project.yml 的 MARKETING_VERSION 與 CURRENT_PROJECT_VERSION，commit 並 push 後執行
 scripts/release.sh

@@ -2,11 +2,11 @@
 
     python3 -I scripts/localization.py
 
-要先建置 Mac（輸出到 build/）與 iPhone（輸出到 build-ios/，會一起建置手錶與小工具）：
+要先建置 Mac（輸出到 build.noindex/mac）與 iPhone（輸出到 build.noindex/ios，會一起建置手錶與小工具）：
 
-    xcodebuild -project Presence.xcodeproj -scheme Presence -derivedDataPath build build
+    xcodebuild -project Presence.xcodeproj -scheme Presence -derivedDataPath build.noindex/mac build
     xcodebuild -project Presence.xcodeproj -scheme PresenceRemote -destination 'generic/platform=iOS' \
-        -derivedDataPath build-ios -allowProvisioningUpdates build
+        -derivedDataPath build.noindex/ios -allowProvisioningUpdates build
 
 會做三件事：
 1. 用建置產生的 .stringsdata 同步各目標的 String Catalog（見 TARGETS）。
@@ -27,14 +27,15 @@ SOURCE = "zh-Hant"
 LANGUAGES = ["en", "ja", "ko", "zh-Hans", "de", "fr", "es"]
 
 # 每個建置目標：從哪裡找 .stringsdata、同步到哪些 String Catalog。
-# Mac 先建置到 build/，iPhone 與手錶建置到 build-ios/（見 README 的「開發」）。
+# Mac 先建置到 build.noindex/mac，iPhone 與手錶建置到 build.noindex/ios（見 README 的「開發」）。
+# 資料夾名稱以 .noindex 結尾，Spotlight 才不會把建置出來的 App 列進「應用程式」。
 TARGETS = [
-    ("build", "Presence.build", ["Presence/Localizable.xcstrings", "Presence/AppShortcuts.xcstrings"]),
-    ("build-ios", "PresenceRemote.build", ["Remote/Localizable.xcstrings", "Remote/AppShortcuts.xcstrings"]),
-    ("build-ios", "PresenceRemoteWidgets.build", ["RemoteWidgets/Localizable.xcstrings"]),
-    ("build-ios", "PresenceRemoteWatch.build", ["Watch/Localizable.xcstrings"]),
-    ("build-ios", "PresenceRemoteWatchWidgets.build", ["WatchWidgets/Localizable.xcstrings"]),
-    ("build-ios", "PresenceLink-t.build", ["Packages/PresenceLink/Sources/PresenceLink/Localizable.xcstrings"]),
+    ("build.noindex/mac", "Presence.build", ["Presence/Localizable.xcstrings", "Presence/AppShortcuts.xcstrings"]),
+    ("build.noindex/ios", "PresenceRemote.build", ["Remote/Localizable.xcstrings", "Remote/AppShortcuts.xcstrings"]),
+    ("build.noindex/ios", "PresenceRemoteWidgets.build", ["RemoteWidgets/Localizable.xcstrings"]),
+    ("build.noindex/ios", "PresenceRemoteWatch.build", ["Watch/Localizable.xcstrings"]),
+    ("build.noindex/ios", "PresenceRemoteWatchWidgets.build", ["WatchWidgets/Localizable.xcstrings"]),
+    ("build.noindex/ios", "PresenceLink-t.build", ["Packages/PresenceLink/Sources/PresenceLink/Localizable.xcstrings"]),
 ]
 # 手動維護的（Info.plist 的權限說明），只整理不同步
 MANUAL = ["Presence/InfoPlist.xcstrings", "Remote/InfoPlist.xcstrings", "Watch/InfoPlist.xcstrings"]

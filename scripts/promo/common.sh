@@ -6,14 +6,14 @@
 set -euo pipefail
 cd "${0:a:h}/../.."
 repo=$PWD
-work=$repo/build/promo
+work=$repo/build.noindex/promo
 bin=$work/bin
-app=$repo/build/Build/Products/Debug/Presence.app
+app=$repo/build.noindex/mac/Build/Products/Debug/Presence.app
 mkdir -p $bin
 
 xcodegen generate >/dev/null
 xcodebuild -project Presence.xcodeproj -scheme Presence -configuration Debug -destination 'platform=macOS' \
-    -derivedDataPath build build -quiet
+    -derivedDataPath build.noindex/mac build -quiet
 
 # 有頂層程式碼的 Swift 檔要叫 main.swift 才能編譯
 for tool in card winrec winid; do

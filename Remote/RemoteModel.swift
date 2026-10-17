@@ -200,6 +200,53 @@ final class RemoteModel {
         }
     }
 
+    // MARK: - 雷射筆與聚光燈
+
+    /// Mac 會畫雷射筆（版本夠新、允許簡報遙控），而且連線找得到送位置的通道。
+    var pointerAvailable: Bool { link.status?.pointer == true && link.canStreamPointer }
+    /// 手機上觸控區的寬高比：跟 Mac 上要畫的那個螢幕一樣。
+    var pointerAspect: Double { link.status?.screenAspect ?? 16.0 / 9 }
+
+    @ObservationIgnored private var pointerLatest: PointerUpdate?
+    @ObservationIgnored private var pointerSent: (update: PointerUpdate, at: Date)?
+    @ObservationIgnored private var pointerLoop: Task<Void, Never>?
+
+    /// 手指在觸控區上移動：記下最新位置，每 33 毫秒送一次最新的（手指停著不動也每秒送一次，Mac 才不會收起）。
+    func movePointer(_ mode: PointerUpdate.Mode, x: Double, y: Double) {
+        pointerLatest = PointerUpdate(mode: mode, x: x, y: y)
+        guard pointerLoop == nil else { return }
+        pointerLoop = Task { [weak self] in
+            while !Task.isCancelled {
+                self?.sendLatestPointer()
+                try? await Task.sleep(for: .milliseconds(33))
+            }
+        }
+    }
+
+    private func sendLatestPointer() {
+        guard let latest = pointerLatest else { return }
+        let now = Date()
+        if let sent = pointerSent, sent.update.mode == latest.mode, sent.update.x == latest.x, sent.update.y == latest.y,
+           now.timeIntervalSince(sent.at) < 1 { return }
+        let update = PointerUpdate(mode: latest.mode, x: latest.x, y: latest.y, sentAt: now)
+        link.streamPointer(update)
+        pointerSent = (update, now)
+    }
+
+    /// 手指離開：收起紅點或聚光燈。不等回覆的寫入可能掉，隔一下多送兩次。
+    func endPointer() {
+        pointerLoop?.cancel()
+        pointerLoop = nil
+        pointerLatest = nil
+        pointerSent = nil
+        Task {
+            for delay in [0, 80, 200] {
+                try? await Task.sleep(for: .milliseconds(delay))
+                link.streamPointer(PointerUpdate(mode: .hidden, x: 0, y: 0))
+            }
+        }
+    }
+
     // MARK: - 簡報時間提醒
 
     @ObservationIgnored private var activityState: PresenterAttributes.ContentState?

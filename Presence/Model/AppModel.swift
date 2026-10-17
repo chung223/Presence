@@ -129,6 +129,8 @@ final class AppModel {
     /// 簡報計時：手機設定，Mac 轉給所有連著的手機與手錶（見 LinkCommand.presentationTimer）。
     private var presentationStartedAt: Date?
     private var presentationMinutes: Int?
+    /// 要畫雷射筆的螢幕寬高比，幾秒查一次（見 pointerScreenAspect）。
+    @ObservationIgnored private var screenAspectCache: (aspect: Double, at: Date)?
     private(set) var currentNetwork: NetworkIdentity.Current?
     /// 正在播放簡報的 App（見 PresentationDetector）。
     private(set) var presentingApp: String?
@@ -198,6 +200,7 @@ final class AppModel {
         session.start()
         link.statusProvider = { [weak self] in self?.linkStatus ?? LinkStatus(macName: "Mac", presence: .waiting, summary: "", locked: false) }
         link.onCommand = { [weak self] command in self?.handleRemote(command) ?? nil }
+        link.onPointer = { [weak self] update in self?.showPointer(update) }
         link.onDeviceConnected = { [weak self] _ in self?.companionDidConnect() }
         link.start()
 
@@ -954,7 +957,9 @@ final class AppModel {
             frontApp: front.name,
             frontAppPresents: front.presents,
             presentationStartedAt: isPresenting ? presentationStartedAt : nil,
-            presentationMinutes: isPresenting ? presentationMinutes : nil
+            presentationMinutes: isPresenting ? presentationMinutes : nil,
+            pointer: preferences.allowPresenter ? true : nil,
+            screenAspect: preferences.allowPresenter ? pointerScreenAspect : nil
         )
     }
 
@@ -1061,11 +1066,31 @@ final class AppModel {
         }
     }
 
+    /// 雷射筆與聚光燈：要允許簡報遙控，螢幕鎖著時不畫。
+    private func showPointer(_ update: PointerUpdate) {
+        guard preferences.allowPresenter, ScreenSession.queryLocked() != true else {
+            PointerOverlay.shared.hide()
+            return
+        }
+        if update.mode != .hidden, !isPresenting { beginPresentation() }
+        PointerOverlay.shared.show(update)
+    }
+
+    /// 要畫雷射筆的螢幕寬高比（手機上的觸控區照這個比例），幾秒才重新查一次。
+    private var pointerScreenAspect: Double {
+        if let cached = screenAspectCache, Date().timeIntervalSince(cached.at) < 5 { return cached.aspect }
+        let frame = PointerOverlay.targetScreen().frame
+        let aspect = frame.height > 0 ? Double(frame.width / frame.height) : 16.0 / 9
+        screenAspectCache = (aspect, Date())
+        return aspect
+    }
+
     private func endPresentation() {
         guard isPresenting else { return }
         presentingUntil = nil
         presentationStartedAt = nil
         presentationMinutes = nil
+        PointerOverlay.shared.hide()
         automation.pause(until: nil)
         now = Date()
         log.add(.info, String(localized: "結束簡報，恢復自動鎖定與解鎖"))

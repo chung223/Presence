@@ -152,7 +152,7 @@ swift scripts/make-icon.swift Presence/Assets.xcassets/AppIcon.appiconset
 
 # iPhone and watch apps (with widgets), using Xcode automatic signing
 xcodebuild -project Presence.xcodeproj -scheme PresenceRemote -destination 'generic/platform=iOS' \
-    -derivedDataPath build-ios -allowProvisioningUpdates build
+    -derivedDataPath build.noindex/ios -allowProvisioningUpdates build
 
 # Release a new Mac version: update MARKETING_VERSION and CURRENT_PROJECT_VERSION in project.yml, commit and push, then run
 scripts/release.sh

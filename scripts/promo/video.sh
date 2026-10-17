@@ -1,7 +1,7 @@
 #!/bin/zsh
 # 宣傳影片（中文、英文，1920×1080、約 37 秒）與 README 用的動圖。
 # 片頭 → 離開座位倒數鎖定 → 回來後自動解鎖 → iPhone 與手錶 → 鎖定與解鎖設定 → 在座時間 → 片尾。
-# 輸出：build/promo/presence-promo-<語言>.mp4、docs/images/walkaway-<語言>.gif。
+# 輸出：build.noindex/promo/presence-promo-<語言>.mp4、docs/images/walkaway-<語言>.gif。
 # 錄影時 Mac 要保持解鎖，不要碰滑鼠鍵盤（每種語言約 50 秒）。
 source "${0:a:h}/common.sh"
 icon=Presence/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png
