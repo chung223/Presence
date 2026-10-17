@@ -67,6 +67,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         LaunchHistory.endRun()
     }
 
+    /// Presence 平常沒有開著的視窗：關掉主視窗、或收起雷射筆的透明視窗時都不能結束
+    /// （2026-10-17 實測：雷射筆收起時被當成最後一個視窗關掉，整個 App 結束，自動鎖定也停了）。
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
+
     /// 在 Finder 或 Spotlight 再打開一次 Presence：打開主視窗。
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         if !flag { NotificationCenter.default.post(name: AppInstance.showWindow, object: nil) }

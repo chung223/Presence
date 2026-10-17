@@ -103,7 +103,8 @@ final class PointerOverlay {
         root.frame = CGRect(origin: .zero, size: size)
         root.contentsScale = screen.backingScaleFactor
 
-        let diameter = max(22, size.height * 0.03)
+        // 投影在教室後排也要看得到：比滑鼠游標大得多（2026-10-17 實測 0.03 偏小）
+        let diameter = max(28, size.height * 0.042)
         dot.bounds = CGRect(x: 0, y: 0, width: diameter, height: diameter)
         dot.cornerRadius = diameter / 2
         dotCore.frame = dot.bounds.insetBy(dx: diameter * 0.32, dy: diameter * 0.32)
