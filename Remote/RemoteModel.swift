@@ -247,6 +247,39 @@ final class RemoteModel {
         }
     }
 
+    // MARK: - Mac 的音量
+
+    /// Mac 的音量；Mac 太舊或沒允許簡報遙控時是 nil（不顯示音量）。
+    var macVolume: MacVolume? { link.status?.volume }
+
+    @ObservationIgnored private var volumeTarget: Double?
+    @ObservationIgnored private var volumeLoop: Task<Void, Never>?
+
+    /// 拖音量條時一直呼叫：同時只送一筆，前一筆有回覆了才送最新的值，拖得快也不會塞車。
+    func setVolume(_ level: Double) {
+        volumeTarget = level
+        guard volumeLoop == nil else { return }
+        volumeLoop = Task { [weak self] in
+            while let self, let level = volumeTarget {
+                volumeTarget = nil
+                await changeVolume(.set(level))
+            }
+            self?.volumeLoop = nil
+        }
+    }
+
+    @discardableResult
+    func changeVolume(_ change: VolumeChange) async -> Bool {
+        switch await link.send(.volume(change), timeout: 5) {
+        case .success(let status):
+            lastError = status.refusalMessage
+            return status.refusal == nil
+        case .failure(let failure):
+            lastError = failure.message
+            return false
+        }
+    }
+
     // MARK: - 簡報時間提醒
 
     @ObservationIgnored private var activityState: PresenterAttributes.ContentState?
@@ -322,6 +355,7 @@ final class RemoteModel {
             status.presentationMinutes = 20
             status.frontApp = "Keynote"
             status.frontAppPresents = true
+            status.volume = MacVolume(level: 0.5, muted: false, adjustable: true)
         default:
             break
         }

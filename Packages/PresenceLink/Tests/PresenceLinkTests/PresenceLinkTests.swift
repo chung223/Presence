@@ -265,7 +265,8 @@ struct PresenterProtocolTests {
 
 struct PresentationTimerTests {
     @Test(arguments: [LinkCommand.goToSlide(12), .presentationTimer(startedAt: Date(timeIntervalSince1970: 1_800_000_000), minutes: 20),
-                      .presentationTimer(startedAt: Date(timeIntervalSince1970: 1_800_000_000), minutes: nil)])
+                      .presentationTimer(startedAt: Date(timeIntervalSince1970: 1_800_000_000), minutes: nil),
+                      .volume(.set(0.4)), .volume(.step(up: true)), .volume(.mute(true))])
     func newCommandsRoundTrip(command: LinkCommand) throws {
         let pairing = PairingInfo.generate(macName: "Mac")
         let frame = try RequestFrame.make(LinkRequest(command), pairing: pairing)
@@ -325,7 +326,7 @@ struct ProAccessTests {
 
 struct NeedsProTests {
     @Test(arguments: [LinkCommand.presenter(.next), .goToSlide(3), .presentation(active: true),
-                      .presentationTimer(startedAt: Date(timeIntervalSince1970: 0), minutes: 10)])
+                      .presentationTimer(startedAt: Date(timeIntervalSince1970: 0), minutes: 10), .volume(.mute(false))])
     func presenterCommandsNeedPro(command: LinkCommand) {
         #expect(command.needsPro)
     }
@@ -417,5 +418,27 @@ struct PointerTests {
         #expect(accept(now + 0.03))
         #expect(!accept(now - 1))
         #expect(!accept(now + 60))
+    }
+}
+
+struct VolumeTests {
+    @Test("舊版 Mac 沒送音量：解得開，手機不顯示音量")
+    func oldMacHasNoVolume() throws {
+        let status = LinkStatus(macName: "Mac", presence: .near, summary: "", locked: false)
+        var json = try JSONSerialization.jsonObject(with: WatchMessage.encode(status)) as! [String: Any]
+        json.removeValue(forKey: "volume")
+        let decoded = try WatchMessage.decode(LinkStatus.self, from: JSONSerialization.data(withJSONObject: json))
+        #expect(decoded.volume == nil)
+    }
+
+    @Test func volumeRoundTrips() throws {
+        let status = LinkStatus(macName: "Mac", presence: .near, summary: "", locked: false,
+                                volume: MacVolume(level: 0.625, muted: true, adjustable: true))
+        #expect(try WatchMessage.decode(LinkStatus.self, from: WatchMessage.encode(status)).volume == status.volume)
+    }
+
+    @Test func levelIsClamped() {
+        #expect(MacVolume(level: 1.4, muted: false, adjustable: true).level == 1)
+        #expect(MacVolume(level: -0.2, muted: false, adjustable: true).level == 0)
     }
 }

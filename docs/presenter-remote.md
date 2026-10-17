@@ -57,7 +57,20 @@ Keynote 與 PowerPoint 都測過開始播放、下一頁、上一頁、跳頁、
 - **位置走另一條通道**：藍牙特徵 `LinkIdentifiers.pointer`，寫入不等回覆，每秒約 30 筆；每筆 58 位元組（配對編號＋AES-GCM 加密的 14 位元組），驗證內容多加 "pointer"，指令的密文不能拿來當位置。Mac 只收比上一筆新、時鐘差 30 秒內的（`PointerGuard`）。手指停著不動時每秒補送一次。
 - **Mac 端**：兩筆之間用 70 毫秒的線性動畫補平；手指放開、或 2.5 秒沒收到位置就淡出收起。畫在 Mac 正在使用的 App 最大那個視窗所在的螢幕（接投影機時就是播放簡報的那個），寬高比放在 `LinkStatus.screenAspect` 給手機。
 - **實測**（Keynote 全螢幕播放、MacBook 內建螢幕）：紅點與聚光燈都蓋在簡報上面；第一次測時收起雷射筆的視窗被系統當成「最後一個視窗關掉」而結束整個 Presence，已改成 `applicationShouldTerminateAfterLastWindowClosed` 回傳 false。
+- **聚光燈的畫法**：一整片比螢幕大很多的暗色圖層，中間一個邊緣柔和的洞，整片跟著手指移動。第一版用「洞＋四周四塊暗色」拼起來，移動時幾塊的動畫對不齊，洞的四周出現方形接縫，使用者實測說效果很差。圖只畫洞附近一小塊，外面靠 `contentsRect` 超出圖的範圍時延伸最外圈的暗色，邊緣才細緻、記憶體也小。四周暗 0.8、邊緣在半徑的 0.9～1.1 倍之間由亮變暗（第一版 0.72、邊緣太寬，像一團白光）。
+- **自己檢查效果**：開發版 `-PresenceDemo YES -PresencePointerDemo spotlight`（或 `laser`）會在螢幕中間 1280×720 的範圍畫一張假投影片，照固定路線走一遍（8 字、甩到四個角、停住、收起）；假投影片畫在同一個視窗裡，用 `scripts/promo/winrec` 只錄那個視窗就看得到結果。
 - 還沒做：螢光筆（手指畫線、幾秒後淡掉）、手錶、接投影機的雙螢幕實測。
+
+## Mac 的音量（2026-10-17）
+
+簡報裡的影片太大聲或太小聲時，不用走回電腦。手機簡報畫面的「上一頁」下面有一條音量條：拖拉調整，點喇叭靜音。手錶在「上一頁」左邊有喇叭按鈕，點開後轉錶冠調整（簡報畫面的錶冠拿來翻頁，所以音量另外開一頁）。
+
+- **Mac 直接調系統音量**（`SystemVolume`，CoreAudio 的 `kAudioHardwareServiceDeviceProperty_VirtualMainVolume` 與 `kAudioDevicePropertyMute`），不模擬鍵盤的音量鍵：投影畫面上不會跳出音量圖示，也不需要輔助使用權限。調大聲時跟音量鍵一樣順便取消靜音；沒有靜音開關的裝置用音量 0 代替，取消時調回原本的音量。
+- **指令** `LinkCommand.volume(VolumeChange)`：`set(0～1)`、`step(up:)`（一格 1/16，跟音量鍵一樣）、`mute(Bool)`，要 Presence Pro、要允許簡報遙控。**狀態** `LinkStatus.volume`（音量、靜音、能不能調）：舊版 Mac 是 nil，手機與手錶就不顯示音量。Mac 每秒檢查一次，音量變了（例如在 Mac 上按音量鍵）就推送給手機。
+- **接 HDMI 的電視、投影機常常不能從 Mac 調音量**（Mac 的音量鍵也沒用）：這時 `adjustable` 是 false，手機只顯示說明；硬送會收到 `CommandRefusal.volumeNotAdjustable`。
+- **拖拉不塞車**：手機與手錶同時只送一筆，前一筆有回覆了才送最新的值。手機的音量條在最後一次拉動後 1.5 秒內顯示手指的位置，之後顯示 Mac 回報的音量；第一版用 Slider 的 `onEditingChanged` 判斷放開，實測放開後音量條一直停在手指的位置，Mac 的音量變了也不動。
+- **實測**（MacBook Pro 內建喇叭，iPhone 開發版）：手機拉到 69%，Mac 也是 69%；靜音、取消靜音都正確；在 Mac 上把音量改成 62%，手機一兩秒內跟著變。手錶（Apple Watch Ultra 2，經由 iPhone 轉送）使用者實測可以用。
+- iPhone 側邊的實體音量鍵不能拿來調 Mac：Apple 不讓 App 接管，繞過的做法容易被退審。
 
 ## 其他 App 怎麼配合
 

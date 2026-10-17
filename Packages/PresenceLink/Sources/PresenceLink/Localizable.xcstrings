@@ -313,6 +313,58 @@
         }
       }
     },
+    "Mac 現在的聲音輸出不能從 Mac 調音量（例如接 HDMI 的電視或投影機），請用它的遙控器調": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Lautstärke der aktuellen Tonausgabe (z. B. ein per HDMI angeschlossener Fernseher oder Projektor) lässt sich nicht am Mac ändern. Verwende die Fernbedienung des Geräts."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The volume of your Mac’s current sound output (such as a TV or projector connected over HDMI) can’t be changed from the Mac. Use that device’s remote instead."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El volumen de la salida de sonido actual del Mac (por ejemplo, una TV o un proyector conectado por HDMI) no se puede ajustar desde el Mac. Usa el mando a distancia de ese dispositivo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le volume de la sortie audio actuelle du Mac (par exemple une TV ou un projecteur branché en HDMI) ne peut pas être réglé depuis le Mac. Utilisez sa télécommande."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macの現在のサウンド出力（HDMIで接続したテレビやプロジェクタなど）は、Macから音量を調整できません。その機器のリモコンで調整してください"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac의 현재 사운드 출력(HDMI로 연결한 TV나 프로젝터 등)은 Mac에서 음량을 조절할 수 없습니다. 해당 기기의 리모컨으로 조절하세요"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 当前的声音输出无法从 Mac 调节音量（例如通过 HDMI 连接的电视或投影仪），请用它的遥控器调节"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 現在的聲音輸出不能從 Mac 調音量（例如接 HDMI 的電視或投影機），請用它的遙控器調"
+          }
+        }
+      }
+    },
     "Mac 螢幕鎖著，先解鎖才能翻頁": {
       "localizations": {
         "de": {

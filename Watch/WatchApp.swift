@@ -64,6 +64,7 @@ final class WatchModel: NSObject {
                 status?.presentationMinutes = 20
                 status?.frontApp = "Keynote"
                 status?.frontAppPresents = true
+                status?.volume = MacVolume(level: 0.5, muted: false, adjustable: true)
             }
             phonePro = UserDefaults.standard.object(forKey: "PresencePro").map { _ in UserDefaults.standard.bool(forKey: "PresencePro") } ?? true
             demo = true
@@ -134,6 +135,22 @@ final class WatchModel: NSObject {
         case .failure(let failure):
             LinkLog.write("[手錶] 直接連線失敗：\(failure)")
             return apply(.failure(failure.message), route: nil)
+        }
+    }
+
+    @ObservationIgnored private var volumeTarget: Double?
+    @ObservationIgnored private var volumeLoop: Task<Void, Never>?
+
+    /// 轉錶冠調 Mac 的音量時一直呼叫：同時只送一筆，前一筆有回覆了才送最新的值。
+    func setVolume(_ level: Double) {
+        volumeTarget = level
+        guard volumeLoop == nil else { return }
+        volumeLoop = Task { [weak self] in
+            while let self, let level = volumeTarget {
+                volumeTarget = nil
+                await perform(.volume(.set(level)))
+            }
+            self?.volumeLoop = nil
         }
     }
 
@@ -391,6 +408,7 @@ struct WatchPresenterView: View {
     @State private var crown = 0.0
     @State private var crownStep = 0
     @State private var nextDone = 0
+    @State private var adjustingVolume = false
 
     var body: some View {
         let status = model.status
@@ -425,16 +443,32 @@ struct WatchPresenterView: View {
             .buttonStyle(WatchPressStyle())
             .handGestureShortcut(.primaryAction)
 
-            Button { send(.previous) } label: {
-                Label("上一頁", systemImage: "chevron.backward")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, minHeight: 40)
-                    .background(Capsule().fill(.white.opacity(0.14)))
-                    .contentShape(Capsule())
+            HStack(spacing: 6) {
+                // 錶冠在這個畫面拿來翻頁，音量另外開一頁用錶冠調（Mac 0.3 以後、允許簡報遙控時才有）
+                if status?.volume != nil {
+                    Button { adjustingVolume = true } label: {
+                        Image(systemName: status?.volume?.muted == true ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 40, height: 40)
+                            .background(Circle().fill(.white.opacity(0.14)))
+                            .contentShape(Circle())
+                    }
+                    .buttonStyle(WatchPressStyle())
+                    .accessibilityLabel("Mac 的音量")
+                }
+                Button { send(.previous) } label: {
+                    Label("上一頁", systemImage: "chevron.backward")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, minHeight: 40)
+                        .background(Capsule().fill(.white.opacity(0.14)))
+                        .contentShape(Capsule())
+                }
+                .buttonStyle(WatchPressStyle())
             }
-            .buttonStyle(WatchPressStyle())
         }
+        .sheet(isPresented: $adjustingVolume) { WatchVolumeView(model: model) }
         .padding(.horizontal, 2)
         .padding(.bottom, 6)
         // 用到螢幕最下面：下面留白的話「下一頁」會變小
@@ -488,6 +522,67 @@ struct WatchPresenterView: View {
             WKInterfaceDevice.current().play(done ? .click : .failure)
             if done, action == .next { nextDone += 1 }
         }
+    }
+}
+
+/// 調 Mac 的音量：轉錶冠調大小聲（一格跟 Mac 鍵盤的音量鍵一樣），點按鈕靜音。
+private struct WatchVolumeView: View {
+    let model: WatchModel
+    @State private var level: Double
+
+    init(model: WatchModel) {
+        self.model = model
+        _level = State(initialValue: model.status?.volume?.level ?? 0.5)
+    }
+
+    var body: some View {
+        let volume = model.status?.volume
+        let muted = volume?.muted == true
+        VStack(spacing: 6) {
+            if volume?.adjustable == false {
+                Text("Mac 現在的聲音輸出不能從這裡調音量")
+                    .font(.footnote)
+                    .multilineTextAlignment(.center)
+                    .frame(maxHeight: .infinity)
+            } else {
+                Image(systemName: muted || level == 0 ? "speaker.slash.fill" : "speaker.wave.3.fill", variableValue: level)
+                    .font(.system(size: 26, weight: .semibold))
+                    .foregroundStyle(.orange)
+                    .contentTransition(.symbolEffect(.replace))
+                Text(level, format: .percent.precision(.fractionLength(0)))
+                    .font(.system(size: 34, weight: .semibold, design: .rounded))
+                    .monospacedDigit()
+                    .contentTransition(.numericText())
+                    .foregroundStyle(muted ? .secondary : .primary)
+                ProgressView(value: level)
+                    .tint(.orange)
+                    .opacity(muted ? 0.45 : 1)
+                Text("轉錶冠調整")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            Button {
+                Task {
+                    let done = await model.perform(.volume(.mute(!muted)))
+                    WKInterfaceDevice.current().play(done ? .click : .failure)
+                }
+            } label: {
+                Label(muted ? "取消靜音" : "靜音", systemImage: muted ? "speaker.wave.2.fill" : "speaker.slash.fill")
+                    .font(.footnote.weight(.semibold))
+                    .frame(maxWidth: .infinity, minHeight: 36)
+                    .background(Capsule().fill(.white.opacity(0.14)))
+                    .contentShape(Capsule())
+            }
+            .buttonStyle(WatchPressStyle())
+        }
+        .padding(.horizontal, 4)
+        .focusable()
+        .digitalCrownRotation($level, from: 0, through: 1, by: 1.0 / 16, sensitivity: .low,
+                              isContinuous: false, isHapticFeedbackEnabled: true)
+        .digitalCrownAccessory(.hidden)
+        .onChange(of: level) { _, value in model.setVolume(value) }
+        .animation(.snappy, value: level)
+        .navigationTitle("Mac 的音量")
     }
 }
 

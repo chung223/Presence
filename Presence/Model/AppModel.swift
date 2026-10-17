@@ -959,7 +959,8 @@ final class AppModel {
             presentationStartedAt: isPresenting ? presentationStartedAt : nil,
             presentationMinutes: isPresenting ? presentationMinutes : nil,
             pointer: preferences.allowPresenter ? true : nil,
-            screenAspect: preferences.allowPresenter ? pointerScreenAspect : nil
+            screenAspect: preferences.allowPresenter ? pointerScreenAspect : nil,
+            volume: preferences.allowPresenter ? SystemVolume.current : nil
         )
     }
 
@@ -1023,6 +1024,10 @@ final class AppModel {
             guard preferences.allowPresenter else { return .presenterNotAllowed }
             presentationStartedAt = startedAt
             presentationMinutes = minutes.map { max(1, min($0, 24 * 60)) }
+        case .volume(let change):
+            // 不送按鍵，不需要輔助使用權限
+            guard preferences.allowPresenter else { return .presenterNotAllowed }
+            guard SystemVolume.change(change) else { return .volumeNotAdjustable }
         case .hello, .status, .confirm:
             break
         }
@@ -1101,7 +1106,8 @@ final class AppModel {
         let s = linkStatus
         let signature = [s.presence.rawValue, "\(s.locked)", "\(s.pausedUntil?.timeIntervalSince1970 ?? 0)", "\(nearDeviceNames)",
                          s.presenter?.rawValue ?? "", s.frontApp ?? "", "\(s.presentationStartedAt?.timeIntervalSince1970 ?? 0)",
-                         "\(s.presentationMinutes ?? 0)"].joined(separator: "|")
+                         "\(s.presentationMinutes ?? 0)", s.volume.map { "\($0.level)\($0.muted)\($0.adjustable)" } ?? ""]
+            .joined(separator: "|")
         guard signature != lastLinkSignature else { return }
         lastLinkSignature = signature
         link.broadcast()
@@ -1246,6 +1252,14 @@ extension AppModel {
                     return view.subviews.lazy.compactMap(sidebar(in:)).first
                 }
                 window.makeFirstResponder(window.contentView.flatMap(sidebar(in:)))
+            }
+        }
+
+        // -PresencePointerDemo spotlight|laser：雷射筆或聚光燈照固定路線走一遍，錄影檢查效果（見 PointerOverlay.runDemo）
+        if let name = UserDefaults.standard.string(forKey: "PresencePointerDemo") {
+            Task {
+                try? await Task.sleep(for: .seconds(1))
+                await PointerOverlay.shared.runDemo(name == "laser" ? .laser : .spotlight)
             }
         }
 

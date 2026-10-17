@@ -129,6 +129,14 @@ public final class LinkCentral: NSObject {
         case .presentationTimer(let startedAt, let minutes):
             next.presentationStartedAt = startedAt
             next.presentationMinutes = minutes
+        case .volume(let change):
+            var volume = next.volume ?? MacVolume(level: 0.5, muted: false, adjustable: true)
+            switch change {
+            case .set(let level): volume = MacVolume(level: level, muted: false, adjustable: true)
+            case .step(let up): volume = MacVolume(level: volume.level + (up ? 1 : -1) / 16, muted: false, adjustable: true)
+            case .mute(let muted): volume.muted = muted
+            }
+            next.volume = volume
         case .hello, .status, .confirm, .presenter, .goToSlide: break
         }
         next.sentAt = Date()

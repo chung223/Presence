@@ -284,7 +284,7 @@ final class LinkService: NSObject {
             register(frame.pairingID, name: deviceName)
         case .status:
             touch(frame.pairingID)
-        case .lock, .pause, .resume, .presenter, .presentation, .goToSlide, .presentationTimer:
+        case .lock, .pause, .resume, .presenter, .presentation, .goToSlide, .presentationTimer, .volume:
             touch(frame.pairingID)
             refusal = onCommand?(request.command)
         case .confirm(let response):

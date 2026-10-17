@@ -80,6 +80,16 @@ struct PresenterView: View {
                     .buttonStyle(PadStyle())
                 }
 
+                // Mac 0.3 以後、允許簡報遙控時才有
+                if let volume = model.macVolume {
+                    VolumeBar(volume: volume) { level in
+                        model.setVolume(level)
+                    } mute: { muted in
+                        taps += 1
+                        Task { if await !model.changeVolume(.mute(muted)) { failures += 1 } }
+                    }
+                }
+
                 HStack(spacing: 10) {
                     tile(title: "開始播放", symbol: "play.fill") { send(.start) }
                     tile(title: "黑畫面", symbol: "eye.slash.fill") { send(.blank) }
@@ -551,6 +561,60 @@ private struct PointerPad: View {
                 .strokeBorder(.white.opacity(0.8), lineWidth: 2)
                 .frame(width: 76, height: 76)
         }
+    }
+}
+
+// MARK: - 音量
+
+/// Mac 的音量（簡報裡的影片太大聲或太小聲時）：拖拉調整，點喇叭靜音。
+/// 聲音輸出不能從 Mac 調（例如接 HDMI 的電視）時只顯示說明。
+private struct VolumeBar: View {
+    let volume: MacVolume
+    let set: (Double) -> Void
+    let mute: (Bool) -> Void
+    /// 手指拉到的位置與時間：最後一次拉動後 1.5 秒內顯示這個，不要被 Mac 回報的中間值拉回去；之後一律顯示 Mac 的音量。
+    /// 不靠 Slider 的 onEditingChanged 判斷放開：那樣做時實測放開後音量條一直停在手指的位置，Mac 的音量變了也不動（2026-10-17）。
+    @State private var dragged: (level: Double, at: Date)?
+
+    var body: some View {
+        let level = dragged.flatMap { Date().timeIntervalSince($0.at) < 1.5 ? $0.level : nil } ?? volume.level
+        let silent = volume.muted || level == 0
+        HStack(spacing: 12) {
+            Button { mute(!volume.muted) } label: {
+                Image(systemName: silent ? "speaker.slash.fill" : "speaker.wave.3.fill", variableValue: level)
+                    .font(.system(size: 17, weight: .semibold))
+                    .contentTransition(.symbolEffect(.replace))
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(.white.opacity(0.12)))
+            }
+            .buttonStyle(PadStyle())
+            .accessibilityLabel(volume.muted ? Text("取消靜音") : Text("靜音"))
+
+            if volume.adjustable {
+                Slider(value: Binding(get: { level }, set: { value in
+                    dragged = (value, Date())
+                    set(value)
+                }), in: 0...1)
+                .tint(.orange)
+                .opacity(volume.muted ? 0.45 : 1)
+                .accessibilityLabel("Mac 的音量")
+
+                Text(level, format: .percent.precision(.fractionLength(0)))
+                    .font(.subheadline.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(volume.muted ? .secondary : .primary)
+                    .frame(minWidth: 44, alignment: .trailing)
+            } else {
+                Text("Mac 現在的聲音輸出不能從這裡調音量")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .padding(.leading, 8)
+        .padding(.trailing, 14)
+        .frame(minHeight: 60)
+        .background(Card(radius: 20))
     }
 }
 

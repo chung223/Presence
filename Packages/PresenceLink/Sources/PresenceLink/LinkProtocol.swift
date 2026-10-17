@@ -31,13 +31,16 @@ public enum LinkCommand: Codable, Sendable, Equatable {
     case goToSlide(Int)
     /// 簡報計時：從什麼時候開始算、預定講幾分鐘（nil 表示不限）。存在 Mac 上，手機、手錶、鎖定畫面顯示同一個倒數。
     case presentationTimer(startedAt: Date, minutes: Int?)
+    /// 調 Mac 的系統音量（簡報裡的影片太大聲或太小聲時）。Mac 直接調目前的聲音輸出，不模擬音量鍵，
+    /// 投影畫面上不會跳出音量圖示。手機看 `LinkStatus.volume` 有沒有值決定要不要顯示，舊版 Mac 收不到。
+    case volume(VolumeChange)
 }
 
 extension LinkCommand {
     /// 要 Presence Pro 才能送的簡報指令。結束簡報不算：沒有 Pro 也要能讓 Mac 恢復自動鎖定。
     public var needsPro: Bool {
         switch self {
-        case .presenter, .goToSlide, .presentationTimer, .presentation(active: true): true
+        case .presenter, .goToSlide, .presentationTimer, .presentation(active: true), .volume: true
         case .hello, .status, .lock, .pause, .resume, .confirm, .presentation(active: false): false
         }
     }
@@ -54,6 +57,30 @@ public enum PresenterAction: String, Codable, Sendable, CaseIterable {
     case blank
 }
 
+/// 音量要怎麼調。
+public enum VolumeChange: Codable, Sendable, Equatable {
+    /// 調到 0～1。
+    case set(Double)
+    /// 大聲或小聲一格，跟 Mac 鍵盤的音量鍵一樣（一格 1/16）。
+    case step(up: Bool)
+    case mute(Bool)
+}
+
+/// Mac 目前的音量。
+public struct MacVolume: Codable, Sendable, Equatable {
+    /// 0～1。
+    public var level: Double
+    public var muted: Bool
+    /// 目前的聲音輸出能不能從 Mac 調音量：接 HDMI 的電視、投影機常常不行（Mac 鍵盤的音量鍵也沒用）。
+    public var adjustable: Bool
+
+    public init(level: Double, muted: Bool, adjustable: Bool) {
+        self.level = min(max(level, 0), 1)
+        self.muted = muted
+        self.adjustable = adjustable
+    }
+}
+
 /// Mac 沒有執行指令的原因，iPhone 與手錶依此顯示自己語言的說明。
 public enum CommandRefusal: String, Codable, Sendable {
     /// Mac 上沒有允許簡報遙控。
@@ -64,6 +91,8 @@ public enum CommandRefusal: String, Codable, Sendable {
     case screenLocked
     /// 沒有 Presence Pro（iPhone 代手錶轉送簡報指令時判斷，不是 Mac 回的）。
     case proRequired
+    /// Mac 目前的聲音輸出不能調音量（例如接 HDMI 的電視）。
+    case volumeNotAdjustable
 
     public var message: String {
         switch self {
@@ -75,6 +104,8 @@ public enum CommandRefusal: String, Codable, Sendable {
             String(localized: "Mac 螢幕鎖著，先解鎖才能翻頁", bundle: .module)
         case .proRequired:
             String(localized: "簡報遙控是 Presence Pro 的功能，請在 iPhone 的 Presence Remote 升級", bundle: .module)
+        case .volumeNotAdjustable:
+            String(localized: "Mac 現在的聲音輸出不能從 Mac 調音量（例如接 HDMI 的電視或投影機），請用它的遙控器調", bundle: .module)
         }
     }
 }
@@ -155,6 +186,8 @@ public struct LinkStatus: Codable, Sendable, Equatable {
     public var pointer: Bool?
     /// 要畫雷射筆的那個螢幕的寬高比，手機上的觸控區照這個比例。
     public var screenAspect: Double?
+    /// Mac 目前的音量（允許簡報遙控、而且版本夠新）；舊版 Mac 是 nil。
+    public var volume: MacVolume?
     /// 回覆的指令沒有做成時的原因（`CommandRefusal` 的 rawValue）。存成字串：新版 Mac 多了原因，
     /// 舊版 iPhone 也還解得開整則狀態。
     public var refusal: String?
@@ -165,7 +198,7 @@ public struct LinkStatus: Codable, Sendable, Equatable {
                 challenge: Data? = nil, presenter: PresenterSupport? = nil, refusal: String? = nil,
                 frontApp: String? = nil, frontAppPresents: Bool? = nil,
                 presentationStartedAt: Date? = nil, presentationMinutes: Int? = nil,
-                pointer: Bool? = nil, screenAspect: Double? = nil, sentAt: Date = Date()) {
+                pointer: Bool? = nil, screenAspect: Double? = nil, volume: MacVolume? = nil, sentAt: Date = Date()) {
         self.macName = macName
         self.presence = presence
         self.summary = summary
@@ -183,6 +216,7 @@ public struct LinkStatus: Codable, Sendable, Equatable {
         self.presentationMinutes = presentationMinutes
         self.pointer = pointer
         self.screenAspect = screenAspect
+        self.volume = volume
         self.sentAt = sentAt
     }
 }
