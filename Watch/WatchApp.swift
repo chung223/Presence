@@ -38,7 +38,19 @@ final class WatchModel: NSObject {
     /// 手錶自己向 App Store 查到的 Presence Pro（同一個 App 紀錄，iPhone 上買的手錶也查得到）。
     private(set) var ownPro = false
     /// 能不能用簡報遙控。
-    var isPro: Bool { phonePro || ownPro }
+    var isPro: Bool { Self.debugPro ?? (phonePro || ownPro) }
+
+    /// 開發用：`-PresencePro YES|NO` 強制 Pro（跟 iPhone 一樣，帶過一次就記住）。
+    /// 測試用的沙盒訂閱過期後，手錶會跟著 iPhone 變成沒有 Pro，測不了簡報遙控。
+    private static let debugPro: Bool? = {
+        #if DEBUG
+        if UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)["PresencePro"] != nil {
+            UserDefaults.standard.set(UserDefaults.standard.bool(forKey: "PresencePro"), forKey: "PresenceProDebug")
+        }
+        if UserDefaults.standard.object(forKey: "PresenceProDebug") != nil { return UserDefaults.standard.bool(forKey: "PresenceProDebug") }
+        #endif
+        return nil
+    }()
 
     @ObservationIgnored private let link = LinkCentral(deviceName: "Apple Watch", keepConnected: false)
     @ObservationIgnored private let launchedAt = Date()
@@ -223,6 +235,7 @@ final class WatchModel: NSObject {
             lastUpdate = Date()
         }
         if let pro = context["pro"] as? Bool, pro != phonePro {
+            LinkLog.write("[手錶] iPhone 說 Pro=\(pro)")
             phonePro = pro
             UserDefaults.standard.set(pro, forKey: "proFromPhone")
         }
@@ -408,76 +421,35 @@ struct WatchPresenterView: View {
     @State private var crown = 0.0
     @State private var crownStep = 0
     @State private var nextDone = 0
-    @State private var adjustingVolume = false
+    /// 錶冠：第一頁翻頁，第二頁調音量。換頁時把錶冠交給那一頁。
+    @FocusState private var crownOwner: Int?
+    /// 截圖用：-PresenceDemoPage 1 直接打開第二頁。
+    @State private var page = UserDefaults.standard.integer(forKey: "PresenceDemoPage")
 
     var body: some View {
         let status = model.status
         let presenting = status?.presenter == .presenting
         let endsAt = presenting ? status?.presentationEndsAt : nil
-        VStack(spacing: 6) {
-            if let notice = model.lastError ?? wrongApp(status) {
-                Label(notice, systemImage: "exclamationmark.triangle.fill")
-                    .font(.caption2)
-                    .foregroundStyle(.orange)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-            }
-
-            // 跟 iPhone 的簡報畫面一樣：「下一頁」佔大部分畫面，「上一頁」小一點放下面
-            Button { send(.next) } label: {
-                VStack(spacing: 2) {
-                    Image(systemName: "chevron.forward")
-                        .font(.system(size: 40, weight: .bold))
-                        .symbolEffect(.wiggle.forward, value: nextDone)
-                    Text("下一頁").font(.headline)
-                }
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background {
-                    RoundedRectangle(cornerRadius: 26, style: .continuous)
-                        .fill(LinearGradient(colors: [Color(red: 1.0, green: 0.66, blue: 0.24), Color(red: 0.97, green: 0.42, blue: 0.08)],
-                                             startPoint: .top, endPoint: .bottom))
-                }
-                .contentShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
-            }
-            .buttonStyle(WatchPressStyle())
-            .handGestureShortcut(.primaryAction)
-
-            HStack(spacing: 6) {
-                // 錶冠在這個畫面拿來翻頁，音量另外開一頁用錶冠調（Mac 0.3 以後、允許簡報遙控時才有）
-                if status?.volume != nil {
-                    Button { adjustingVolume = true } label: {
-                        Image(systemName: status?.volume?.muted == true ? "speaker.slash.fill" : "speaker.wave.2.fill")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 40, height: 40)
-                            .background(Circle().fill(.white.opacity(0.14)))
-                            .contentShape(Circle())
-                    }
-                    .buttonStyle(WatchPressStyle())
-                    .accessibilityLabel("Mac 的音量")
-                }
-                Button { send(.previous) } label: {
-                    Label("上一頁", systemImage: "chevron.backward")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity, minHeight: 40)
-                        .background(Capsule().fill(.white.opacity(0.14)))
-                        .contentShape(Capsule())
-                }
-                .buttonStyle(WatchPressStyle())
+        // 第一頁只放翻頁；第二頁直接就是 Mac 的音量（2026-10-17 使用者說主畫面太擠，
+        // 第二頁只放一顆「音量」按鈕又太空）。舊版 Mac 沒有音量就只有一頁
+        TabView(selection: $page) {
+            slidesPage(status)
+                .focusable()
+                .focused($crownOwner, equals: 0)
+                .digitalCrownRotation($crown, from: -10_000, through: 10_000, by: 1, sensitivity: .low,
+                                      isContinuous: false, isHapticFeedbackEnabled: true)
+                // 錶冠在這一頁只拿來翻頁，不用顯示捲動的指示條
+                .digitalCrownAccessory(.hidden)
+                .tag(0)
+            if status?.volume != nil {
+                WatchVolumeView(model: model)
+                    .focused($crownOwner, equals: 1)
+                    .tag(1)
             }
         }
-        .sheet(isPresented: $adjustingVolume) { WatchVolumeView(model: model) }
-        .padding(.horizontal, 2)
-        .padding(.bottom, 6)
-        // 用到螢幕最下面：下面留白的話「下一頁」會變小
-        .ignoresSafeArea(edges: .bottom)
-        .focusable()
-        .digitalCrownRotation($crown, from: -10_000, through: 10_000, by: 1, sensitivity: .low,
-                              isContinuous: false, isHapticFeedbackEnabled: true)
-        // 錶冠只拿來翻頁，不用顯示捲動的指示條
-        .digitalCrownAccessory(.hidden)
+        .tabViewStyle(.page)
+        .onAppear { crownOwner = page }
+        .onChange(of: page) { _, page in crownOwner = page }
         .onChange(of: crown) { _, value in
             // 轉超過幾格才翻一頁，免得碰到錶冠就翻
             let step = Int((value / 4).rounded(.towardZero))
@@ -510,6 +482,54 @@ struct WatchPresenterView: View {
         }
     }
 
+    /// 第一頁：大大的「下一頁」，下面一條「上一頁」，跟 iPhone 的簡報畫面一樣。
+    private func slidesPage(_ status: LinkStatus?) -> some View {
+        VStack(spacing: 6) {
+            if let notice = model.lastError ?? wrongApp(status) {
+                Label(notice, systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption2)
+                    .foregroundStyle(.orange)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+            }
+
+            Button { send(.next) } label: {
+                VStack(spacing: 2) {
+                    Image(systemName: "chevron.forward")
+                        .font(.system(size: 40, weight: .bold))
+                        .symbolEffect(.wiggle.forward, value: nextDone)
+                    Text("下一頁").font(.headline)
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background {
+                    RoundedRectangle(cornerRadius: 26, style: .continuous)
+                        .fill(LinearGradient(colors: [Color(red: 1.0, green: 0.66, blue: 0.24), Color(red: 0.97, green: 0.42, blue: 0.08)],
+                                             startPoint: .top, endPoint: .bottom))
+                }
+                .contentShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
+            }
+            .buttonStyle(WatchPressStyle())
+            .handGestureShortcut(.primaryAction)
+
+            Button { send(.previous) } label: {
+                Label("上一頁", systemImage: "chevron.backward")
+                    .font(.footnote.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, minHeight: 40)
+                    .background(Capsule().fill(.white.opacity(0.14)))
+                    .contentShape(Capsule())
+            }
+            .buttonStyle(WatchPressStyle())
+        }
+        .padding(.horizontal, 2)
+        // 下面留給頁面的小圓點
+        .padding(.bottom, 14)
+        .ignoresSafeArea(edges: .bottom)
+    }
+
     /// Mac 最前面不是簡報 App 時提醒：翻頁的按鍵會送到那裡。
     private func wrongApp(_ status: LinkStatus?) -> String? {
         guard status?.frontAppPresents == false, let app = status?.frontApp else { return nil }
@@ -525,10 +545,14 @@ struct WatchPresenterView: View {
     }
 }
 
-/// 調 Mac 的音量：轉錶冠調大小聲（一格跟 Mac 鍵盤的音量鍵一樣），點按鈕靜音。
+/// 簡報畫面的第二頁：Mac 的音量。轉錶冠調大小聲（一格跟 Mac 鍵盤的音量鍵一樣），點按鈕靜音。
 private struct WatchVolumeView: View {
     let model: WatchModel
     @State private var level: Double
+    /// 最後一次轉錶冠的時間：轉的時候 Mac 回報的舊音量不要把畫面拉回去。
+    @State private var turnedAt = Date.distantPast
+    /// 照 Mac 回報的音量更新畫面時，不要再送回 Mac。
+    @State private var syncing = false
 
     init(model: WatchModel) {
         self.model = model
@@ -538,28 +562,34 @@ private struct WatchVolumeView: View {
     var body: some View {
         let volume = model.status?.volume
         let muted = volume?.muted == true
-        VStack(spacing: 6) {
+        VStack(spacing: 4) {
+            Text("Mac 的音量")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
             if volume?.adjustable == false {
                 Text("Mac 現在的聲音輸出不能從這裡調音量")
                     .font(.footnote)
                     .multilineTextAlignment(.center)
                     .frame(maxHeight: .infinity)
             } else {
-                Image(systemName: muted || level == 0 ? "speaker.slash.fill" : "speaker.wave.3.fill", variableValue: level)
-                    .font(.system(size: 26, weight: .semibold))
-                    .foregroundStyle(.orange)
-                    .contentTransition(.symbolEffect(.replace))
-                Text(level, format: .percent.precision(.fractionLength(0)))
-                    .font(.system(size: 34, weight: .semibold, design: .rounded))
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
-                    .foregroundStyle(muted ? .secondary : .primary)
+                HStack(spacing: 8) {
+                    Image(systemName: muted || level == 0 ? "speaker.slash.fill" : "speaker.wave.3.fill", variableValue: level)
+                        .font(.system(size: 24, weight: .semibold))
+                        .foregroundStyle(.orange)
+                        .contentTransition(.symbolEffect(.replace))
+                    Text(level, format: .percent.precision(.fractionLength(0)))
+                        .font(.system(size: 34, weight: .semibold, design: .rounded))
+                        .monospacedDigit()
+                        .contentTransition(.numericText())
+                        .foregroundStyle(muted ? .secondary : .primary)
+                }
                 ProgressView(value: level)
                     .tint(.orange)
                     .opacity(muted ? 0.45 : 1)
                 Text("轉錶冠調整")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
+                Spacer(minLength: 0)
             }
             Button {
                 Task {
@@ -569,20 +599,35 @@ private struct WatchVolumeView: View {
             } label: {
                 Label(muted ? "取消靜音" : "靜音", systemImage: muted ? "speaker.wave.2.fill" : "speaker.slash.fill")
                     .font(.footnote.weight(.semibold))
-                    .frame(maxWidth: .infinity, minHeight: 36)
+                    .frame(maxWidth: .infinity, minHeight: 40)
                     .background(Capsule().fill(.white.opacity(0.14)))
                     .contentShape(Capsule())
             }
             .buttonStyle(WatchPressStyle())
         }
         .padding(.horizontal, 4)
+        // 下面留給頁面的小圓點
+        .padding(.bottom, 14)
+        .ignoresSafeArea(edges: .bottom)
         .focusable()
         .digitalCrownRotation($level, from: 0, through: 1, by: 1.0 / 16, sensitivity: .low,
                               isContinuous: false, isHapticFeedbackEnabled: true)
         .digitalCrownAccessory(.hidden)
-        .onChange(of: level) { _, value in model.setVolume(value) }
+        .onChange(of: level) { _, value in
+            if syncing {
+                syncing = false
+                return
+            }
+            turnedAt = Date()
+            model.setVolume(value)
+        }
+        // 在 Mac 上按音量鍵、或從 iPhone 調：畫面跟著變
+        .onChange(of: volume?.level) { _, value in
+            guard let value, abs(value - level) > 0.01, Date().timeIntervalSince(turnedAt) > 1.5 else { return }
+            syncing = true
+            level = value
+        }
         .animation(.snappy, value: level)
-        .navigationTitle("Mac 的音量")
     }
 }
 

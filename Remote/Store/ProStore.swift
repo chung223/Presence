@@ -52,7 +52,7 @@ final class ProStore {
                                          revocationDate: transaction.revocationDate, isUpgraded: transaction.isUpgraded,
                                          isFamilyShared: transaction.ownershipType == .familyShared))
         }
-        let wasPro = isPro
+        let wasPro = isPro, wasLoaded = loaded
         isPro = Self.debugOverride ?? ProAccess.isActive(purchases)
         loaded = true
         isLifetime = ProAccess.hasLifetime(purchases)
@@ -60,7 +60,8 @@ final class ProStore {
         let active = ProAccess.activeSubscription(purchases)
         subscription = active?.product
         renewalDate = active?.renewal
-        if isPro != wasPro { onChange?(isPro) }
+        // 第一次讀完也要通知：讀完之前沒有告訴手錶（見 WatchBridge.sync）
+        if isPro != wasPro || !wasLoaded { onChange?(isPro) }
     }
 
     /// 回傳能不能用 Pro；還沒讀過購買狀態就先讀。
@@ -106,8 +107,13 @@ final class ProStore {
     }
 
     /// 開發用：`-PresencePro YES|NO` 強制 Pro 狀態（測試付費的鎖、截圖）。示範模式預設是 Pro，截圖才拍得到簡報畫面。
+    /// 帶過一次就記住：手錶的訊息會讓系統在背景重新啟動 App，那次沒有啟動參數，
+    /// 不記住的話 iPhone 就不轉送手錶的簡報指令（2026-10-17 測手錶雷射筆時遇到）。
     private static var debugOverride: Bool? {
         #if DEBUG
+        if UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)["PresencePro"] != nil {
+            UserDefaults.standard.set(UserDefaults.standard.bool(forKey: "PresencePro"), forKey: "PresencePro")
+        }
         if UserDefaults.standard.object(forKey: "PresencePro") != nil { return UserDefaults.standard.bool(forKey: "PresencePro") }
         if RemoteModel.isDemo { return true }
         #endif

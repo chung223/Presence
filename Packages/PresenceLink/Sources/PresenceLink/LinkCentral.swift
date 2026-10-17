@@ -200,7 +200,9 @@ public final class LinkCentral: NSObject {
             return
         }
         if let peripheral, peripheral.state == .connecting { return }
-        if let key = savedPeripheralKey, let saved = UserDefaults.standard.string(forKey: key).flatMap(UUID.init),
+        // 只有一直連著的 iPhone 沿用記住的 Mac。手錶隔很久才直接連一次，Mac 的藍牙位址早就換了，
+        // 連記住的那個會一直等（2026-10-17 實測等了 42 秒），重新搜尋約 3 秒就連上
+        if keepConnected, let key = savedPeripheralKey, let saved = UserDefaults.standard.string(forKey: key).flatMap(UUID.init),
            let known = central.retrievePeripherals(withIdentifiers: [saved]).first {
             connect(known)
             return

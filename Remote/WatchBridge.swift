@@ -9,6 +9,7 @@ final class WatchBridge: NSObject {
     var onCommand: ((LinkCommand) async -> Result<LinkStatus, LinkCentral.Failure>)?
 
     private var lastSyncedStatus: Date?
+    private var lastSyncedPro: Bool?
 
     func activate() {
         guard WCSession.isSupported() else { return }
@@ -24,8 +25,15 @@ final class WatchBridge: NSObject {
             return
         }
         if let status, status.event == nil, let last = lastSyncedStatus, Date().timeIntervalSince(last) < 5 { return }
-        // 手錶靠這個決定簡報遙控能不能用（手錶自己也查 App Store，但開發時的測試購買只在 iPhone 上）
-        var context: [String: Any] = ["pro": ProStore.shared.isPro]
+        // 手錶靠這個決定簡報遙控能不能用（手錶自己也查 App Store，但開發時的測試購買只在 iPhone 上）。
+        // 還沒讀完購買狀態就不要送：系統在背景重開 App 時，一開始 isPro 還是 false，
+        // 送過去手錶就以為沒有 Pro、跳出付費畫面（2026-10-17 使用者遇到）
+        var context: [String: Any] = [:]
+        if ProStore.shared.loaded { context["pro"] = ProStore.shared.isPro }
+        if let pro = context["pro"] as? Bool, pro != lastSyncedPro {
+            LinkLog.write("[iPhone] 告訴手錶 Pro=\(pro)")
+            lastSyncedPro = pro
+        }
         if let pairing, let data = try? JSONEncoder().encode(pairing) { context["pairing"] = data }
         if let status, let data = try? WatchMessage.encode(status) {
             context["status"] = data
