@@ -1,6 +1,6 @@
 # Presence
 
-[English](README.en.md)
+[English](README.en.md)　[網站](https://chung223.github.io/presence-site/)
 
 帶著手機離開座位，Mac 自動鎖定；走回來，自動解鎖。
 
@@ -56,7 +56,7 @@ https://github.com/user-attachments/assets/ed99e2bb-de2b-4e57-80bd-02ce0df88796
 
 **一定要放在「應用程式」資料夾**：從「下載」或外接硬碟執行，系統可能在睡眠時把它結束，登入時也開不起來。放錯地方時，Presence 會提醒你並可以一鍵移過去。
 
-iPhone 與 Apple Watch 的 Presence Remote 已送 App Store 審核，上架後會在這裡附上連結；在那之前要從原始碼建置（見「開發」）。
+iPhone 與 Apple Watch 的 Presence Remote 在 [App Store](https://apps.apple.com/tw/app/id6822611221) 免費下載，也可以從原始碼建置（見「開發」）。
 
 也可以從原始碼建置 Mac 版：
 

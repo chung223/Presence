@@ -1,6 +1,6 @@
 # Presence
 
-[繁體中文](README.md)
+[繁體中文](README.md) · [Website](https://chung223.github.io/presence-site/en/)
 
 Walk away from your desk with your phone and your Mac locks itself. Come back and it unlocks.
 
@@ -56,7 +56,7 @@ Download `Presence-<version>.zip` from [Releases](https://github.com/chung223/Pr
 
 **Keep it in the Applications folder.** Run from Downloads or an external drive, macOS may quit it during sleep, and it may fail to start at login. If it's in the wrong place, Presence tells you and can move itself.
 
-Presence Remote for iPhone and Apple Watch has been submitted to the App Store; a link will go here once it's available. Until then you can build it from source (see [Development](#development)).
+Presence Remote for iPhone and Apple Watch is a free download on the [App Store](https://apps.apple.com/app/id6822611221). You can also build it from source (see [Development](#development)).
 
 To build the Mac app from source:
 
