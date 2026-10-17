@@ -3,6 +3,6 @@
   "keywords": "bloquear,desbloquear,bluetooth,presentaciones,pasador,presentador,puntero,mando,cronómetro,BLEUnlock",
   "promotionalText": "Novedad: puntero láser, foco y subrayador, y control del volumen del Mac. El iPhone y el Apple Watch se convierten en tu pasador.",
   "supportUrl": "https://github.com/chung223/Presence/issues",
-  "marketingUrl": "https://github.com/chung223/Presence",
+  "marketingUrl": "https://chung223.github.io/presence-site/es/",
   "whatsNew": "Novedades de Presence Pro\n• Puntero láser, foco y subrayador: donde mueves el dedo en el iPhone, aparece en la pantalla proyectada. Las líneas del subrayador desaparecen a los pocos segundos y al pasar de diapositiva\n• Ajusta el volumen del Mac desde el iPhone y el Apple Watch\n\nAdemás\n• La pantalla de presentación del Apple Watch tiene dos páginas: primero las diapositivas; desliza a la izquierda para el volumen\n• Corregido: el Apple Watch a veces mostraba por error la pantalla de suscripción\n• Estas novedades requieren Presence 0.3.0 o posterior en el Mac"
 }

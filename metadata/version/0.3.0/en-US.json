@@ -3,6 +3,6 @@
   "keywords": "proximity,bluetooth,unlock,autolock,clicker,slides,presenter,remote,talk timer,desk,BLEUnlock,laser",
   "promotionalText": "New: laser pointer, spotlight, and highlighter, plus Mac volume control. Your iPhone and Apple Watch are your presentation remote.",
   "supportUrl": "https://github.com/chung223/Presence/issues",
-  "marketingUrl": "https://github.com/chung223/Presence",
+  "marketingUrl": "https://chung223.github.io/presence-site/en/",
   "whatsNew": "New in Presence Pro\n• Laser pointer, spotlight, and highlighter: wherever your finger moves on your iPhone, it appears on the projected screen. Highlighter lines fade after a few seconds and clear when you change slides\n• Adjust your Mac’s volume from your iPhone and Apple Watch\n\nAlso\n• The Apple Watch presenter screen now has two pages: slides first, swipe left for volume\n• Fixed Apple Watch sometimes showing the subscription screen by mistake\n• The new features need Presence 0.3.0 or later on your Mac"
 }

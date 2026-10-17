@@ -3,6 +3,6 @@
   "keywords": "verrouillage,déverrouiller,bluetooth,proximité,télécommande,présentation,diapo,minuteur,BLEUnlock",
   "promotionalText": "Nouveau : pointeur laser, projecteur et surligneur, et réglage du volume du Mac. L’iPhone et l’Apple Watch deviennent votre télécommande.",
   "supportUrl": "https://github.com/chung223/Presence/issues",
-  "marketingUrl": "https://github.com/chung223/Presence",
+  "marketingUrl": "https://chung223.github.io/presence-site/fr/",
   "whatsNew": "Nouveautés de Presence Pro\n• Pointeur laser, projecteur et surligneur : là où va votre doigt sur l’iPhone, cela apparaît sur l’écran projeté. Les traits du surligneur s’effacent après quelques secondes et dès que vous changez de diapositive\n• Réglez le volume du Mac depuis l’iPhone et l’Apple Watch\n\nAutres améliorations\n• L’écran de présentation de l’Apple Watch a deux pages : d’abord les diapositives, balayez vers la gauche pour le volume\n• Correction : l’Apple Watch affichait parfois l’écran d’abonnement par erreur\n• Ces nouveautés nécessitent Presence 0.3.0 ou ultérieur sur votre Mac"
 }

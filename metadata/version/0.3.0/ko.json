@@ -3,6 +3,6 @@
   "keywords": "잠금,잠금해제,블루투스,근접,자동잠금,화면잠금,프레젠터,리모컨,클리커,슬라이드,프레젠테이션,발표,타이머,카운트다운,무선,원격,보안,자리,BLEUnlock,레이저",
   "promotionalText": "새로운 기능: 레이저, 스포트라이트, 형광펜과 Mac 음량 조절. iPhone과 Apple Watch가 프레젠터가 됩니다.",
   "supportUrl": "https://github.com/chung223/Presence/issues",
-  "marketingUrl": "https://github.com/chung223/Presence",
+  "marketingUrl": "https://chung223.github.io/presence-site/ko/",
   "whatsNew": "Presence Pro 새로운 기능\n• 레이저, 스포트라이트, 형광펜: iPhone에서 손가락을 움직인 곳이 프로젝터 화면에 그대로 나타납니다. 형광펜 선은 몇 초 후 사라지고, 슬라이드를 넘기면 바로 지워집니다\n• iPhone과 Apple Watch로 Mac 음량 조절\n\n기타 개선 사항\n• Apple Watch 프레젠테이션 화면을 두 페이지로 구성: 첫 페이지는 슬라이드, 왼쪽으로 쓸어넘기면 음량\n• Apple Watch에서 구독 화면이 잘못 표시되던 문제 수정\n• 새로운 기능을 사용하려면 Mac에 Presence 0.3.0 이상 필요"
 }

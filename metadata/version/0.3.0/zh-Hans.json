@@ -3,6 +3,6 @@
   "keywords": "锁屏,自动锁屏,解锁,靠近解锁,蓝牙,翻页笔,翻页器,幻灯片,演示,遥控器,演讲,倒计时,计时器,离座,电脑锁,课件,讲课,近距离,防偷看,BLEUnlock,激光笔",
   "promotionalText": "新功能：激光笔、聚光灯、荧光笔，还能用手机调节 Mac 的音量。iPhone 和 Apple Watch 就是你的翻页笔。",
   "supportUrl": "https://github.com/chung223/Presence/issues",
-  "marketingUrl": "https://github.com/chung223/Presence",
+  "marketingUrl": "https://chung223.github.io/presence-site/zh-Hans/",
   "whatsNew": "Presence Pro 新功能\n• 激光笔、聚光灯、荧光笔：手指在 iPhone 上移到哪里，投影画面上就出现在哪里；荧光笔画的线几秒后自动消失，翻页时立即清除\n• 用 iPhone 和 Apple Watch 调节 Mac 的音量\n\n其他改进\n• Apple Watch 演示画面分为两页：第一页翻页，向左轻扫调节音量\n• 修复 Apple Watch 偶尔误显示付费画面的问题\n• 新功能需要 Mac 上的 Presence 0.3.0 或更高版本"
 }

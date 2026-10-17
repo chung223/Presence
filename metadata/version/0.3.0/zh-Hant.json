@@ -3,6 +3,6 @@
   "keywords": "解鎖,藍牙,遙控,簡報筆,翻頁,簡報,演講,倒數,自動上鎖,電腦,安全,座位,螢幕鎖,BLEUnlock,雷射筆",
   "promotionalText": "新功能：雷射筆、聚光燈、螢光筆，還能從手機調 Mac 的音量。iPhone 和 Apple Watch 就是你的簡報筆。",
   "supportUrl": "https://github.com/chung223/Presence/issues",
-  "marketingUrl": "https://github.com/chung223/Presence",
+  "marketingUrl": "https://chung223.github.io/presence-site/",
   "whatsNew": "新功能（Presence Pro）\n• 雷射筆、聚光燈、螢光筆：手指在手機上移到哪裡，投影畫面上就出現在哪裡；螢光筆畫的線幾秒後自動消失，翻頁時馬上清掉\n• 用 iPhone 和 Apple Watch 調 Mac 的音量\n\n其他改進\n• Apple Watch 的簡報畫面分成兩頁：第一頁翻頁，往左滑調音量\n• 修正 Apple Watch 偶爾誤顯示付費畫面\n• 新功能需要 Mac 上的 Presence 0.3.0 以上"
 }

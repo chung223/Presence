@@ -3,6 +3,6 @@
   "keywords": "ロック解除,自動ロック,画面ロック,Bluetooth,近接,離席,在席,プレゼン,プレゼンリモコン,スライド送り,プレゼンター,発表,タイマー,パソコン,セキュリティ,BLEUnlock,レーザー",
   "promotionalText": "新機能：レーザー、スポットライト、蛍光ペン。iPhoneからMacの音量も調整できます。iPhoneとApple Watchがプレゼンリモコンに。",
   "supportUrl": "https://github.com/chung223/Presence/issues",
-  "marketingUrl": "https://github.com/chung223/Presence",
+  "marketingUrl": "https://chung223.github.io/presence-site/ja/",
   "whatsNew": "Presence Proの新機能\n• レーザー、スポットライト、蛍光ペン：iPhoneで指を動かした場所が、そのまま投影画面に表示されます。蛍光ペンの線は数秒後に消え、スライドをめくるとすぐに消えます\n• iPhoneとApple WatchでMacの音量を調整\n\nその他の改良点\n• Apple Watchのプレゼン画面を2ページに：1ページ目でスライド操作、左にスワイプで音量\n• Apple Watchで購入画面が誤って表示されることがある問題を修正\n• 新機能には、MacのPresence 0.3.0以降が必要です"
 }

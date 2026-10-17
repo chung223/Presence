@@ -3,6 +3,6 @@
   "keywords": "entsperren,bluetooth,nähe,präsentation,folien,clicker,fernbedienung,vortrag,timer,laser,BLEUnlock",
   "promotionalText": "Neu: Laserpointer, Spotlight und Marker – und die Mac-Lautstärke regeln. iPhone und Apple Watch werden zum Presenter.",
   "supportUrl": "https://github.com/chung223/Presence/issues",
-  "marketingUrl": "https://github.com/chung223/Presence",
+  "marketingUrl": "https://chung223.github.io/presence-site/de/",
   "whatsNew": "Neu in Presence Pro\n• Laserpointer, Spotlight und Marker: Wo dein Finger auf dem iPhone hinzeigt, erscheint es im Projektionsbild. Markierungen verschwinden nach ein paar Sekunden und beim Folienwechsel sofort\n• Mac-Lautstärke mit iPhone und Apple Watch regeln\n\nWeitere Verbesserungen\n• Die Präsentationsansicht auf der Apple Watch hat zwei Seiten: zuerst die Folien, nach links wischen für die Lautstärke\n• Behoben: Die Apple Watch zeigte manchmal fälschlich den Abo-Bildschirm\n• Die neuen Funktionen erfordern Presence 0.3.0 oder neuer auf dem Mac"
 }
