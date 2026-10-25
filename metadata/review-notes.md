@@ -25,6 +25,8 @@ Presence Pro (in-app purchases):
 
 Demo video: the previous version (0.2.1) was reviewed with a demo video of Presenter Remote controlling a Keynote slideshow on a real iPhone and Mac. If you need a new video showing the 0.3.0 laser, spotlight, highlighter, and volume controls, we'll provide one. The app is localized in Traditional Chinese, English, Japanese, Korean, Simplified Chinese, German, French, and Spanish.
 
+0.3.2 is a bug-fix release (no new features, purchases, or permissions): after the Mac woke from sleep, the app often stopped getting replies from the Mac until paired again. It now reconnects on its own.
+
 Background mode "Uses Bluetooth LE accessories" is used to keep the connection to the Mac, so the app can receive lock notifications and answer the Mac's encrypted presence confirmation while in the background. It also lets the Lock Screen slide buttons reach the Mac while the iPhone is locked during a presentation.
 
 Encryption: commands between the iPhone and the Mac are encrypted with AES-GCM using Apple's CryptoKit, only to protect communication between the user's own devices.
