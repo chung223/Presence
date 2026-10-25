@@ -345,6 +345,9 @@ final class LinkService: NSObject {
     private func advertise() {
         guard let manager, manager.state == .poweredOn, shouldAdvertise else { return }
         if statusCharacteristic == nil {
+            // Mac 睡眠時藍牙狀態會變成關閉，但系統不會清掉已加入的服務。醒來再加一份前先移除舊的，
+            // 否則每醒來一次就多一份：iPhone 訂閱最舊的那份，回覆卻從最新的送出，一直收不到（2026-10-25 實測四個多小時疊了 14 份）
+            manager.removeAllServices()
             let command = CBMutableCharacteristic(type: CBUUID(string: LinkIdentifiers.command),
                                                   properties: [.write], value: nil, permissions: [.writeable])
             let status = CBMutableCharacteristic(type: CBUUID(string: LinkIdentifiers.status),

@@ -66,6 +66,8 @@ public final class LinkCentral: NSObject {
     /// 雷射筆的位置走這個特徵；舊版 Mac 沒有。
     private var pointerCharacteristic: CBCharacteristic?
     @ObservationIgnored private var verified = false
+    /// 還在查特徵的服務；每一份都查完才訂閱與打招呼。
+    @ObservationIgnored private var discovering: Set<ObjectIdentifier> = []
     @ObservationIgnored private var helloID: UUID?
     @ObservationIgnored private var rejectedPeripherals: Set<UUID> = []
     @ObservationIgnored private var readyWaiters: [CheckedContinuation<Bool, Never>] = []
@@ -223,20 +225,31 @@ public final class LinkCentral: NSObject {
         p.delegate = self
         command = nil
         pointerCharacteristic = nil
+        discovering = []
         p.discoverServices([CBUUID(string: LinkIdentifiers.service)])
     }
 
-    private func didDiscoverCharacteristics(of service: CBService, on p: CBPeripheral) {
-        for characteristic in service.characteristics ?? [] {
-            if characteristic.uuid == CBUUID(string: LinkIdentifiers.command) { command = characteristic }
-            if characteristic.uuid == CBUUID(string: LinkIdentifiers.pointer) { pointerCharacteristic = characteristic }
-            if characteristic.uuid == CBUUID(string: LinkIdentifiers.status) {
-                if characteristic.isNotifying {
-                    sendHello()
-                } else {
-                    p.setNotifyValue(true, for: characteristic)
-                }
-            }
+    private func ourServices(of p: CBPeripheral) -> [CBService] {
+        p.services?.filter { $0.uuid == CBUUID(string: LinkIdentifiers.service) } ?? []
+    }
+
+    private func statusCharacteristics(of p: CBPeripheral) -> [CBCharacteristic] {
+        ourServices(of: p).flatMap { $0.characteristics ?? [] }.filter { $0.uuid == CBUUID(string: LinkIdentifiers.status) }
+    }
+
+    /// Mac 上 0.3.1 以前的 Presence 每次睡眠醒來都會多加一份服務（舊的沒移除），回覆只從最新那份送出。
+    /// 所以每一份的狀態特徵都訂閱，全部訂好才打招呼；指令與雷射筆寫到最後一份（Mac 收到哪一份都一樣處理）。
+    private func didDiscoverCharacteristics(on p: CBPeripheral) {
+        let characteristics = ourServices(of: p).flatMap { $0.characteristics ?? [] }
+        command = characteristics.last { $0.uuid == CBUUID(string: LinkIdentifiers.command) }
+        pointerCharacteristic = characteristics.last { $0.uuid == CBUUID(string: LinkIdentifiers.pointer) }
+        let statuses = statusCharacteristics(of: p)
+        guard !statuses.isEmpty else { return }
+        let waiting = statuses.filter { !$0.isNotifying }
+        if waiting.isEmpty {
+            sendHello()
+        } else {
+            waiting.forEach { p.setNotifyValue(true, for: $0) }
         }
     }
 
@@ -439,22 +452,40 @@ extension LinkCentral: CBCentralManagerDelegate, CBPeripheralDelegate {
 
     public nonisolated func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         MainActor.assumeIsolated {
-            guard let service = peripheral.services?.first(where: { $0.uuid == CBUUID(string: LinkIdentifiers.service) }) else {
+            let services = ourServices(of: peripheral)
+            guard !services.isEmpty else {
                 central?.cancelPeripheralConnection(peripheral)
                 return
             }
-            peripheral.discoverCharacteristics([CBUUID(string: LinkIdentifiers.command), CBUUID(string: LinkIdentifiers.status),
-                                                CBUUID(string: LinkIdentifiers.pointer)], for: service)
+            if services.count > 1 {
+                LinkLog.write("[\(deviceName)] Mac 上有 \(services.count) 份服務（舊版 Presence 睡眠醒來會多加），每一份都訂閱")
+            }
+            discovering = Set(services.map(ObjectIdentifier.init))
+            for service in services {
+                peripheral.discoverCharacteristics([CBUUID(string: LinkIdentifiers.command), CBUUID(string: LinkIdentifiers.status),
+                                                    CBUUID(string: LinkIdentifiers.pointer)], for: service)
+            }
         }
     }
 
     public nonisolated func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        MainActor.assumeIsolated { didDiscoverCharacteristics(of: service, on: peripheral) }
+        MainActor.assumeIsolated {
+            // 上一輪查詢晚到的回呼不算
+            guard discovering.remove(ObjectIdentifier(service)) != nil, discovering.isEmpty else { return }
+            didDiscoverCharacteristics(on: peripheral)
+        }
     }
 
     public nonisolated func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
         let ok = error == nil && characteristic.isNotifying
-        MainActor.assumeIsolated { if ok { sendHello() } }
+        MainActor.assumeIsolated {
+            guard ok else {
+                LinkLog.write("[\(deviceName)] 訂閱 Mac 的狀態失敗：\(error.map { "\($0)" } ?? "沒有開啟")")
+                return
+            }
+            // 每一份都訂好才打招呼，不然回覆可能從還沒訂到的那份送出
+            if statusCharacteristics(of: peripheral).allSatisfy(\.isNotifying) { sendHello() }
+        }
     }
 
     /// Mac 上的 Presence 重開時，連線可能還在、服務卻已重建：重新查詢並再打一次招呼。
