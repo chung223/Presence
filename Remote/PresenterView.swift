@@ -35,11 +35,66 @@ struct PresenterView: View {
 
     var body: some View {
         let status = model.link.status
-        let support = model.presenterSupport
         let connected = model.link.state == .connected
-        let ready = connected && (support == .enabled || support == .presenting)
+        let ready = connected && (model.presenterSupport == .enabled || model.presenterSupport == .presenting)
         let endsAt = status?.presenter == .presenting ? status?.presentationEndsAt : nil
 
+        NavigationStack {
+            stage(status: status, connected: connected, ready: ready)
+                .toolbar { toolbar(status: status, ready: ready) }
+        }
+        .preferredColorScheme(.dark)
+        .animation(.snappy, value: model.lastError)
+        .sensoryFeedback(.impact(flexibility: .solid, intensity: 0.8), trigger: taps)
+        .sensoryFeedback(.error, trigger: failures)
+        .sensoryFeedback(.impact(weight: .light), trigger: pointerTouches)
+        .animation(.snappy, value: tool)
+        .sensoryFeedback(.warning, trigger: alerts)
+        .sheet(isPresented: $jumping) {
+            JumpSheet { slide in
+                taps += 1
+                inkReset += 1
+                Task { if await !model.goToSlide(slide) { failures += 1 } }
+            }
+        }
+        // 剩 5 分鐘、時間到時在手上震一下（App 在前景時系統不顯示通知）
+        .task(id: endsAt) {
+            guard let endsAt else { return }
+            for offset in [-300.0, 0] {
+                let wait = endsAt.addingTimeInterval(offset).timeIntervalSinceNow
+                guard wait > 0 else { continue }
+                try? await Task.sleep(for: .seconds(wait))
+                if Task.isCancelled { return }
+                alerts += 1
+            }
+        }
+        .onAppear {
+            // 簡報中手機不要自動鎖定；鎖了也還有鎖定畫面的翻頁按鈕
+            UIApplication.shared.isIdleTimerDisabled = true
+            Task { await model.setPresentation(true) }
+        }
+        .onDisappear {
+            model.endPointer()
+            UIApplication.shared.isIdleTimerDisabled = false
+            Task { await model.setPresentation(false) }
+        }
+        #if DEBUG
+        // 宣傳影片：字幕、自動翻頁、結尾畫面（簡報畫面蓋在主畫面上，主畫面的字幕和結尾看不到）
+        .overlay(alignment: .top) { DemoCaption(text: model.demoCaption, top: true) }
+        .overlay { if model.demoEndCard { DemoEndCard().environment(\.colorScheme, .light) } }
+        .animation(.easeInOut(duration: 0.6), value: model.demoEndCard)
+        .onChange(of: model.demoSlideTick) {
+            taps += 1
+            nextDone += 1
+        }
+        #endif
+    }
+
+    /// 翻頁區與工具。結束、演講長度和開始／黑畫面／跳頁／結束播放放在系統工具列：
+    /// 一般 iPhone 在上下兩條，iPhone Duo 合上時系統把它們排到側邊，翻頁區可以用滿整個高度。
+    @ViewBuilder
+    private func stage(status: LinkStatus?, connected: Bool, ready: Bool) -> some View {
+        let support = model.presenterSupport
         VStack(spacing: 14) {
             header(status: status, connected: connected)
 
@@ -108,13 +163,6 @@ struct PresenterView: View {
                         Task { if await !model.changeVolume(.mute(muted)) { failures += 1 } }
                     }
                 }
-
-                HStack(spacing: 10) {
-                    tile(title: "開始播放", symbol: "play.fill") { send(.start) }
-                    tile(title: "黑畫面", symbol: "eye.slash.fill") { send(.blank) }
-                    tile(title: "跳頁", symbol: "number") { jumping = true }
-                    tile(title: "結束播放", symbol: "stop.fill") { send(.end) }
-                }
             }
             .disabled(!ready)
             .opacity(ready ? 1 : 0.4)
@@ -122,84 +170,41 @@ struct PresenterView: View {
         .padding(.horizontal, 20)
         .padding(.bottom, 8)
         .background { StageBackground() }
-        .preferredColorScheme(.dark)
-        .animation(.snappy, value: model.lastError)
-        .sensoryFeedback(.impact(flexibility: .solid, intensity: 0.8), trigger: taps)
-        .sensoryFeedback(.error, trigger: failures)
-        .sensoryFeedback(.impact(weight: .light), trigger: pointerTouches)
-        .animation(.snappy, value: tool)
-        .sensoryFeedback(.warning, trigger: alerts)
-        .sheet(isPresented: $jumping) {
-            JumpSheet { slide in
-                taps += 1
-                inkReset += 1
-                Task { if await !model.goToSlide(slide) { failures += 1 } }
-            }
-        }
-        // 剩 5 分鐘、時間到時在手上震一下（App 在前景時系統不顯示通知）
-        .task(id: endsAt) {
-            guard let endsAt else { return }
-            for offset in [-300.0, 0] {
-                let wait = endsAt.addingTimeInterval(offset).timeIntervalSinceNow
-                guard wait > 0 else { continue }
-                try? await Task.sleep(for: .seconds(wait))
-                if Task.isCancelled { return }
-                alerts += 1
-            }
-        }
-        .onAppear {
-            // 簡報中手機不要自動鎖定；鎖了也還有鎖定畫面的翻頁按鈕
-            UIApplication.shared.isIdleTimerDisabled = true
-            Task { await model.setPresentation(true) }
-        }
-        .onDisappear {
-            model.endPointer()
-            UIApplication.shared.isIdleTimerDisabled = false
-            Task { await model.setPresentation(false) }
-        }
-        #if DEBUG
-        // 宣傳影片：字幕、自動翻頁、結尾畫面（簡報畫面蓋在主畫面上，主畫面的字幕和結尾看不到）
-        .overlay(alignment: .top) { DemoCaption(text: model.demoCaption, top: true) }
-        .overlay { if model.demoEndCard { DemoEndCard().environment(\.colorScheme, .light) } }
-        .animation(.easeInOut(duration: 0.6), value: model.demoEndCard)
-        .onChange(of: model.demoSlideTick) {
-            taps += 1
-            nextDone += 1
-        }
-        #endif
     }
 
+    /// 自訂畫面放不進直排的工具列，所以計時與連線狀態留在畫面裡。
     private func header(status: LinkStatus?, connected: Bool) -> some View {
         let presenting = status?.presenter == .presenting
         let start = presenting ? status?.presentationStartedAt ?? openedAt : openedAt
         let minutes = presenting ? status?.presentationMinutes : nil
-        return HStack {
-            Button { dismiss() } label: {
-                Image(systemName: "xmark").font(.headline).frame(width: 44, height: 44)
+        return VStack(spacing: 2) {
+            PresentationClock(start: start, minutes: minutes)
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(connected ? Color.green : Color.orange)
+                    .frame(width: 7, height: 7)
+                Text(status?.frontApp.map { String(localized: "正在控制「\($0)」") } ?? model.pairing?.macName ?? "Mac")
+                    .lineLimit(1)
             }
-            .buttonStyle(.glass)
-            .buttonBorderShape(.circle)
-            .accessibilityLabel("結束簡報")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .accessibilityElement(children: .combine)
+            .accessibilityValue(connected ? Text("已連線") : Text("未連線"))
+        }
+    }
 
-            Spacer()
+    /// 每個按鈕都有標題與圖示：直排時系統只顯示圖示，放不下時收進溢出選單（顯示標題）。
+    /// 簡報中最常按的黑畫面、跳頁最後才收；開始與結束播放各只按一次，先收。
+    @ToolbarContentBuilder
+    private func toolbar(status: LinkStatus?, ready: Bool) -> some ToolbarContent {
+        let presenting = status?.presenter == .presenting
+        let minutes = presenting ? status?.presentationMinutes : nil
 
-            VStack(spacing: 2) {
-                PresentationClock(start: start, minutes: minutes)
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(connected ? Color.green : Color.orange)
-                        .frame(width: 7, height: 7)
-                    Text(status?.frontApp.map { String(localized: "正在控制「\($0)」") } ?? model.pairing?.macName ?? "Mac")
-                        .lineLimit(1)
-                }
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .accessibilityElement(children: .combine)
-                .accessibilityValue(connected ? Text("已連線") : Text("未連線"))
-            }
+        ToolbarItem(placement: .cancellationAction) {
+            Button("結束簡報", systemImage: "xmark") { dismiss() }
+        }
 
-            Spacer()
-
+        ToolbarItem(placement: .primaryAction) {
             Menu {
                 Picker("演講長度", selection: Binding(
                     get: { minutes },
@@ -213,26 +218,34 @@ struct PresenterView: View {
                     Task { await model.setPresentationTimer(minutes: minutes, restart: true) }
                 }
             } label: {
-                Image(systemName: "timer").font(.headline).frame(width: 44, height: 44)
+                Label("演講長度", systemImage: "timer")
             }
-            .buttonStyle(.glass)
-            .buttonBorderShape(.circle)
-            .accessibilityLabel("演講長度")
             .disabled(!presenting)
         }
-        .padding(.top, 4)
+
+        if #available(iOS 27, *) {
+            playbackItems(ready: ready).visibilityPriority(.low)
+            ToolbarSpacer(.flexible, placement: .bottomBar)
+            showItems(ready: ready).visibilityPriority(.high)
+        } else {
+            playbackItems(ready: ready)
+            ToolbarSpacer(.flexible, placement: .bottomBar)
+            showItems(ready: ready)
+        }
     }
 
-    private func tile(title: LocalizedStringKey, symbol: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            VStack(spacing: 6) {
-                Image(systemName: symbol).font(.system(size: 18, weight: .semibold))
-                Text(title).font(.caption.weight(.medium)).lineLimit(1).minimumScaleFactor(0.8)
-            }
-            .frame(maxWidth: .infinity, minHeight: 64)
-            .background(Card(radius: 20))
+    private func playbackItems(ready: Bool) -> some ToolbarContent {
+        ToolbarItemGroup(placement: .bottomBar) {
+            Button("開始播放", systemImage: "play.fill") { send(.start) }.disabled(!ready)
+            Button("結束播放", systemImage: "stop.fill") { send(.end) }.disabled(!ready)
         }
-        .buttonStyle(PadStyle())
+    }
+
+    private func showItems(ready: Bool) -> some ToolbarContent {
+        ToolbarItemGroup(placement: .bottomBar) {
+            Button("黑畫面", systemImage: "eye.slash.fill") { send(.blank) }.disabled(!ready)
+            Button("跳頁", systemImage: "number") { jumping = true }.disabled(!ready)
+        }
     }
 
     /// 還不能翻頁時的說明。
