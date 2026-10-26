@@ -103,6 +103,14 @@ Keynote 與 PowerPoint 都測過開始播放、下一頁、上一頁、跳頁、
 - **實測**（MacBook Pro 內建喇叭，iPhone 開發版）：手機拉到 69%，Mac 也是 69%；靜音、取消靜音都正確；在 Mac 上把音量改成 62%，手機一兩秒內跟著變。手錶（Apple Watch Ultra 2，經由 iPhone 轉送）使用者實測可以用。
 - iPhone 側邊的實體音量鍵不能拿來調 Mac：Apple 不讓 App 接管，繞過的做法容易被退審。
 
+## iPhone Duo（2026-10-26，0.3.3）
+
+- **一般 iPhone 維持原本的版面**：上面一列結束、計時、演講長度，最下面四個有字的按鈕（開始播放、黑畫面、跳頁、結束播放）。第一版把這些都改成系統工具列，一般 iPhone 的四個按鈕變成只有圖示，使用者說文字要留著。
+- **工具列是直的才換版面**：看 iOS 27.1 的 `@Environment(\.toolbarVerticalEdge)`（沒有直排工具列時是 nil，`VerticalBarReader`）。是直的（iPhone Duo）時，結束、演講長度、開始／結束播放、黑畫面、跳頁放系統工具列，系統排到側邊，翻頁區用滿整個高度。
+- **半開時避開折線**：`ArrangementView` 疊放排列，計時與按鈕分在折線兩邊（`ArrangementReader` 看 `overlayArrangementZIndex`）。像書本拿著時計時在左、按鈕在右；立在桌上時大字計時在上半、按鈕在下半。翻頁圓鈕跟著高度縮小，太矮時省掉說明。
+- **驗證**：模擬器上看過 iOS 27.0 一般 iPhone（跟 0.3.2 一樣）與 iOS 27.1 iPhone Duo 外螢幕（按鈕在右邊直欄）。半開、立在桌上、全開要在 Device Hub 按 Book／Open，沒有驗證。本機沒有 iOS 27.1 的一般 iPhone 模擬器，那裡 `toolbarVerticalEdge` 是不是 nil 要用實機確認（如果不是，會換成 Duo 的版面，不會壞）。
+- **截圖**：`scripts/store-screenshots.sh --duo` 拍外螢幕（1398×2034，`APP_IPHONE_DUO`），輸出到 `metadata/screenshots/iphone-duo/`。
+
 ## 其他 App 怎麼配合
 
 1. **簡報模式支援上面的按鍵**。Presence 對 Keynote、PowerPoint 以外的 App 用 ⌘↩ 開始播放，所以建議把 ⌘↩ 當「從目前這一頁開始簡報」。方向鍵、B、數字、Esc 只在簡報畫面處理，不要做成全域快捷鍵。另外支援 ↓、空白鍵、Page Down（一般藍牙簡報筆送的）會更好用。
