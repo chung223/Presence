@@ -32,6 +32,8 @@ struct PresenterView: View {
     @GestureState private var padPressed = false
     /// 計時跟按鈕放在一起（沒有折線）；iPhone Duo 半開時是 false，計時在折線另一邊。
     @State private var infoStacked = true
+    /// 系統把工具列排成直的（iPhone Duo）。一般 iPhone 沒有直排工具列，維持原本的版面。
+    @State private var verticalBar = false
 
     private static let lengths = [10, 15, 20, 30, 45, 60]
 
@@ -43,7 +45,11 @@ struct PresenterView: View {
 
         NavigationStack {
             stage(status: status, connected: connected, ready: ready)
-                .toolbar { toolbar(status: status, ready: ready) }
+                .toolbar { if verticalBar { toolbar(status: status, ready: ready) } }
+                .toolbarVisibility(verticalBar ? .automatic : .hidden, for: .navigationBar)
+                .background {
+                    if #available(iOS 27.1, *) { VerticalBarReader { verticalBar = $0 } }
+                }
         }
         .preferredColorScheme(.dark)
         .animation(.snappy, value: model.lastError)
@@ -92,16 +98,18 @@ struct PresenterView: View {
         #endif
     }
 
-    /// 翻頁區與工具。結束、演講長度和開始／黑畫面／跳頁／結束播放放在系統工具列：
-    /// 一般 iPhone 在上下兩條，iPhone Duo 合上時系統把它們排到側邊，翻頁區可以用滿整個高度。
+    /// 翻頁區與工具。
     ///
-    /// iPhone Duo 半開時用疊放排列（overlay）把計時與按鈕分在折線兩邊，按鈕不會被折線切過：
-    /// 像書本拿著時按鈕在右半邊（拇指按得到），立在桌上時計時在上半部（遠處看得到）、按鈕在下半部。
-    /// 合上、全開或一般 iPhone 時兩者疊在一起，按鈕那層自己帶計時，跟原本一樣。
+    /// 一般 iPhone：結束、計時、演講長度在上面一列，開始／黑畫面／跳頁／結束播放是最下面四個有字的按鈕。
+    ///
+    /// iPhone Duo（工具列是直的）：結束、演講長度和開始／黑畫面／跳頁／結束播放放在系統工具列，
+    /// 系統把它們排到側邊，翻頁區可以用滿整個高度。半開時用疊放排列（overlay）把計時與按鈕分在折線兩邊，
+    /// 按鈕不會被折線切過：像書本拿著時按鈕在右半邊（拇指按得到），立在桌上時計時在上半部（遠處看得到）、
+    /// 按鈕在下半部。合上或全開時兩者疊在一起，按鈕那層自己帶計時。
     @ViewBuilder
     private func stage(status: LinkStatus?, connected: Bool, ready: Bool) -> some View {
         Group {
-            if #available(iOS 27.1, *) {
+            if #available(iOS 27.1, *), verticalBar {
                 ArrangementView {
                     VStack(spacing: 14) {
                         if infoStacked { info(status: status, connected: connected, large: false) }
@@ -119,8 +127,17 @@ struct PresenterView: View {
                 .arrangementViewStyle(.overlay)
             } else {
                 VStack(spacing: 14) {
-                    info(status: status, connected: connected, large: false)
+                    topRow(status: status, connected: connected)
+                    notice(status: status, connected: connected)
                     controls(ready: ready)
+                    HStack(spacing: 10) {
+                        tile(title: "開始播放", symbol: "play.fill") { send(.start) }
+                        tile(title: "黑畫面", symbol: "eye.slash.fill") { send(.blank) }
+                        tile(title: "跳頁", symbol: "number") { jumping = true }
+                        tile(title: "結束播放", symbol: "stop.fill") { send(.end) }
+                    }
+                    .disabled(!ready)
+                    .opacity(ready ? 1 : 0.4)
                 }
             }
         }
@@ -133,10 +150,69 @@ struct PresenterView: View {
     private func info(status: LinkStatus?, connected: Bool, large: Bool) -> some View {
         VStack(spacing: 14) {
             header(status: status, connected: connected, large: large)
-            if let message = guidance(model.presenterSupport, connected: connected) ?? model.lastError ?? wrongApp(status) {
-                Notice(message: message)
-                    .transition(.move(edge: .top).combined(with: .opacity))
+            notice(status: status, connected: connected)
+        }
+    }
+
+    @ViewBuilder
+    private func notice(status: LinkStatus?, connected: Bool) -> some View {
+        if let message = guidance(model.presenterSupport, connected: connected) ?? model.lastError ?? wrongApp(status) {
+            Notice(message: message)
+                .transition(.move(edge: .top).combined(with: .opacity))
+        }
+    }
+
+    /// 一般 iPhone 最上面一列：結束、計時、演講長度。
+    private func topRow(status: LinkStatus?, connected: Bool) -> some View {
+        let presenting = status?.presenter == .presenting
+        let minutes = presenting ? status?.presentationMinutes : nil
+        return HStack {
+            Button { dismiss() } label: {
+                Image(systemName: "xmark").font(.headline).frame(width: 44, height: 44)
             }
+            .buttonStyle(.glass)
+            .buttonBorderShape(.circle)
+            .accessibilityLabel("結束簡報")
+
+            Spacer()
+            header(status: status, connected: connected, large: false)
+            Spacer()
+
+            Menu { lengthMenu(minutes: minutes) } label: {
+                Image(systemName: "timer").font(.headline).frame(width: 44, height: 44)
+            }
+            .buttonStyle(.glass)
+            .buttonBorderShape(.circle)
+            .accessibilityLabel("演講長度")
+            .disabled(!presenting)
+        }
+        .padding(.top, 4)
+    }
+
+    private func tile(title: LocalizedStringKey, symbol: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Image(systemName: symbol).font(.system(size: 18, weight: .semibold))
+                Text(title).font(.caption.weight(.medium)).lineLimit(1).minimumScaleFactor(0.8)
+            }
+            .frame(maxWidth: .infinity, minHeight: 64)
+            .background(Card(radius: 20))
+        }
+        .buttonStyle(PadStyle())
+    }
+
+    @ViewBuilder
+    private func lengthMenu(minutes: Int?) -> some View {
+        Picker("演講長度", selection: Binding(
+            get: { minutes },
+            set: { value in Task { await model.setPresentationTimer(minutes: value) } }
+        )) {
+            Text("不限時間").tag(Int?.none)
+            ForEach(Self.lengths, id: \.self) { Text("\($0) 分鐘").tag(Int?.some($0)) }
+        }
+        Divider()
+        Button("重新計時", systemImage: "arrow.counterclockwise") {
+            Task { await model.setPresentationTimer(minutes: minutes, restart: true) }
         }
     }
 
@@ -240,19 +316,7 @@ struct PresenterView: View {
         }
 
         ToolbarItem(placement: .primaryAction) {
-            Menu {
-                Picker("演講長度", selection: Binding(
-                    get: { minutes },
-                    set: { value in Task { await model.setPresentationTimer(minutes: value) } }
-                )) {
-                    Text("不限時間").tag(Int?.none)
-                    ForEach(Self.lengths, id: \.self) { Text("\($0) 分鐘").tag(Int?.some($0)) }
-                }
-                Divider()
-                Button("重新計時", systemImage: "arrow.counterclockwise") {
-                    Task { await model.setPresentationTimer(minutes: minutes, restart: true) }
-                }
-            } label: {
+            Menu { lengthMenu(minutes: minutes) } label: {
                 Label("演講長度", systemImage: "timer")
             }
             .disabled(!presenting)
@@ -348,6 +412,17 @@ private struct PresentationClock: View {
         let total = max(0, Int(seconds.rounded(.down)))
         let h = total / 3600, m = total / 60 % 60, s = total % 60
         return h > 0 ? String(format: "%d:%02d:%02d", h, m, s) : String(format: "%d:%02d", m, s)
+    }
+}
+
+/// 有沒有直排的工具列：iPhone Duo 有，一般 iPhone 是 nil。
+@available(iOS 27.1, *)
+private struct VerticalBarReader: View {
+    @Environment(\.toolbarVerticalEdge) private var edge
+    let changed: (Bool) -> Void
+
+    var body: some View {
+        Color.clear.onChange(of: edge, initial: true) { changed(edge != nil) }
     }
 }
 
