@@ -30,6 +30,8 @@ struct PresenterView: View {
     /// 翻頁時加一：手機上畫的螢光筆線跟 Mac 一樣馬上清掉。
     @State private var inkReset = 0
     @GestureState private var padPressed = false
+    /// 計時跟按鈕放在一起（沒有折線）；iPhone Duo 半開時是 false，計時在折線另一邊。
+    @State private var infoStacked = true
 
     private static let lengths = [10, 15, 20, 30, 45, 60]
 
@@ -92,93 +94,126 @@ struct PresenterView: View {
 
     /// 翻頁區與工具。結束、演講長度和開始／黑畫面／跳頁／結束播放放在系統工具列：
     /// 一般 iPhone 在上下兩條，iPhone Duo 合上時系統把它們排到側邊，翻頁區可以用滿整個高度。
+    ///
+    /// iPhone Duo 半開時用疊放排列（overlay）把計時與按鈕分在折線兩邊，按鈕不會被折線切過：
+    /// 像書本拿著時按鈕在右半邊（拇指按得到），立在桌上時計時在上半部（遠處看得到）、按鈕在下半部。
+    /// 合上、全開或一般 iPhone 時兩者疊在一起，按鈕那層自己帶計時，跟原本一樣。
     @ViewBuilder
     private func stage(status: LinkStatus?, connected: Bool, ready: Bool) -> some View {
-        let support = model.presenterSupport
-        VStack(spacing: 14) {
-            header(status: status, connected: connected)
-
-            if let message = guidance(support, connected: connected) ?? model.lastError ?? wrongApp(status) {
-                Notice(message: message)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-
-            Group {
-                // 雷射筆、聚光燈、螢光筆要 Mac 0.3 以後；舊版 Mac 只有翻頁
-                let tools: [Tool] = model.highlighterAvailable ? Tool.allCases
-                    : model.pointerAvailable ? [.slides, .laser, .spotlight] : [.slides]
-                if tools.count > 1 {
-                    ToolPicker(tools: tools, tool: $tool)
+        Group {
+            if #available(iOS 27.1, *) {
+                ArrangementView {
+                    VStack(spacing: 14) {
+                        if infoStacked { info(status: status, connected: connected, large: false) }
+                        controls(ready: ready)
+                    }
+                    .background { ArrangementReader { infoStacked = $0 } }
+                } secondary: {
+                    if infoStacked {
+                        Color.clear.allowsHitTesting(false)
+                    } else {
+                        info(status: status, connected: connected, large: true)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
                 }
-                let tool = tools.contains(tool) ? tool : .slides
-                if tool == .slides {
-                    // 點一下下一頁，也可以像翻書一樣滑：向左滑下一頁、向右滑上一頁。
-                    // 點和滑用同一個手勢判斷；用 Button 加滑動手勢的話，滑一下會被當成點一下再滑一下，翻兩頁。
-                    NextPad(done: nextDone)
-                        .foregroundStyle(.white)
-                        .scaleEffect(padPressed ? 0.97 : 1)
-                        .brightness(padPressed ? 0.06 : 0)
-                        .animation(.spring(duration: 0.25, bounce: 0.4), value: padPressed)
-                        .gesture(DragGesture(minimumDistance: 0)
-                            .updating($padPressed) { _, pressed, _ in pressed = true }
-                            .onEnded { value in
-                                let dx = value.translation.width, dy = value.translation.height
-                                if abs(dx) > 40, abs(dx) > abs(dy) {
-                                    send(dx < 0 ? .next : .previous)
-                                } else if hypot(dx, dy) < 20 {
-                                    send(.next)
-                                }
-                            })
-                        .accessibilityElement(children: .combine)
-                        .accessibilityAddTraits(.isButton)
-                        .accessibilityAction { send(.next) }
-
-                    Button { send(.previous) } label: { PreviousBar(done: previousDone) }
-                        .buttonStyle(PadStyle())
-                } else {
-                    let mode: PointerUpdate.Mode = switch tool {
-                    case .laser: .laser
-                    case .highlighter: .highlighter
-                    default: .spotlight
-                    }
-                    PointerPad(mode: mode, aspect: model.pointerAspect, inkReset: inkReset) { x, y, began in
-                        if began { pointerTouches += 1 }
-                        model.movePointer(mode, x: x, y: y, began: began)
-                    } end: {
-                        model.endPointer()
-                    }
-                    HStack(spacing: 10) {
-                        Button { send(.previous) } label: { TurnButton(title: "上一頁", symbol: "chevron.backward") }
-                        Button { send(.next) } label: { TurnButton(title: "下一頁", symbol: "chevron.forward", prominent: true) }
-                    }
-                    .buttonStyle(PadStyle())
-                }
-
-                // Mac 0.3 以後、允許簡報遙控時才有
-                if let volume = model.macVolume {
-                    VolumeBar(volume: volume) { level in
-                        model.setVolume(level)
-                    } mute: { muted in
-                        taps += 1
-                        Task { if await !model.changeVolume(.mute(muted)) { failures += 1 } }
-                    }
+                .arrangementViewStyle(.overlay)
+            } else {
+                VStack(spacing: 14) {
+                    info(status: status, connected: connected, large: false)
+                    controls(ready: ready)
                 }
             }
-            .disabled(!ready)
-            .opacity(ready ? 1 : 0.4)
         }
         .padding(.horizontal, 20)
         .padding(.bottom, 8)
         .background { StageBackground() }
     }
 
-    /// 自訂畫面放不進直排的工具列，所以計時與連線狀態留在畫面裡。
-    private func header(status: LinkStatus?, connected: Bool) -> some View {
+    /// 計時、連線狀態，以及還不能翻頁或按鍵會送錯地方時的提醒。
+    private func info(status: LinkStatus?, connected: Bool, large: Bool) -> some View {
+        VStack(spacing: 14) {
+            header(status: status, connected: connected, large: large)
+            if let message = guidance(model.presenterSupport, connected: connected) ?? model.lastError ?? wrongApp(status) {
+                Notice(message: message)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+    }
+
+    private func controls(ready: Bool) -> some View {
+        Group {
+            // 雷射筆、聚光燈、螢光筆要 Mac 0.3 以後；舊版 Mac 只有翻頁
+            let tools: [Tool] = model.highlighterAvailable ? Tool.allCases
+                : model.pointerAvailable ? [.slides, .laser, .spotlight] : [.slides]
+            if tools.count > 1 {
+                ToolPicker(tools: tools, tool: $tool)
+            }
+            let tool = tools.contains(tool) ? tool : .slides
+            if tool == .slides {
+                // 點一下下一頁，也可以像翻書一樣滑：向左滑下一頁、向右滑上一頁。
+                // 點和滑用同一個手勢判斷；用 Button 加滑動手勢的話，滑一下會被當成點一下再滑一下，翻兩頁。
+                NextPad(done: nextDone)
+                    .foregroundStyle(.white)
+                    .scaleEffect(padPressed ? 0.97 : 1)
+                    .brightness(padPressed ? 0.06 : 0)
+                    .animation(.spring(duration: 0.25, bounce: 0.4), value: padPressed)
+                    .gesture(DragGesture(minimumDistance: 0)
+                        .updating($padPressed) { _, pressed, _ in pressed = true }
+                        .onEnded { value in
+                            let dx = value.translation.width, dy = value.translation.height
+                            if abs(dx) > 40, abs(dx) > abs(dy) {
+                                send(dx < 0 ? .next : .previous)
+                            } else if hypot(dx, dy) < 20 {
+                                send(.next)
+                            }
+                        })
+                    .accessibilityElement(children: .combine)
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityAction { send(.next) }
+
+                Button { send(.previous) } label: { PreviousBar(done: previousDone) }
+                    .buttonStyle(PadStyle())
+            } else {
+                let mode: PointerUpdate.Mode = switch tool {
+                case .laser: .laser
+                case .highlighter: .highlighter
+                default: .spotlight
+                }
+                PointerPad(mode: mode, aspect: model.pointerAspect, inkReset: inkReset) { x, y, began in
+                    if began { pointerTouches += 1 }
+                    model.movePointer(mode, x: x, y: y, began: began)
+                } end: {
+                    model.endPointer()
+                }
+                HStack(spacing: 10) {
+                    Button { send(.previous) } label: { TurnButton(title: "上一頁", symbol: "chevron.backward") }
+                    Button { send(.next) } label: { TurnButton(title: "下一頁", symbol: "chevron.forward", prominent: true) }
+                }
+                .buttonStyle(PadStyle())
+            }
+
+            // Mac 0.3 以後、允許簡報遙控時才有
+            if let volume = model.macVolume {
+                VolumeBar(volume: volume) { level in
+                    model.setVolume(level)
+                } mute: { muted in
+                    taps += 1
+                    Task { if await !model.changeVolume(.mute(muted)) { failures += 1 } }
+                }
+            }
+        }
+        .disabled(!ready)
+        .opacity(ready ? 1 : 0.4)
+    }
+
+    /// 自訂畫面放不進直排的工具列，所以計時與連線狀態留在畫面裡。`large` 是折線另一邊的半個螢幕，
+    /// 立在講台上時要從遠處看得到。
+    private func header(status: LinkStatus?, connected: Bool, large: Bool) -> some View {
         let presenting = status?.presenter == .presenting
         let start = presenting ? status?.presentationStartedAt ?? openedAt : openedAt
         let minutes = presenting ? status?.presentationMinutes : nil
-        return VStack(spacing: 2) {
-            PresentationClock(start: start, minutes: minutes)
+        return VStack(spacing: large ? 8 : 2) {
+            PresentationClock(start: start, minutes: minutes, size: large ? 76 : 30)
             HStack(spacing: 6) {
                 Circle()
                     .fill(connected ? Color.green : Color.orange)
@@ -186,7 +221,7 @@ struct PresenterView: View {
                 Text(status?.frontApp.map { String(localized: "正在控制「\($0)」") } ?? model.pairing?.macName ?? "Mac")
                     .lineLimit(1)
             }
-            .font(.caption)
+            .font(large ? .body : .caption)
             .foregroundStyle(.secondary)
             .accessibilityElement(children: .combine)
             .accessibilityValue(connected ? Text("已連線") : Text("未連線"))
@@ -287,6 +322,7 @@ struct PresenterView: View {
 private struct PresentationClock: View {
     let start: Date
     let minutes: Int?
+    var size: CGFloat = 30
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 1)) { context in
@@ -299,7 +335,7 @@ private struct PresentationClock: View {
             case let r?: (Self.format(r), .primary)
             }
             Text(text)
-                .font(.system(size: 30, weight: .semibold, design: .rounded))
+                .font(.system(size: size, weight: .semibold, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(color)
                 .contentTransition(.numericText())
@@ -315,27 +351,46 @@ private struct PresentationClock: View {
     }
 }
 
+/// 讀疊放排列的層次：按鈕那層疊在計時上面（大於 0）表示沒有折線分開兩邊。
+@available(iOS 27.1, *)
+private struct ArrangementReader: View {
+    @Environment(\.overlayArrangementZIndex) private var zIndex
+    let stacked: (Bool) -> Void
+
+    var body: some View {
+        Color.clear.onChange(of: zIndex, initial: true) { stacked(zIndex > 0) }
+    }
+}
+
 /// 主要的翻頁區：整塊都能按，Mac 翻頁成功時箭頭動一下。
 private struct NextPad: View {
     let done: Int
 
     var body: some View {
-        VStack(spacing: 22) {
-            ZStack {
-                Circle()
-                    .fill(LinearGradient.stageOrange)
-                    .shadow(color: Color.orange.opacity(0.45), radius: 28, y: 10)
-                Image(systemName: "chevron.forward")
-                    .font(.system(size: 52, weight: .bold))
-                    .foregroundStyle(.white)
-                    .symbolEffect(.wiggle.forward, value: done)
-            }
-            .frame(width: 128, height: 128)
+        // iPhone Duo 立在桌上時按鈕只有下半個螢幕：圓鈕跟著高度縮小，太矮就省掉說明，不擠到工具列底下
+        GeometryReader { geo in
+            let circle = min(128, geo.size.height * 0.45)
+            let roomy = geo.size.height >= 220
+            VStack(spacing: roomy ? 22 : 10) {
+                ZStack {
+                    Circle()
+                        .fill(LinearGradient.stageOrange)
+                        .shadow(color: Color.orange.opacity(0.45), radius: circle * 0.22, y: circle * 0.08)
+                    Image(systemName: "chevron.forward")
+                        .font(.system(size: circle * 0.4, weight: .bold))
+                        .foregroundStyle(.white)
+                        .symbolEffect(.wiggle.forward, value: done)
+                }
+                .frame(width: circle, height: circle)
 
-            VStack(spacing: 6) {
-                Text("下一頁").font(.title2.weight(.bold))
-                Text("點一下，或向左滑").font(.subheadline).foregroundStyle(.secondary)
+                VStack(spacing: 6) {
+                    Text("下一頁").font(.title2.weight(.bold))
+                    if roomy {
+                        Text("點一下，或向左滑").font(.subheadline).foregroundStyle(.secondary)
+                    }
+                }
             }
+            .frame(width: geo.size.width, height: geo.size.height)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Card(radius: 36))
